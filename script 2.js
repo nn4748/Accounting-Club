@@ -6,6 +6,7 @@
 
   // بريق تفاعلي في الهيرو يتبع الماوس
   const hero = document.querySelector('.hero');
+  if (hero){
   hero.addEventListener('mousemove', (e) => {
     const r = hero.getBoundingClientRect();
     const mx = ((e.clientX - r.left) / r.width) * 100;
@@ -13,6 +14,7 @@
     hero.style.setProperty('--mx', mx + '%');
     hero.style.setProperty('--my', my + '%');
   });
+}
 
   // ظهور تدريجي عند التمرير
   const revealEls = document.querySelectorAll('[data-reveal]');
@@ -94,3 +96,64 @@
 
   btn.addEventListener('click', runSearch);
   input.addEventListener('keydown', (e) => { if(e.key === 'Enter') runSearch(); });
+  function animateStats(){
+  document.querySelectorAll('#stats .stat-num').forEach(el=>{
+    const raw = el.textContent.trim();
+    const match = raw.match(/^([+\-]?)([\d.]+)([A-Za-z%]*)$/);
+    if(!match) return;
+    const sign = match[1] || '';
+    const target = parseFloat(match[2]);
+    const suffix = match[3] || '';
+    const decimals = match[2].includes('.') ? match[2].split('.')[1].length : 0;
+    const duration = 900;
+    const start = performance.now();
+    function tick(now){
+      const progress = Math.min((now-start)/duration, 1);
+      const eased = 1 - Math.pow(1-progress, 3);
+      const value = target * eased;
+      el.textContent = sign + value.toFixed(decimals) + suffix;
+      if(progress < 1) requestAnimationFrame(tick);
+      else el.textContent = sign + target.toFixed(decimals) + suffix;
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+function animateStats(){
+  document.querySelectorAll('#stats .stat-num').forEach(el=>{
+    const raw = el.textContent.trim();
+    const match = raw.match(/^([+\-]?)([\d.]+)([A-Za-z%]*)$/);
+    if(!match) return;
+    const sign = match[1] || '';
+    const target = parseFloat(match[2]);
+    const suffix = match[3] || '';
+    const decimals = match[2].includes('.') ? match[2].split('.')[1].length : 0;
+    const duration = 1200;
+    const start = performance.now();
+    function tick(now){
+      const elapsed = now - start;
+      const progress = Math.min(elapsed/duration, 1);
+      const eased = 1 - Math.pow(1-progress, 3);
+      const value = target * eased;
+      el.textContent = sign + value.toFixed(decimals) + suffix;
+      if(progress < 1) requestAnimationFrame(tick);
+      else el.textContent = sign + target.toFixed(decimals) + suffix;
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+const statsSection = document.getElementById('stats');
+let statsAnimated = false;
+if(statsSection){
+  const statsObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting && !statsAnimated){
+        statsAnimated = true;
+        animateStats();
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '0px 0px -50px 0px' });
+  statsObserver.observe(statsSection);
+}
+
