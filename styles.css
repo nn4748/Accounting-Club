@@ -285,7 +285,7 @@
   .stat-pill .stat-num{font-weight:800;font-size:19px;white-space:nowrap;}
   .stat-pill .stat-label{font-weight:700;font-size:14.5px;white-space:nowrap;}
 
-  @media (max-width:860px){
+  @media (max-width:600px){
     .stats-columns{grid-template-columns:1fr;gap:0;max-width:420px;margin-inline:auto;}
     .stats-col:nth-child(2),.stats-col:nth-child(3){margin-top:0;}
     .stat-connector{min-height:24px;}
@@ -307,10 +307,11 @@
     position:relative;width:100%;overflow:hidden;padding:6px 0 40px;
   }
   .mini-track{
-    display:flex;align-items:stretch;gap:20px;width:max-content;
-    animation:miniScroll 40s linear infinite;
+    display:flex;align-items:stretch;gap:20px;width:200%;
+    animation:miniScroll 20s linear infinite;
+      will-change: transform;
   }
-  .mini-track--reverse{animation-direction:reverse;animation-duration:36s;}
+  .mini-track--reverse{animation-direction:reverse;animation-duration:20s;}
   .mini-marquee:hover .mini-track{animation-play-state:paused;}
   @keyframes miniScroll{
     from{transform:translateX(0);}
@@ -420,3 +421,15 @@
     .signature-float{animation:none;}
     [data-reveal]{transition:none;opacity:1;transform:none;}
   }
+  /* ===== منع اسم الشركة من النزول ===== */
+.company-name {
+  font-size: 12px;              /* تصغير الخط */
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;          /* ← يمنع النزول للسطر الثاني */
+  overflow: hidden;             /* يخفي النص الزائد */
+  text-overflow: ellipsis;      /* يضيف ... إذا النص طويل */
+  max-width: 90px;              /* عرض أقصى للاسم */
+  display: inline-block;
+  direction: rtl;               /* عشان النص يبدأ من اليمين */
+}
