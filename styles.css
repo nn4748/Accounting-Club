@@ -553,7 +553,7 @@
   }
   .sponsors-track{
     display:flex;align-items:center;gap:64px;width:max-content;
-    animation:sponsorsScroll 18s linear infinite;
+    animation:sponsorsScroll 10s linear infinite;
   }
   .sponsors-track img{height:46px;width:auto;object-fit:contain;filter:grayscale(15%);opacity:.9;flex:none;}
   .sponsors-marquee:hover .sponsors-track{animation-play-state:paused;}
