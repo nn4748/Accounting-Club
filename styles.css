@@ -307,7 +307,7 @@
     position:relative;width:100%;overflow:hidden;padding:6px 0 40px;
   }
   .mini-track{
-    display:flex;align-items:stretch;gap:20px;
+    display:flex;align-items:stretch;gap:20px;width:200%;
     animation:miniScroll 20s linear infinite;
       will-change: transform;
   }

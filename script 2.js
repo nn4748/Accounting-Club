@@ -156,5 +156,53 @@ if(statsSection){
   }, { threshold: 0.3, rootMargin: '0px 0px -50px 0px' });
   statsObserver.observe(statsSection);
 }
+const VISITS_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFDEZv-P6YxohrZPYeVvUY1BY1eirg0czoWkqOuLras-AS9GemQBmNnE9ubT_oXzBm_VhNN8xeTLCh/pub?gid=329727116&single=true&output=csv";
 
+function driveDirectLink(url){
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+  if(match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+  return url;
+}
+
+async function loadVisits(){
+  try{
+    const res = await fetch(VISITS_SHEET_CSV_URL);
+    const csv = await res.text();
+    const rows = csv.trim().split('\n').slice(1);
+    return rows.map(r => {
+      const match = r.match(/^([^,]*),([^,]*),([^,]*),([^,]*),(.*)$/);
+      if(!match) return null;
+      return {
+        name: match[2].trim(),
+        date: match[3].trim(),
+        image: driveDirectLink(match[4].trim())
+      };
+    }).filter(Boolean);
+  }catch(e){
+    console.error('تعذر تحميل بيانات الزيارات', e);
+    return [];
+  }
+}
+
+function buildVisitCard(v){
+  return `
+    <div class="mini-card mini-card--visits">
+      <div class="visit-header">
+        <span class="mini-date">${v.date}</span>
+        <span class="company-name">${v.name}</span>
+        <div class="company-logo"><img src="${v.image}" alt="${v.name}"></div>
+      </div>
+    </div>`;
+}
+
+async function renderVisits(){
+  const track = document.querySelector('#featured-visits .mini-track');
+  if(!track) return;
+  const visits = await loadVisits();
+  if(visits.length === 0) return;
+  const cardsHtml = visits.map(buildVisitCard).join('');
+  track.innerHTML = cardsHtml + cardsHtml;
+}
+
+renderVisits();
 
