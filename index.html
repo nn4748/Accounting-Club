@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <script>
+  if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
   if (location.hash) { history.replaceState(null, '', location.pathname + location.search); }
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  window.addEventListener('pageshow', function(){ window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); });
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نادي المحاسبة | جامعة الإمام محمد بن سعود الإسلامية</title>
