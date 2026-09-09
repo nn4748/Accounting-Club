@@ -163,23 +163,90 @@ function driveDirectLink(url){
   if(match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
   return url;
 }
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let value = "";
+  let insideQuotes = false;
 
-async function loadVisits(){
-  try{
-    const res = await fetch(VISITS_SHEET_CSV_URL);
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const next = text[i + 1];
+
+    if (char === '"' && insideQuotes && next === '"') {
+      value += '"';
+      i++;
+    }
+
+    else if (char === '"') {
+      insideQuotes = !insideQuotes;
+    }
+
+    else if (char === ',' && !insideQuotes) {
+      row.push(value);
+      value = "";
+    }
+
+    else if ((char === '\n' || char === '\r') && !insideQuotes) {
+
+      if (char === '\r' && next === '\n') {
+        i++;
+      }
+
+      row.push(value);
+      rows.push(row);
+
+      row = [];
+      value = "";
+    }
+
+    else {
+      value += char;
+    }
+  }
+
+  // آخر قيمة
+  if (value !== "" || row.length > 0) {
+    row.push(value);
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+async function loadVisits() {
+  try {
+    const res = await fetch(VISITS_SHEET_CSV_URL + '&t=' + Date.now());
+
+    if (!res.ok) {
+      throw new Error(`HTTP Error: ${res.status}`);
+    }
+
     const csv = await res.text();
-    const rows = csv.trim().split('\n').slice(1);
-    return rows.map(r => {
-      const match = r.match(/^([^,]*),([^,]*),([^,]*),([^,]*),(.*)$/);
-      if(!match) return null;
-      return {
-        name: match[2].trim(),
-        date: match[3].trim(),
-        image: driveDirectLink(match[4].trim())
-      };
-    }).filter(Boolean);
-  }catch(e){
-    console.error('تعذر تحميل بيانات الزيارات', e);
+
+    const rows = parseCSV(csv);
+
+    // أول صف هو أسماء الأعمدة
+    const headers = rows[0].map(h => h.trim());
+
+    console.log("Headers:", headers);
+    console.log("Rows:", rows);
+
+    return rows.slice(1)
+      .filter(row => row.length > 1)
+      .map(row => {
+
+        return {
+          name: row[1]?.trim() || "",
+          date: row[2]?.trim() || "",
+          image: driveDirectLink(row[3]?.trim() || "")
+        };
+
+      })
+      .filter(v => v.name);
+
+  } catch (e) {
+    console.error("تعذر تحميل بيانات الزيارات:", e);
     return [];
   }
 }

@@ -315,7 +315,7 @@
   .mini-marquee:hover .mini-track{animation-play-state:paused;}
   @keyframes miniScroll{
     from{transform:translateX(0);}
-    to{transform:translateX(-50%);}
+    to{transform:translateX(calc(-50% - 10px));}
   }
   .mini-card{
     flex:none;width:230px;background:var(--white);border-radius:16px;
@@ -432,4 +432,18 @@
   max-width: 90px;              /* عرض أقصى للاسم */
   display: inline-block;
   direction: rtl;               /* عشان النص يبدأ من اليمين */
+}
+.mini-card--visits .company-logo{
+  width:100%;
+  height:120px;
+  margin-top:12px;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.mini-card--visits .company-logo img{
+  width:140%;
+  height:140%;
+  object-fit:cover;
+  display:block;
 }
