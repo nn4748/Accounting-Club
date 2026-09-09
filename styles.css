@@ -499,12 +499,15 @@
   }
   .photo-band-bg span{
     flex:1;background-size:cover;background-position:center;
-    filter:grayscale(10%) brightness(.5);
+    filter:blur(5px) brightness(.7);
+    transform:scale(1.08);
   }
   .photo-band::after{
     content:"";position:absolute;inset:0;z-index:1;
-    background:linear-gradient(160deg, rgba(0,8,120,.88) 0%, rgba(4,4,74,.85) 55%, rgba(26,26,26,.9) 100%);
+    background:rgba(0,0,0,.22);
   }
+  .photo-band .eyebrow,
+  .photo-band h2{text-shadow:0 2px 14px rgba(0,0,0,.55);}
   .photo-band > .wrap,
   .photo-band > .mini-marquee{position:relative;z-index:2;}
   .photo-band .eyebrow{color:var(--sky);}
