@@ -6,7 +6,6 @@
 
   // بريق تفاعلي في الهيرو يتبع الماوس
   const hero = document.querySelector('.hero');
-  if (hero){
   hero.addEventListener('mousemove', (e) => {
     const r = hero.getBoundingClientRect();
     const mx = ((e.clientX - r.left) / r.width) * 100;
@@ -14,7 +13,6 @@
     hero.style.setProperty('--mx', mx + '%');
     hero.style.setProperty('--my', my + '%');
   });
-}
 
   // ظهور تدريجي عند التمرير
   const revealEls = document.querySelectorAll('[data-reveal]');
@@ -54,7 +52,7 @@
   async function loadFromGoogleSheet(){
     if(!GOOGLE_SHEET_CSV_URL) return MEMBERS;
     try{
-      const res = await fetch(GOOGLE_SHEET_CSV_URL);
+      const res = await fetch ("https://script.google.com/macros/s/AKfycbx3dsV9X4MEb2yapODFXBlDrroD9wYlbyxvgeknBxgf5okn2fU9b4ioAp5Lw_h_SC2r/exec");
       const csv = await res.text();
       const rows = csv.trim().split('\n').slice(1); // تجاهل صف العناوين
       return rows.map(r => {
@@ -96,113 +94,163 @@
 
   btn.addEventListener('click', runSearch);
   input.addEventListener('keydown', (e) => { if(e.key === 'Enter') runSearch(); });
-  function animateStats(){
-  document.querySelectorAll('#stats .stat-num').forEach(el=>{
-    const raw = el.textContent.trim();
-    const match = raw.match(/^([+\-]?)([\d.]+)([A-Za-z%]*)$/);
-    if(!match) return;
-    const sign = match[1] || '';
-    const target = parseFloat(match[2]);
-    const suffix = match[3] || '';
-    const decimals = match[2].includes('.') ? match[2].split('.')[1].length : 0;
-    const duration = 900;
-    const start = performance.now();
-    function tick(now){
-      const progress = Math.min((now-start)/duration, 1);
-      const eased = 1 - Math.pow(1-progress, 3);
-      const value = target * eased;
-      el.textContent = sign + value.toFixed(decimals) + suffix;
-      if(progress < 1) requestAnimationFrame(tick);
-      else el.textContent = sign + target.toFixed(decimals) + suffix;
+
+  const API_URL = "https://script.google.com/macros/s/AKfycbwnD4jxqeTzbi4n5_OOJl3BUhwNeAdDN2f2HF80MWTiRRjZilvt8tu9-8UBYY74P_2W/exec";
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadEvents();
+});
+
+async function loadEvents() {
+
+    try {
+
+        const response = await fetch(API_URL);
+
+        const events = await response.json();
+
+        displayEvents(events);
+
+    } catch (error) {
+
+        console.error("Error:", error);
+
     }
-    requestAnimationFrame(tick);
-  });
+
 }
 
-function animateStats(){
-  document.querySelectorAll('#stats .stat-num').forEach(el=>{
-    const raw = el.textContent.trim();
-    const match = raw.match(/^([+\-]?)([\d.]+)([A-Za-z%]*)$/);
-    if(!match) return;
-    const sign = match[1] || '';
-    const target = parseFloat(match[2]);
-    const suffix = match[3] || '';
-    const decimals = match[2].includes('.') ? match[2].split('.')[1].length : 0;
-    const duration = 1200;
-    const start = performance.now();
-    function tick(now){
-      const elapsed = now - start;
-      const progress = Math.min(elapsed/duration, 1);
-      const eased = 1 - Math.pow(1-progress, 3);
-      const value = target * eased;
-      el.textContent = sign + value.toFixed(decimals) + suffix;
-      if(progress < 1) requestAnimationFrame(tick);
-      else el.textContent = sign + target.toFixed(decimals) + suffix;
-    }
-    requestAnimationFrame(tick);
-  });
-}
+function displayEvents(events) {
 
-const statsSection = document.getElementById('stats');
-let statsAnimated = false;
-if(statsSection){
-  const statsObserver = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting && !statsAnimated){
-        statsAnimated = true;
-        animateStats();
-      }
+    const container = document.getElementById("eventsContainer");
+
+    container.innerHTML = "";
+
+    events.forEach(event => {
+
+        container.innerHTML += `
+
+        <div class="event-card">
+
+            <div class="event-image">
+
+                <img src="${event.image}" alt="${event.name}">
+
+            </div>
+
+            <div class="event-content">
+
+                <h3>${event.name}</h3>
+
+                <p>${event.description}</p>
+
+                <div class="event-info">
+
+                    <span>📍 ${event.location}</span>
+
+                    <span>📅 ${event.date}</span>
+
+                </div>
+
+               <button class="register-btn" onclick="openRegister('${event.name}')">
+                                سجل الآن
+                 </button>
+
+            </div>
+
+        </div>
+
+        `;
+
     });
-  }, { threshold: 0.3, rootMargin: '0px 0px -50px 0px' });
-  statsObserver.observe(statsSection);
-}
-const VISITS_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFDEZv-P6YxohrZPYeVvUY1BY1eirg0czoWkqOuLras-AS9GemQBmNnE9ubT_oXzBm_VhNN8xeTLCh/pub?gid=329727116&single=true&output=csv";
 
-function driveDirectLink(url){
-  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-  if(match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
-  return url;
+
+
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxCeXRlp9rfuJFZ9B36PlnoEw2qwHs8f_zczqb4QQOH2X5RJh6-R8ZddIBB48EESp8OeQ/exec";
+
+document.getElementById("registerForm").addEventListener("submit", function (e) {
+
+    e.preventDefault();
+
+    // التأكد من الموافقة
+    if (!document.getElementById("agree").checked) {
+        alert("يجب الموافقة على التعهد قبل التسجيل.");
+        return;
+    }
+
+    const data = {
+
+        event: document.getElementById("eventName").value,
+
+        name: document.getElementById("name").value,
+
+        email: document.getElementById("email").value,
+
+        phone: document.getElementById("phone").value,
+
+        major: document.getElementById("major").value,
+
+        agree: document.getElementById("agree").checked
+
+    };
+
+    fetch(scriptURL, {
+
+        method: "POST",
+
+        body: JSON.stringify(data)
+
+    })
+
+    .then(response => response.json())
+
+    .then(result => {
+
+        if (result.status === "success") {
+
+            alert("🎉 تم التسجيل بنجاح، شكراً لك.");
+
+            document.getElementById("registerForm").reset();
+
+            document.getElementById("register-section").classList.remove("active");
+
+        } else {
+
+            alert("حدث خطأ أثناء التسجيل.");
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("تعذر الاتصال بالخادم.");
+
+    });
+
+});
+
+
+}
+function openRegister(event){
+
+    document
+    .getElementById("register-section")
+    .classList.add("active");
+
+
+    document
+    .getElementById("eventName")
+    .value = event;
+
+
+    document
+    .getElementById("register-section")
+    .scrollIntoView({
+        behavior:"smooth"
+    });
+
 }
 
-async function loadVisits(){
-  try{
-    const res = await fetch(VISITS_SHEET_CSV_URL);
-    const csv = await res.text();
-    const rows = csv.trim().split('\n').slice(1);
-    return rows.map(r => {
-      const match = r.match(/^([^,]*),([^,]*),([^,]*),([^,]*),(.*)$/);
-      if(!match) return null;
-      return {
-        name: match[2].trim(),
-        date: match[3].trim(),
-        image: driveDirectLink(match[4].trim())
-      };
-    }).filter(Boolean);
-  }catch(e){
-    console.error('تعذر تحميل بيانات الزيارات', e);
-    return [];
-  }
-}
-
-function buildVisitCard(v){
-  return `
-    <div class="mini-card mini-card--visits">
-      <div class="visit-header">
-        <span class="mini-date">${v.date}</span>
-        <span class="company-name">${v.name}</span>
-        <div class="company-logo"><img src="${v.image}" alt="${v.name}"></div>
-      </div>
-    </div>`;
-}
-
-async function renderVisits(){
-  const track = document.querySelector('#featured-visits .mini-track');
-  if(!track) return;
-  const visits = await loadVisits();
-  if(visits.length === 0) return;
-  const cardsHtml = visits.map(buildVisitCard).join('');
-  track.innerHTML = cardsHtml + cardsHtml;
-}
-
-renderVisits();
 

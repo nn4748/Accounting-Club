@@ -285,7 +285,7 @@
   .stat-pill .stat-num{font-weight:800;font-size:19px;white-space:nowrap;}
   .stat-pill .stat-label{font-weight:700;font-size:14.5px;white-space:nowrap;}
 
-  @media (max-width:600px){
+  @media (max-width:860px){
     .stats-columns{grid-template-columns:1fr;gap:0;max-width:420px;margin-inline:auto;}
     .stats-col:nth-child(2),.stats-col:nth-child(3){margin-top:0;}
     .stat-connector{min-height:24px;}
@@ -293,8 +293,270 @@
   @media (max-width:480px){
     .stat-pill{flex-wrap:wrap;padding:16px 18px;}
   }
+/* Events Section */
+.events-section{
+    padding:40px 5%;
+    background:white;
+}
 
 
+/* Cards Container */
+.events-container{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    justify-content:center;
+    gap:25px;
+}
+
+
+/* Card */
+.event-card{
+    width:100%;
+    min-height:360px;
+    background:white;
+    border:2px solid #071952;
+    border-radius:16px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:0.4s ease;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+}
+
+
+.event-card:hover{
+    transform:scale(1.04);
+}
+
+
+/* Image */
+.event-image{
+    width:100%;
+    height:170px; 
+    flex-shrink:0;
+}
+
+
+.event-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+
+/* Content */
+.event-content{
+
+    flex:1;
+    display:flex;
+    flex-direction:column;
+
+    padding:15px;
+
+    box-sizing:border-box;
+
+}
+
+
+
+/* Title */
+.event-content h3{
+
+    margin:0 0 8px;
+
+    color:#071952;
+
+    font-size:clamp(12px,1.2vw,17px);
+
+    line-height:1.4;
+
+    overflow-wrap:break-word;
+
+}
+
+
+
+/* Description */
+.event-description{
+
+    flex:1;
+
+    font-size:clamp(10px,1vw,14px);
+
+    color:#555;
+
+    line-height:1.5;
+
+    margin:5px 0;
+
+    overflow:hidden;
+
+}
+
+
+/* Info */
+.event-info{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    font-size:clamp(9px,1vw,12px);
+
+    color:#071952;
+
+    margin-bottom:12px;
+
+}
+
+
+
+/* Button */
+.register-btn{
+
+    width:100%;
+
+    background:#071952;
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+
+    padding:8px;
+
+    font-size:clamp(10px,1vw,13px);
+
+    cursor:pointer;
+
+    margin-top:auto;
+
+}
+
+
+.register-btn:hover{
+
+    background:#0b2d88;
+
+}
+
+
+.register-section{
+
+display:none;
+
+max-width:500px;
+
+margin:40px auto;
+
+padding:25px;
+
+background:white;
+
+border-radius:15px;
+
+border:2px solid #071952;
+
+}
+
+
+
+.register-section.active{
+
+display:block;
+
+}
+
+
+
+.register-section input{
+
+width:100%;
+
+padding:12px;
+
+margin-bottom:15px;
+
+border-radius:8px;
+
+border:1px solid #ccc;
+
+box-sizing:border-box;
+
+}
+
+
+.check{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+    margin-bottom:20px;
+}
+
+
+.check input{
+    width:18px;
+    height:18px;
+    margin:0;
+    flex-shrink:0;
+}
+
+
+
+.register-section button{
+
+width:100%;
+
+padding:12px;
+
+background:#071952;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+
+
+
+/* Tablet */
+
+@media(max-width:1100px){
+
+
+    .events-container{
+
+        grid-template-columns:repeat(2,271px);
+
+    }
+
+
+}
+
+
+
+/* Mobile */
+
+@media(max-width:600px){
+
+
+    .events-container{
+
+        grid-template-columns:271px;
+
+    }
+
+
+}
 
   /* ============ FEATURED EVENTS/VISITS MARQUEE ============ */
   .featured{padding:70px 0 30px;background:var(--paper);}
@@ -307,11 +569,10 @@
     position:relative;width:100%;overflow:hidden;padding:6px 0 40px;
   }
   .mini-track{
-    display:flex;align-items:stretch;gap:20px;width:200%;
-    animation:miniScroll 20s linear infinite;
-      will-change: transform;
+    display:flex;align-items:stretch;gap:20px;width:max-content;
+    animation:miniScroll 40s linear infinite;
   }
-  .mini-track--reverse{animation-direction:reverse;animation-duration:20s;}
+  .mini-track--reverse{animation-direction:reverse;animation-duration:36s;}
   .mini-marquee:hover .mini-track{animation-play-state:paused;}
   @keyframes miniScroll{
     from{transform:translateX(0);}
@@ -421,15 +682,3 @@
     .signature-float{animation:none;}
     [data-reveal]{transition:none;opacity:1;transform:none;}
   }
-  /* ===== منع اسم الشركة من النزول ===== */
-.company-name {
-  font-size: 12px;              /* تصغير الخط */
-  font-weight: 700;
-  color: var(--ink);
-  white-space: nowrap;          /* ← يمنع النزول للسطر الثاني */
-  overflow: hidden;             /* يخفي النص الزائد */
-  text-overflow: ellipsis;      /* يضيف ... إذا النص طويل */
-  max-width: 90px;              /* عرض أقصى للاسم */
-  display: inline-block;
-  direction: rtl;               /* عشان النص يبدأ من اليمين */
-}
