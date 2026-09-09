@@ -4,6 +4,33 @@
     header.classList.toggle('scrolled', window.scrollY > 40);
   });
 
+  // القائمة الجانبية
+  const menuToggle = document.getElementById('menuToggle');
+  const menuClose = document.getElementById('menuClose');
+  const sideMenu = document.getElementById('sideMenu');
+  const menuOverlay = document.getElementById('menuOverlay');
+  if (menuToggle && sideMenu && menuOverlay){
+    const openMenu = () => {
+      sideMenu.classList.add('open');
+      menuOverlay.classList.add('open');
+      sideMenu.setAttribute('aria-hidden', 'false');
+      menuToggle.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('menu-open');
+    };
+    const closeMenu = () => {
+      sideMenu.classList.remove('open');
+      menuOverlay.classList.remove('open');
+      sideMenu.setAttribute('aria-hidden', 'true');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('menu-open');
+    };
+    menuToggle.addEventListener('click', openMenu);
+    menuClose.addEventListener('click', closeMenu);
+    menuOverlay.addEventListener('click', closeMenu);
+    sideMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+  }
+
   // بريق تفاعلي في الهيرو يتبع الماوس
   const hero = document.querySelector('.hero');
   if (hero){
