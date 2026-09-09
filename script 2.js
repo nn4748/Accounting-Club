@@ -273,3 +273,157 @@ async function renderVisits(){
 
 renderVisits();
 
+
+
+
+// ================= EVENTS =================
+
+const API_URL = "https://script.google.com/macros/s/AKfycbwnD4jxqeTzbi4n5_OOJl3BUhwNeAdDN2f2HF80MWTiRRjZilvt8tu9-8UBYY74P_2W/exec";
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadEvents();
+});
+
+async function loadEvents() {
+    try {
+        const response = await fetch(API_URL);
+        const events = await response.json();
+        displayEvents(events);
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+
+function displayEvents(events) {
+
+    const container = document.getElementById("eventsContainer");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    events.forEach(event => {
+
+        container.innerHTML += `
+            <div class="event-card">
+
+                <div class="event-image">
+                    <img src="${event.image}" alt="${event.name}">
+                </div>
+
+                <div class="event-content">
+
+                    <h3>${event.name}</h3>
+
+                    <p>${event.description}</p>
+
+                    <div class="event-info">
+                        <span>📍 ${event.location}</span>
+                        <span>📅 ${event.date}</span>
+                    </div>
+
+                    <button class="register-btn"
+                        onclick="openRegister('${event.name}')">
+                        سجل الآن
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+}
+
+
+// ================= EVENT REGISTRATION =================
+
+const scriptURL = "https://script.google.com/macros/s/AKfycbxCeXRlp9rfuJFZ9B36PlnoEw2qwHs8f_zczqb4QQOH2X5RJh6-R8ZddIBB48EESp8OeQ/exec";
+
+const registerForm = document.getElementById("registerForm");
+
+if (registerForm) {
+
+    registerForm.addEventListener("submit", function (e) {
+
+        e.preventDefault();
+
+        if (!document.getElementById("agree").checked) {
+
+            alert("يجب الموافقة على التعهد قبل التسجيل.");
+
+            return;
+        }
+
+        const data = {
+
+            event: document.getElementById("eventName").value,
+
+            name: document.getElementById("name").value,
+
+            email: document.getElementById("email").value,
+
+            phone: document.getElementById("phone").value,
+
+            major: document.getElementById("major").value,
+
+            agree: document.getElementById("agree").checked
+
+        };
+
+        fetch(scriptURL, {
+
+            method: "POST",
+
+            body: JSON.stringify(data)
+
+        })
+
+        .then(response => response.json())
+
+        .then(result => {
+
+            if (result.status === "success") {
+
+                alert("🎉 تم التسجيل بنجاح، شكراً لك.");
+
+                registerForm.reset();
+
+                document
+                    .getElementById("register-section")
+                    .classList.remove("active");
+
+            } else {
+
+                alert("حدث خطأ أثناء التسجيل.");
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            alert("تعذر الاتصال بالخادم.");
+
+        });
+
+    });
+}
+
+
+// فتح نموذج التسجيل
+
+function openRegister(event) {
+
+    const registerSection =
+        document.getElementById("register-section");
+
+    registerSection.classList.add("active");
+
+    document.getElementById("eventName").value = event;
+
+    registerSection.scrollIntoView({
+        behavior: "smooth"
+    });
+}
