@@ -106,9 +106,6 @@
   header.scrolled .menu-toggle span{background:var(--ink);}
   header:not(.scrolled) .menu-toggle span{background:var(--white);}
 
-  .nav-cta{display:none;flex:none;}
-  @media(min-width:760px){.nav-cta{display:inline-flex;}}
-
   @media(max-width:600px){
     .wrap{padding:0 16px;}
     .brand{font-size:14px;gap:7px;}
@@ -170,6 +167,14 @@
   .hero-grid{
     display:flex;flex-direction:column;align-items:center;text-align:center;
     position:relative;z-index:2;
+  }
+  .hero-mark{
+    position:absolute;inset:0;z-index:1;
+    background:url('assets/club-mark-white.png') no-repeat center center;
+    background-size:min(620px,62vw) auto;
+    opacity:.07;
+    filter:blur(4px);
+    pointer-events:none;
   }
 
   /* entrance choreography */
