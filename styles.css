@@ -324,7 +324,12 @@
     .stat-connector{min-height:24px;}
   }
   @media (max-width:480px){
-    .stat-pill{flex-wrap:wrap;padding:16px 18px;}
+    .stat-pill{
+      flex-direction:column;flex-wrap:nowrap;gap:4px;
+      padding:14px 16px;border-radius:20px;
+    }
+    .stat-pill .stat-num{font-size:17px;}
+    .stat-pill .stat-label{font-size:13px;}
   }
 
 /* Events Section */
