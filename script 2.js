@@ -257,7 +257,7 @@ function buildVisitCard(v){
       <div class="visit-header">
         <span class="mini-date">${v.date}</span>
         <span class="company-name">${v.name}</span>
-        <div class="company-logo"><img src="${v.image}" alt="${v.name}"></div>
+        <div class="company-logo"><img src="${v.image}" alt="${v.name}" onerror="this.closest('.company-logo').remove()"></div>
       </div>
     </div>`;
 }
@@ -308,7 +308,7 @@ function displayEvents(events) {
             <div class="event-card">
 
                 <div class="event-image">
-                    <img src="${event.image}" alt="${event.name}">
+                    <img src="${event.image}" alt="${event.name}" onerror="this.closest('.event-image').remove()">
                 </div>
 
                 <div class="event-content">
