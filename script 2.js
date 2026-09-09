@@ -296,6 +296,7 @@ async function renderVisits(){
   if(visits.length === 0) return;
   const cardsHtml = visits.map(buildVisitCard).join('');
   track.innerHTML = cardsHtml + cardsHtml;
+  setMarqueeShift('#featured-visits .mini-track', '.mini-card', '--mini-shift');
 }
 
 renderVisits();
@@ -457,3 +458,51 @@ function openRegister(event) {
         behavior: "smooth"
     });
 }
+
+// ================= MARQUEES: exact loop distance =================
+// الشرائط (الرعاة، الفعاليات، الزيارات) كلها محتواها مكرر مرتين، لكن
+// عرض عناصرها يختلف، فنحسب هنا المسافة الحقيقية بالبكسل من أول عنصر
+// لأول عنصر بالنسخة المكررة، عشان اللف يصير سلس بدون فراغات دائمًا.
+function setMarqueeShift(trackSelector, itemSelector, varName) {
+    const track = document.querySelector(trackSelector);
+    if (!track) return;
+    const items = track.querySelectorAll(itemSelector);
+    if (items.length < 2) return;
+    const half = Math.floor(items.length / 2);
+    const firstRect = items[0].getBoundingClientRect();
+    const midRect = items[half].getBoundingClientRect();
+    const shift = Math.abs(midRect.right - firstRect.right) || Math.abs(midRect.left - firstRect.left);
+    if (shift > 0) {
+        track.style.setProperty(varName, `-${shift}px`);
+    }
+}
+
+function setSponsorsShift() {
+    setMarqueeShift('.sponsors-track', '.sponsor-logo', '--sponsors-shift');
+}
+
+const sponsorsTrackImgs = document.querySelectorAll('.sponsors-track img');
+if (sponsorsTrackImgs.length) {
+    let pending = sponsorsTrackImgs.length;
+    const onLoaded = () => {
+        pending--;
+        if (pending <= 0) setSponsorsShift();
+    };
+    sponsorsTrackImgs.forEach(img => {
+        if (img.complete) {
+            onLoaded();
+        } else {
+            img.addEventListener('load', onLoaded);
+            img.addEventListener('error', onLoaded);
+        }
+    });
+}
+
+setMarqueeShift('#featured-events .mini-track', '.mini-card', '--mini-shift');
+setMarqueeShift('#featured-visits .mini-track', '.mini-card', '--mini-shift');
+
+window.addEventListener('resize', () => {
+    setSponsorsShift();
+    setMarqueeShift('#featured-events .mini-track', '.mini-card', '--mini-shift');
+    setMarqueeShift('#featured-visits .mini-track', '.mini-card', '--mini-shift');
+});
