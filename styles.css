@@ -195,14 +195,6 @@
   }
   .hero h1 .word:nth-child(1){animation-delay:.32s;}
   .hero h1 .word:nth-child(2){animation-delay:.46s;}
-  .scroll-cue{
-    position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
-    display:flex;flex-direction:column;align-items:center;gap:8px;
-    color:rgba(255,255,255,.6);font-size:12px;letter-spacing:.5px;
-    z-index:2;opacity:0;animation:heroFadeUp .8s 1.1s cubic-bezier(.22,1,.36,1) forwards;
-  }
-  .scroll-cue .line{width:1px;height:34px;background:linear-gradient(var(--sky),transparent);animation:scrollLine 1.8s ease-in-out infinite;}
-  @keyframes scrollLine{0%{opacity:0;transform:scaleY(.4);}50%{opacity:1;transform:scaleY(1);}100%{opacity:0;transform:scaleY(.4);}}
 
   /* ============ ABOUT ============ */
   .about{padding:130px 0 100px;background:var(--paper);}
@@ -394,6 +386,9 @@
 
 .register-btn{
     width:100%;
+    display:block;
+    box-sizing:border-box;
+    text-align:center;
     background:var(--ink);
     color:white;
     border:none;
@@ -404,6 +399,11 @@
     font-size:clamp(10px,1vw,13px);
     cursor:pointer;
     margin-top:auto;
+}
+
+.register-btn--soon{
+    cursor:default;
+    opacity:.85;
 }
 
 .register-btn:hover{
@@ -512,10 +512,10 @@
   }
   .mini-track{
     display:flex;align-items:stretch;gap:20px;width:200%;
-    animation:miniScroll 11s linear infinite;
+    animation:miniScroll 32s linear infinite;
       will-change: transform;
   }
-  .mini-track--reverse{animation-direction:reverse;animation-duration:11s;}
+  .mini-track--reverse{animation-direction:reverse;animation-duration:32s;}
   .mini-marquee:hover .mini-track{animation-play-state:paused;}
   @keyframes miniScroll{
     from{transform:translateX(0);}
@@ -541,7 +541,7 @@
   }
   .sponsors-track{
     display:flex;align-items:center;gap:64px;width:max-content;
-    animation:sponsorsScroll 10s linear infinite;
+    animation:sponsorsScroll 28s linear infinite;
   }
   .sponsors-track img{height:46px;width:auto;object-fit:contain;filter:grayscale(15%);opacity:.9;flex:none;}
   .sponsors-marquee:hover .sponsors-track{animation-play-state:paused;}
@@ -621,7 +621,7 @@
 
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
-    .hero h1 .word,.scroll-cue{animation:none !important;opacity:1 !important;transform:none !important;}
+    .hero h1 .word{animation:none !important;opacity:1 !important;transform:none !important;}
     [data-reveal]{transition:none;opacity:1;transform:none;}
   }
   /* ===== منع اسم الشركة من النزول ===== */

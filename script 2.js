@@ -331,6 +331,12 @@ function displayEvents(events) {
 
     events.forEach(event => {
 
+        const comingSoon = /قريب/.test(event.name) || /قريب/.test(event.description);
+
+        const actionHtml = comingSoon
+            ? `<span class="register-btn register-btn--soon">قريبًا</span>`
+            : `<button class="register-btn" onclick="openRegister('${event.name}')">سجل الآن</button>`;
+
         container.innerHTML += `
             <div class="event-card">
 
@@ -349,10 +355,7 @@ function displayEvents(events) {
                         <span>📅 ${event.date}</span>
                     </div>
 
-                    <button class="register-btn"
-                        onclick="openRegister('${event.name}')">
-                        سجل الآن
-                    </button>
+                    ${actionHtml}
 
                 </div>
 
