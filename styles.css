@@ -520,20 +520,24 @@
   }
   .featured-head h2{margin-bottom:0;}
   .mini-marquee{
+    direction:ltr;
     position:relative;width:100%;overflow:hidden;padding:6px 0 40px;
   }
   .mini-track{
-    display:flex;align-items:stretch;gap:20px;width:200%;
+    direction:ltr;
+    display:flex;align-items:stretch;gap:20px;width:max-content;
     animation:miniScroll 8s linear infinite;
       will-change: transform;
+    --mini-shift:-50%;
   }
   .mini-track--reverse{animation-direction:reverse;animation-duration:8s;}
   .mini-marquee:hover .mini-track{animation-play-state:paused;}
   @keyframes miniScroll{
     from{transform:translateX(0);}
-    to{transform:translateX(calc(-50% - 10px));}
+    to{transform:translateX(var(--mini-shift));}
   }
   .mini-card{
+    direction:rtl;
     flex:none;width:230px;background:var(--white);border-radius:16px;
     padding:20px 20px 22px;border:1px solid #eceef5;
     box-shadow:0 10px 26px -16px rgba(0,8,120,.15);
@@ -549,17 +553,20 @@
   .sponsors{padding:80px 0 90px;background:var(--white);overflow:hidden;}
   .sponsors .eyebrow{color:var(--ink);}
   .sponsors-marquee{
+    direction:ltr;
     margin-top:46px;position:relative;width:100%;overflow:hidden;
   }
   .sponsors-track{
+    direction:ltr;
     display:flex;align-items:center;gap:64px;width:max-content;
-    animation:sponsorsScroll 7s linear infinite;
+    animation:sponsorsScroll 14s linear infinite;
+    --sponsors-shift:-50%;
   }
   .sponsors-track img{height:46px;width:auto;object-fit:contain;filter:grayscale(15%);opacity:.9;flex:none;}
   .sponsors-marquee:hover .sponsors-track{animation-play-state:paused;}
   @keyframes sponsorsScroll{
     from{transform:translateX(0);}
-    to{transform:translateX(-50%);}
+    to{transform:translateX(var(--sponsors-shift));}
   }
 
   /* ============ MEMBERSHIP SEARCH ============ */
