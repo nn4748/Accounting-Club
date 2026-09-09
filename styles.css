@@ -314,7 +314,7 @@
 }
 
 .events-hero{
-    min-height:520px;
+    min-height:360px;
     box-sizing:border-box;
     display:flex;
     flex-direction:column;
