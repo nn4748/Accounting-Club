@@ -190,6 +190,7 @@
   .hero h1 .word{
     opacity:0;
     display:inline-block;
+    letter-spacing:clamp(6px,1.4vw,18px);
     background:linear-gradient(100deg, var(--white) 30%, var(--sky) 48%, var(--white) 66%);
     background-size:260% 100%;
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
