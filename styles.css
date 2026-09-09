@@ -190,6 +190,7 @@
   .hero h1 .word{
     opacity:0;
     display:inline-block;
+    letter-spacing:clamp(6px,1.4vw,18px);
     background:linear-gradient(100deg, var(--white) 30%, var(--sky) 48%, var(--white) 66%);
     background-size:260% 100%;
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
@@ -213,17 +214,7 @@
 
   /* ============ ABOUT ============ */
   .about{padding:130px 0 100px;background:var(--paper);}
-  .about-grid{display:grid;grid-template-columns:1fr;gap:50px;align-items:center;}
-  @media(min-width:920px){.about-grid{grid-template-columns:.85fr 1.15fr;}}
-  .about-mark{
-    width:100%;aspect-ratio:1/1;max-width:300px;
-    background:var(--ink);
-    border-radius:28px;
-    display:flex;align-items:center;justify-content:center;
-    margin:0 auto;padding:40px;
-    box-shadow:0 30px 60px -20px rgba(0,8,120,.35);
-  }
-  .about-mark img{width:100%;}
+  .about-grid{max-width:760px;margin:0 auto;}
 
   /* ============ VISION (dark band) ============ */
   .vision{
@@ -553,7 +544,7 @@
   }
   .sponsors-track{
     display:flex;align-items:center;gap:64px;width:max-content;
-    animation:sponsorsScroll 18s linear infinite;
+    animation:sponsorsScroll 10s linear infinite;
   }
   .sponsors-track img{height:46px;width:auto;object-fit:contain;filter:grayscale(15%);opacity:.9;flex:none;}
   .sponsors-marquee:hover .sponsors-track{animation-play-state:paused;}
