@@ -2,6 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>
+  if (location.hash) { history.replaceState(null, '', location.pathname + location.search); }
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نادي المحاسبة | جامعة الإمام محمد بن سعود الإسلامية</title>
 <meta name="description" content="نادي طلابي تابع لكلية الأعمال بجامعة الإمام محمد بن سعود الإسلامية، يعزز جاهزية الطلبة لسوق العمل ويطور معارفهم في مجال المحاسبة.">
@@ -207,6 +210,10 @@
 
         <!-- سيتم إنشاء الكروت تلقائياً -->
 
+    </div>
+
+    <div class="events-more" id="eventsMore" style="display:none;text-align:center;margin-top:30px;">
+        <a href="events.html" class="btn outline">عرض جميع الفعاليات</a>
     </div>
 
 </section>

@@ -330,7 +330,12 @@ function displayEvents(events) {
 
     container.innerHTML = "";
 
-    events.forEach(event => {
+    const EVENTS_HOME_LIMIT = 4;
+    const moreLink = document.getElementById("eventsMore");
+    if (moreLink) {
+        moreLink.style.display = events.length > EVENTS_HOME_LIMIT ? "block" : "none";
+    }
+    events.slice(0, EVENTS_HOME_LIMIT).forEach(event => {
 
         const comingSoon = /قريب/.test(event.name) || /قريب/.test(event.description);
 
