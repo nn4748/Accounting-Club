@@ -312,17 +312,47 @@ document.addEventListener("DOMContentLoaded", () => {
     loadEvents();
 });
 
+// حد أقصى لعدد المسجلين لبعض الفعاليات (نفس القيم المستخدمة بصفحة
+// register.html) — لما يوصل العدد للحد، زر "سجل الآن" يتحول لـ"انتهى التسجيل".
+const REGISTRATION_LIMITS = {
+    "جلسة حوارية": 43
+};
+const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
+
+async function fetchRegistrationCounts() {
+    const counts = {};
+    try {
+        const res = await fetch(REGISTRATIONS_CSV_URL + "&t=" + Date.now());
+        const text = await res.text();
+        const rows = parseCSV(text);
+        if (rows.length < 2) return counts;
+        const header = rows[0].map(h => h.trim());
+        const eventCol = header.indexOf("اسم الفعاليه");
+        if (eventCol === -1) return counts;
+        rows.slice(1).forEach(r => {
+            const name = (r[eventCol] || "").trim();
+            if (!name) return;
+            counts[name] = (counts[name] || 0) + 1;
+        });
+    } catch (err) {
+        console.error("تعذر التحقق من عدد المسجلين:", err);
+    }
+    return counts;
+}
+
 async function loadEvents() {
     try {
-        const response = await fetch(API_URL);
+        const [response, counts] = await Promise.all([fetch(API_URL), fetchRegistrationCounts()]);
         const events = await response.json();
-        displayEvents(events);
+        displayEvents(events, counts);
     } catch (error) {
         console.error("Error:", error);
     }
 }
 
-function displayEvents(events) {
+function displayEvents(events, counts) {
+
+    counts = counts || {};
 
     const container = document.getElementById("eventsContainer");
 
@@ -338,9 +368,13 @@ function displayEvents(events) {
     events.slice(0, EVENTS_HOME_LIMIT).forEach(event => {
 
         const comingSoon = /قريب/.test(event.name) || /قريب/.test(event.description);
+        const limit = REGISTRATION_LIMITS[(event.name || "").trim()];
+        const isFull = limit && (counts[(event.name || "").trim()] || 0) >= limit;
 
         const actionHtml = comingSoon
             ? `<span class="register-btn register-btn--soon">قريبًا</span>`
+            : isFull
+            ? `<span class="register-btn register-btn--soon">انتهى التسجيل</span>`
             : `<a class="register-btn" href="${buildRegisterUrl(event)}">سجل الآن</a>`;
 
         container.innerHTML += `
