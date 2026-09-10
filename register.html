@@ -237,9 +237,9 @@
 
       <form id="registerForm">
         <input type="text" id="name" placeholder="الاسم الثلاثي" required>
-        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+        <input type="text" id="studentId" placeholder="الرقم الجامعي" required>
         <input type="tel" id="phone" placeholder="+966 " required>
-        <input type="text" id="major" placeholder="التخصص" required>
+        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
 
         <label class="check">
           <input type="checkbox" id="agree" required>
@@ -252,6 +252,11 @@
       <div class="success-message" id="successMessage" style="display:none;">
         <div class="icon">🎉</div>
         <p>تم التسجيل بنجاح، شكراً لك.</p>
+      </div>
+
+      <div class="success-message" id="fullMessage" style="display:none;">
+        <div class="icon">🚫</div>
+        <p>اكتمل عدد المقاعد لهذي الفعالية، التسجيل مغلق.</p>
       </div>
     </div>
 
@@ -270,6 +275,7 @@
 
     const params = new URLSearchParams(location.search);
     const eventData = {
+      id: params.get("id") || "",
       name: params.get("name") || "فعالية",
       date: params.get("date") || "",
       location: params.get("location") || "",
@@ -295,12 +301,93 @@
     }
 
     /* =========================================
+       REGISTRATION CAP
+       ========================================= */
+    // حد أقصى لعدد المسجلين لبعض الفعاليات. الاسم لازم يطابق
+    // بالضبط اسم الفعالية المرسل بالرابط (event.name من مصدر الفعاليات).
+
+    const REGISTRATION_LIMITS = {
+      "جلسة حوارية": 41
+    };
+
+    const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let value = "";
+      let insideQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"' && insideQuotes && next === '"') {
+          value += '"';
+          i++;
+        } else if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === ',' && !insideQuotes) {
+          row.push(value);
+          value = "";
+        } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+          if (char === '\r' && next === '\n') i++;
+          row.push(value);
+          rows.push(row);
+          row = [];
+          value = "";
+        } else {
+          value += char;
+        }
+      }
+      if (value !== "" || row.length) {
+        row.push(value);
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    function checkRegistrationCap() {
+      const limit = REGISTRATION_LIMITS[eventData.name.trim()];
+      if (!limit) return;
+
+      fetch(REGISTRATIONS_CSV_URL + "&t=" + Date.now())
+        .then(res => res.text())
+        .then(text => {
+          const rows = parseCSV(text);
+          if (rows.length < 2) return;
+          const header = rows[0].map(h => h.trim());
+          const eventCol = header.indexOf("اسم الفعاليه");
+          if (eventCol === -1) return;
+          const count = rows.slice(1).filter(r => (r[eventCol] || "").trim() === eventData.name.trim()).length;
+          if (count >= limit) {
+            registerForm.style.display = "none";
+            document.getElementById("fullMessage").style.display = "block";
+          }
+        })
+        .catch(err => console.error("تعذر التحقق من عدد المسجلين:", err));
+    }
+
+    /* =========================================
        SUBMIT
     ========================================= */
 
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxCeXRlp9rfuJFZ9B36PlnoEw2qwHs8f_zczqb4QQOH2X5RJh6-R8ZddIBB48EESp8OeQ/exec";
+    // النموذج القديم (Apps Script) كان يرجع "نجاح" دايمًا بدون ما يحفظ
+    // شي فعليًا، فصار التسجيل يروح لنموذج Google Form مباشرة بدل منه —
+    // بدون ما يتغيّر شكل الصفحة، الطالب أبد ما يشوف نموذج قوقل نفسه.
+    const GOOGLE_FORM_ID = "1FAIpQLSd0vm30tzFhwk-975_-IvjyAA27WPNqt3SYjvkQF-MUMILWaA";
+    const FORM_ENTRY = {
+      fullName: "entry.1551432397",
+      studentId: "entry.296504704",
+      phone: "entry.1099802155",
+      email: "entry.746033374",
+      major: "entry.1326577839",
+      eventName: "entry.266454573"
+    };
 
     const registerForm = document.getElementById("registerForm");
+
+    checkRegistrationCap();
 
     registerForm.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -314,29 +401,23 @@
       submitBtn.disabled = true;
       submitBtn.textContent = "جارِ الإرسال...";
 
-      const data = {
-        event: eventData.name,
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        phone: document.getElementById("phone").value,
-        major: document.getElementById("major").value,
-        agree: document.getElementById("agree").checked
-      };
+      const body = new URLSearchParams();
+      body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
+      body.set(FORM_ENTRY.studentId, document.getElementById("studentId").value);
+      body.set(FORM_ENTRY.phone, document.getElementById("phone").value);
+      body.set(FORM_ENTRY.email, document.getElementById("email").value);
+      body.set(FORM_ENTRY.major, "غير محدد");
+      body.set(FORM_ENTRY.eventName, eventData.name);
 
-      fetch(scriptURL, {
+      fetch(`https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`, {
         method: "POST",
-        body: JSON.stringify(data)
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString()
       })
-        .then(response => response.json())
-        .then(result => {
-          if (result.status === "success") {
-            registerForm.style.display = "none";
-            document.getElementById("successMessage").style.display = "block";
-          } else {
-            alert("حدث خطأ أثناء التسجيل.");
-            submitBtn.disabled = false;
-            submitBtn.textContent = "إرسال الطلب";
-          }
+        .then(() => {
+          registerForm.style.display = "none";
+          document.getElementById("successMessage").style.display = "block";
         })
         .catch(error => {
           console.error(error);

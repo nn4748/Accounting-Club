@@ -664,8 +664,8 @@
       <div class="past-card"><span class="past-date">20-5-2026</span><div class="past-name">وازن</div></div>
       <div class="past-card"><span class="past-date">10-5-2026</span><div class="past-name">يوم المراجعة الداخلية</div></div>
       <div class="past-card"><span class="past-date">24-2-2026</span><div class="past-name">احتفال النادي بيوم التأسيس</div></div>
-      <div class="past-card"><span class="past-date">14-2-2026</span><div class="past-name">أبعاد محاسبية النسخة الثالثة</div></div>
       <div class="past-card"><span class="past-date">17-2-2026</span><div class="past-name">لَمّة المحاسبين</div></div>
+      <div class="past-card"><span class="past-date">14-2-2026</span><div class="past-name">أبعاد محاسبية النسخة الثالثة</div></div>
       <div class="past-card"><span class="past-date">5-11-2025</span><div class="past-name">مشاركة النادي بيوم المحاسبة العالمي</div></div>
       <div class="past-card"><span class="past-date">3-10-2025</span><div class="past-name">أبعاد محاسبية النسخة الثانية</div></div>
       <div class="past-card"><span class="past-date">29-8-2025</span><div class="past-name">ملتقى إضاءة</div></div>
@@ -736,6 +736,7 @@
 
       const soon = isComingSoon(event);
       const registerParams = new URLSearchParams({
+        id: event.id || event.event_id || "",
         name: event.name || "",
         date: event.date || "",
         location: event.location || "",

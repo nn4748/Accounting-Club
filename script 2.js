@@ -377,6 +377,7 @@ function displayEvents(events) {
 
 function buildRegisterUrl(event) {
     const params = new URLSearchParams({
+        id: event.id || event.event_id || "",
         name: event.name || "",
         date: event.date || "",
         location: event.location || "",
