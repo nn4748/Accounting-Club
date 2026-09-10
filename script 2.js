@@ -330,7 +330,7 @@ function displayEvents(events) {
 
     container.innerHTML = "";
 
-    const EVENTS_HOME_LIMIT = 3;
+    const EVENTS_HOME_LIMIT = 2;
     const moreLink = document.getElementById("eventsMore");
     if (moreLink) {
         moreLink.style.display = events.length > EVENTS_HOME_LIMIT ? "block" : "none";
