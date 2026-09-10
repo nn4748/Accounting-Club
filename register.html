@@ -378,7 +378,6 @@
     const GOOGLE_FORM_ID = "1FAIpQLSd0vm30tzFhwk-975_-IvjyAA27WPNqt3SYjvkQF-MUMILWaA";
     const FORM_ENTRY = {
       fullName: "entry.1551432397",
-      studentId: "entry.296504704",
       phone: "entry.1099802155",
       email: "entry.746033374",
       major: "entry.1326577839",
@@ -406,7 +405,6 @@
       body.set(FORM_ENTRY.email, document.getElementById("email").value);
       body.set(FORM_ENTRY.phone, document.getElementById("phone").value);
       body.set(FORM_ENTRY.major, document.getElementById("major").value);
-      body.set(FORM_ENTRY.studentId, "غير محدد");
       body.set(FORM_ENTRY.eventName, eventData.name);
 
       fetch(`https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`, {
