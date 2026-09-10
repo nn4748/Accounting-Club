@@ -422,57 +422,6 @@
     background:var(--ink-soft);
 }
 
-.register-section{
-    display:none;
-    max-width:500px;
-    margin:40px auto;
-    padding:25px;
-    background:white;
-    border-radius:15px;
-    border:2px solid var(--ink);
-}
-
-.register-section.active{
-    display:block;
-}
-
-.register-section input{
-    width:100%;
-    padding:12px;
-    margin-bottom:15px;
-    border-radius:8px;
-    border:1px solid #ccc;
-    box-sizing:border-box;
-    font-family:var(--font);
-}
-
-.check{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:14px;
-    margin-bottom:20px;
-}
-
-.check input{
-    width:18px;
-    height:18px;
-    margin:0;
-    flex-shrink:0;
-}
-
-.register-section button{
-    width:100%;
-    padding:12px;
-    background:var(--ink);
-    color:white;
-    border:none;
-    border-radius:8px;
-    font-family:var(--font);
-    font-weight:700;
-    cursor:pointer;
-}
-
   /* ============ FEATURED EVENTS/VISITS MARQUEE ============ */
   .featured{padding:70px 0 30px;background:var(--paper);}
   .photo-band{
