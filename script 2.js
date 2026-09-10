@@ -515,6 +515,8 @@ document.addEventListener("DOMContentLoaded", () => {
 const REGISTRATION_LIMITS = {
     "جلسة حوارية": 43
 };
+// فعاليات مقفولة يدويًا بغض النظر عن عدد المسجلين.
+const CLOSED_EVENTS = ["جلسة حوارية"];
 const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
 
 async function fetchRegistrationCounts() {
@@ -567,7 +569,8 @@ function displayEvents(events, counts) {
 
         const comingSoon = /قريب/.test(event.name) || /قريب/.test(event.description);
         const limit = REGISTRATION_LIMITS[(event.name || "").trim()];
-        const isFull = limit && (counts[(event.name || "").trim()] || 0) >= limit;
+        const isFull = CLOSED_EVENTS.includes((event.name || "").trim())
+            || (limit && (counts[(event.name || "").trim()] || 0) >= limit);
 
         const actionHtml = comingSoon
             ? `<span class="register-btn register-btn--soon">قريبًا</span>`

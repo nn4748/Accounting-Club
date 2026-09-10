@@ -310,6 +310,9 @@
       "جلسة حوارية": 43
     };
 
+    // فعاليات مقفولة يدويًا بغض النظر عن عدد المسجلين.
+    const CLOSED_EVENTS = ["جلسة حوارية"];
+
     const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
 
     function parseCSV(text) {
@@ -348,6 +351,12 @@
     }
 
     function checkRegistrationCap() {
+      if (CLOSED_EVENTS.includes(eventData.name.trim())) {
+        registerForm.style.display = "none";
+        document.getElementById("fullMessage").style.display = "block";
+        return;
+      }
+
       const limit = REGISTRATION_LIMITS[eventData.name.trim()];
       if (!limit) return;
 
