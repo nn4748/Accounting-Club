@@ -517,13 +517,16 @@
     background:radial-gradient(circle, rgba(108,207,246,.25), transparent 70%);
     pointer-events:none;
   }
-  .membership-box{position:relative;z-index:1;max-width:900px;margin:0 auto;text-align:center;}
+  .membership-box{position:relative;z-index:1;max-width:100%;margin:0 auto;text-align:center;}
   .membership .eyebrow{color:var(--sky);justify-content:center;}
   .membership h2{color:var(--white);}
   .membership p.section-copy{color:rgba(255,255,255,.75);margin-bottom:36px;}
+  .org-chart-scroll{overflow-x:auto;}
   .org-chart-img{
-    max-width:100%;height:auto;border-radius:16px;
-    border:1px solid rgba(255,255,255,.18);
+    max-width:100%;height:auto;display:block;margin:0 auto;
+  }
+  @media (max-width:720px){
+    .org-chart-img{max-width:none;height:520px;}
   }
 
   /* ============ CONTACT / FOOTER ============ */
