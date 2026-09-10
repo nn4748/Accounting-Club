@@ -237,9 +237,9 @@
 
       <form id="registerForm">
         <input type="text" id="name" placeholder="الاسم الثلاثي" required>
-        <input type="text" id="studentId" placeholder="الرقم الجامعي" required>
-        <input type="tel" id="phone" placeholder="+966 " required>
         <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+        <input type="tel" id="phone" placeholder="+966 " required>
+        <input type="text" id="major" placeholder="التخصص" required>
 
         <label class="check">
           <input type="checkbox" id="agree" required>
@@ -403,10 +403,10 @@
 
       const body = new URLSearchParams();
       body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
-      body.set(FORM_ENTRY.studentId, document.getElementById("studentId").value);
-      body.set(FORM_ENTRY.phone, document.getElementById("phone").value);
       body.set(FORM_ENTRY.email, document.getElementById("email").value);
-      body.set(FORM_ENTRY.major, "غير محدد");
+      body.set(FORM_ENTRY.phone, document.getElementById("phone").value);
+      body.set(FORM_ENTRY.major, document.getElementById("major").value);
+      body.set(FORM_ENTRY.studentId, "غير محدد");
       body.set(FORM_ENTRY.eventName, eventData.name);
 
       fetch(`https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`, {
