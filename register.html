@@ -237,9 +237,9 @@
 
       <form id="registerForm">
         <input type="text" id="name" placeholder="الاسم الثلاثي" required>
-        <input type="text" id="studentId" placeholder="الرقم الجامعي" required>
-        <input type="tel" id="phone" placeholder="+966 " required>
         <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+        <input type="tel" id="phone" placeholder="+966 " required>
+        <input type="text" id="major" placeholder="التخصص" required>
 
         <label class="check">
           <input type="checkbox" id="agree" required>
@@ -307,7 +307,7 @@
     // بالضبط اسم الفعالية المرسل بالرابط (event.name من مصدر الفعاليات).
 
     const REGISTRATION_LIMITS = {
-      "جلسة حوارية": 41
+      "جلسة حوارية": 43
     };
 
     const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
@@ -378,7 +378,6 @@
     const GOOGLE_FORM_ID = "1FAIpQLSd0vm30tzFhwk-975_-IvjyAA27WPNqt3SYjvkQF-MUMILWaA";
     const FORM_ENTRY = {
       fullName: "entry.1551432397",
-      studentId: "entry.296504704",
       phone: "entry.1099802155",
       email: "entry.746033374",
       major: "entry.1326577839",
@@ -403,10 +402,9 @@
 
       const body = new URLSearchParams();
       body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
-      body.set(FORM_ENTRY.studentId, document.getElementById("studentId").value);
-      body.set(FORM_ENTRY.phone, document.getElementById("phone").value);
       body.set(FORM_ENTRY.email, document.getElementById("email").value);
-      body.set(FORM_ENTRY.major, "غير محدد");
+      body.set(FORM_ENTRY.phone, document.getElementById("phone").value);
+      body.set(FORM_ENTRY.major, document.getElementById("major").value);
       body.set(FORM_ENTRY.eventName, eventData.name);
 
       fetch(`https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`, {
