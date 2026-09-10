@@ -297,7 +297,9 @@
     const nameWords = normalize(memberName).split(/\s+/).filter(Boolean);
     const queryWords = normalize(query).split(/\s+/).filter(Boolean);
     if(!queryWords.length) return false;
-    return queryWords.every(qw => nameWords.some(nw => nw.includes(qw) || qw.includes(nw)));
+    return queryWords.every(qw => nameWords.some(nw =>
+      nw === qw || (nw.length >= 3 && qw.length >= 3 && (nw.includes(qw) || qw.includes(nw)))
+    ));
   }
 
   function runSearch(){
