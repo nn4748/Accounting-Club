@@ -253,6 +253,11 @@
         <div class="icon">🎉</div>
         <p>تم التسجيل بنجاح، شكراً لك.</p>
       </div>
+
+      <div class="success-message" id="fullMessage" style="display:none;">
+        <div class="icon">🚫</div>
+        <p>اكتمل عدد المقاعد لهذي الفعالية، التسجيل مغلق.</p>
+      </div>
     </div>
 
   </div>
@@ -296,6 +301,74 @@
     }
 
     /* =========================================
+       REGISTRATION CAP
+       ========================================= */
+    // حد أقصى لعدد المسجلين لبعض الفعاليات. الاسم لازم يطابق
+    // بالضبط اسم الفعالية المرسل بالرابط (event.name من مصدر الفعاليات).
+
+    const REGISTRATION_LIMITS = {
+      "جلسة حوارية": 43
+    };
+
+    const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let value = "";
+      let insideQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"' && insideQuotes && next === '"') {
+          value += '"';
+          i++;
+        } else if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === ',' && !insideQuotes) {
+          row.push(value);
+          value = "";
+        } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+          if (char === '\r' && next === '\n') i++;
+          row.push(value);
+          rows.push(row);
+          row = [];
+          value = "";
+        } else {
+          value += char;
+        }
+      }
+      if (value !== "" || row.length) {
+        row.push(value);
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    function checkRegistrationCap() {
+      const limit = REGISTRATION_LIMITS[eventData.name.trim()];
+      if (!limit) return;
+
+      fetch(REGISTRATIONS_CSV_URL + "&t=" + Date.now())
+        .then(res => res.text())
+        .then(text => {
+          const rows = parseCSV(text);
+          if (rows.length < 2) return;
+          const header = rows[0].map(h => h.trim());
+          const eventCol = header.indexOf("اسم الفعاليه");
+          if (eventCol === -1) return;
+          const count = rows.slice(1).filter(r => (r[eventCol] || "").trim() === eventData.name.trim()).length;
+          if (count >= limit) {
+            registerForm.style.display = "none";
+            document.getElementById("fullMessage").style.display = "block";
+          }
+        })
+        .catch(err => console.error("تعذر التحقق من عدد المسجلين:", err));
+    }
+
+    /* =========================================
        SUBMIT
     ========================================= */
 
@@ -313,6 +386,8 @@
     };
 
     const registerForm = document.getElementById("registerForm");
+
+    checkRegistrationCap();
 
     registerForm.addEventListener("submit", function (e) {
       e.preventDefault();
