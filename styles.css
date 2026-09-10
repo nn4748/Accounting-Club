@@ -521,12 +521,8 @@
   .membership .eyebrow{color:var(--sky);justify-content:center;}
   .membership h2{color:var(--white);}
   .membership p.section-copy{color:rgba(255,255,255,.75);margin-bottom:36px;}
-  .org-chart-scroll{overflow-x:auto;}
   .org-chart-img{
     max-width:100%;height:auto;display:block;margin:0 auto;
-  }
-  @media (max-width:720px){
-    .org-chart-img{max-width:none;height:520px;}
   }
 
   /* ============ CONTACT / FOOTER ============ */
