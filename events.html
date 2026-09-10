@@ -736,6 +736,7 @@
 
       const soon = isComingSoon(event);
       const registerParams = new URLSearchParams({
+        id: event.id || event.event_id || "",
         name: event.name || "",
         date: event.date || "",
         location: event.location || "",
