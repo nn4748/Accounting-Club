@@ -341,7 +341,7 @@ function displayEvents(events) {
 
         const actionHtml = comingSoon
             ? `<span class="register-btn register-btn--soon">قريبًا</span>`
-            : `<button class="register-btn" onclick="openRegister('${event.name}')">سجل الآن</button>`;
+            : `<a class="register-btn" href="${buildRegisterUrl(event)}">سجل الآن</a>`;
 
         container.innerHTML += `
             <div class="event-card">
@@ -372,96 +372,18 @@ function displayEvents(events) {
 
 
 // ================= EVENT REGISTRATION =================
+// التسجيل صار بصفحة مستقلة (register.html) تقدر ترسل رابطها مباشرة،
+// فهنا بس نبني رابط الصفحة ومعه بيانات الفعالية كـ query params.
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbxCeXRlp9rfuJFZ9B36PlnoEw2qwHs8f_zczqb4QQOH2X5RJh6-R8ZddIBB48EESp8OeQ/exec";
-
-const registerForm = document.getElementById("registerForm");
-
-if (registerForm) {
-
-    registerForm.addEventListener("submit", function (e) {
-
-        e.preventDefault();
-
-        if (!document.getElementById("agree").checked) {
-
-            alert("يجب الموافقة على التعهد قبل التسجيل.");
-
-            return;
-        }
-
-        const data = {
-
-            event: document.getElementById("eventName").value,
-
-            name: document.getElementById("name").value,
-
-            email: document.getElementById("email").value,
-
-            phone: document.getElementById("phone").value,
-
-            major: document.getElementById("major").value,
-
-            agree: document.getElementById("agree").checked
-
-        };
-
-        fetch(scriptURL, {
-
-            method: "POST",
-
-            body: JSON.stringify(data)
-
-        })
-
-        .then(response => response.json())
-
-        .then(result => {
-
-            if (result.status === "success") {
-
-                alert("🎉 تم التسجيل بنجاح، شكراً لك.");
-
-                registerForm.reset();
-
-                document
-                    .getElementById("register-section")
-                    .classList.remove("active");
-
-            } else {
-
-                alert("حدث خطأ أثناء التسجيل.");
-
-            }
-
-        })
-
-        .catch(error => {
-
-            console.error(error);
-
-            alert("تعذر الاتصال بالخادم.");
-
-        });
-
+function buildRegisterUrl(event) {
+    const params = new URLSearchParams({
+        name: event.name || "",
+        date: event.date || "",
+        location: event.location || "",
+        description: event.description || "",
+        image: event.image || ""
     });
-}
-
-
-// فتح نموذج التسجيل
-
-function openRegister(event) {
-
-    const registerSection =
-        document.getElementById("register-section");
-
-    registerSection.classList.add("active");
-
-    document.getElementById("eventName").value = event;
-
-    registerSection.scrollIntoView({
-        behavior: "smooth"
-    });
+    return "register.html?" + params.toString();
 }
 
 // ================= MARQUEES: exact loop distance =================
