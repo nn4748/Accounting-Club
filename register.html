@@ -299,7 +299,18 @@
        SUBMIT
     ========================================= */
 
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxCeXRlp9rfuJFZ9B36PlnoEw2qwHs8f_zczqb4QQOH2X5RJh6-R8ZddIBB48EESp8OeQ/exec";
+    // النموذج القديم (Apps Script) كان يرجع "نجاح" دايمًا بدون ما يحفظ
+    // شي فعليًا، فصار التسجيل يروح لنموذج Google Form مباشرة بدل منه —
+    // بدون ما يتغيّر شكل الصفحة، الطالب أبد ما يشوف نموذج قوقل نفسه.
+    const GOOGLE_FORM_ID = "1FAIpQLSd0vm30tzFhwk-975_-IvjyAA27WPNqt3SYjvkQF-MUMILWaA";
+    const FORM_ENTRY = {
+      fullName: "entry.1551432397",
+      studentId: "entry.296504704",
+      phone: "entry.1099802155",
+      email: "entry.746033374",
+      major: "entry.1326577839",
+      eventName: "entry.266454573"
+    };
 
     const registerForm = document.getElementById("registerForm");
 
@@ -315,29 +326,23 @@
       submitBtn.disabled = true;
       submitBtn.textContent = "جارِ الإرسال...";
 
-      const data = {
-        event_id: eventData.id,
-        event_name: eventData.name,
-        full_name: document.getElementById("name").value,
-        student_id: document.getElementById("studentId").value,
-        phone: document.getElementById("phone").value,
-        email: document.getElementById("email").value
-      };
+      const body = new URLSearchParams();
+      body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
+      body.set(FORM_ENTRY.studentId, document.getElementById("studentId").value);
+      body.set(FORM_ENTRY.phone, document.getElementById("phone").value);
+      body.set(FORM_ENTRY.email, document.getElementById("email").value);
+      body.set(FORM_ENTRY.major, "غير محدد");
+      body.set(FORM_ENTRY.eventName, eventData.name);
 
-      fetch(scriptURL, {
+      fetch(`https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`, {
         method: "POST",
-        body: JSON.stringify(data)
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString()
       })
-        .then(response => response.json())
-        .then(result => {
-          if (result.status === "success") {
-            registerForm.style.display = "none";
-            document.getElementById("successMessage").style.display = "block";
-          } else {
-            alert("حدث خطأ أثناء التسجيل.");
-            submitBtn.disabled = false;
-            submitBtn.textContent = "إرسال الطلب";
-          }
+        .then(() => {
+          registerForm.style.display = "none";
+          document.getElementById("successMessage").style.display = "block";
         })
         .catch(error => {
           console.error(error);
