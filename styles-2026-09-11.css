@@ -77,9 +77,10 @@
     padding:12px 0;
   }
   .header-inner{position:relative;display:flex;align-items:center;justify-content:center;}
-  /* single persistent brand mark — stays fixed in the corner as the page scrolls */
+  /* single brand mark, top-left — scrolls away naturally with the header/hero
+     instead of staying pinned, so it never overlaps content further down the page */
   .site-logo{
-    position:fixed;top:14px;left:24px;z-index:60;display:flex;flex:none;
+    position:absolute;top:14px;left:24px;z-index:60;display:flex;flex:none;
     padding:8px;border-radius:50%;
     background:rgba(0,8,120,.55);
     backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
@@ -264,7 +265,7 @@
     -webkit-mask-position:center;mask-position:center;
     clip-path:inset(46.4% 34.4% 32.8% 34.2%);
   }
-  .hero-highlight span{font-size:14px;font-weight:700;color:var(--white);}
+  .hero-highlight span{font-size:14px;font-weight:400;color:var(--white);}
   @media(max-width:600px){
     .hero h1{font-size:clamp(40px,20vw,280px);}
     .hero-highlights{gap:10px;margin-top:60px;}
@@ -279,7 +280,7 @@
   .about-block{border-right:4px solid var(--sky);padding-right:26px;}
   .about h2{color:var(--sky);}
   .about p.section-copy{
-    font-size:clamp(16px,1.6vw,19px);font-weight:400;line-height:1.8;
+    font-size:clamp(14px,1.4vw,17px);font-weight:400;line-height:1.8;
     color:rgba(255,255,255,.75);max-width:820px;
   }
 
@@ -291,7 +292,7 @@
   .vision-block{border-right:4px solid var(--sky);padding-right:26px;}
   .vision-title{color:var(--sky);}
   .vision blockquote{
-    font-size:clamp(16px,1.6vw,19px);font-weight:400;line-height:1.8;color:rgba(255,255,255,.75);
+    font-size:clamp(14px,1.4vw,17px);font-weight:400;line-height:1.8;color:rgba(255,255,255,.75);
   }
 
   /* ============ GOALS ============ */
@@ -299,7 +300,7 @@
   .goals-block{border-right:4px solid var(--sky);padding-right:26px;}
   .goals-title{color:var(--sky);}
   .goals p.section-copy{
-    font-size:clamp(16px,1.6vw,19px);font-weight:400;line-height:1.8;
+    font-size:clamp(14px,1.4vw,17px);font-weight:400;line-height:1.8;
     color:rgba(255,255,255,.75);max-width:820px;
   }
   .goals-list{
