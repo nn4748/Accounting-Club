@@ -74,8 +74,15 @@
     padding:12px 0;
   }
   .header-inner{position:relative;display:flex;align-items:center;justify-content:center;}
-  .site-logo{position:absolute;top:50%;left:28px;transform:translateY(-50%);display:flex;flex:none;}
-  .site-logo img{width:52px;height:52px;object-fit:contain;}
+  /* single persistent brand mark — stays fixed in the corner as the page scrolls */
+  .site-logo{
+    position:fixed;top:14px;left:24px;z-index:60;display:flex;flex:none;
+    padding:8px;border-radius:50%;
+    background:rgba(0,8,120,.55);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    box-shadow:0 4px 14px -4px rgba(0,0,0,.35);
+  }
+  .site-logo img{width:44px;height:44px;object-fit:contain;}
   nav{display:flex;align-items:center;justify-content:center;gap:14px;}
   /* ---- nav bar ---- */
   .nav-links{
@@ -110,12 +117,8 @@
     nav{flex-wrap:wrap;}
   }
   @media(max-width:760px){
-    .site-logo{left:16px;}
+    .site-logo{top:14px;left:16px;}
     .site-logo img{width:38px;height:38px;}
-  }
-  .section-mark{position:absolute;top:40px;left:28px;width:48px;height:48px;object-fit:contain;z-index:2;}
-  @media(max-width:760px){
-    .section-mark{top:28px;left:16px;width:34px;height:34px;}
   }
 
 
