@@ -565,7 +565,31 @@
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.16);
       border-radius: 14px;
-      padding: 16px 18px;
+      padding: 0 0 16px;
+      overflow: hidden;
+    }
+
+    .past-photo {
+      width: 100%;
+      height: 150px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .past-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .past-card .past-date,
+    .past-card .past-name {
+      margin-left: 18px;
+      margin-right: 18px;
+    }
+
+    .past-card .past-date {
+      margin-top: 14px;
     }
 
     .past-date {
@@ -660,24 +684,24 @@
   <section class="past-section">
     <h2 class="past-title">الفعاليات السابقة</h2>
     <div class="past-grid">
-      <div class="past-card"><span class="past-date">15-6-2026</span><div class="past-name">نوافذ محاسبية النسخة الثالثة</div></div>
-      <div class="past-card"><span class="past-date">20-5-2026</span><div class="past-name">وازن</div></div>
-      <div class="past-card"><span class="past-date">10-5-2026</span><div class="past-name">يوم المراجعة الداخلية</div></div>
-      <div class="past-card"><span class="past-date">24-2-2026</span><div class="past-name">احتفال النادي بيوم التأسيس</div></div>
-      <div class="past-card"><span class="past-date">17-2-2026</span><div class="past-name">لَمّة المحاسبين</div></div>
-      <div class="past-card"><span class="past-date">14-2-2026</span><div class="past-name">أبعاد محاسبية النسخة الثالثة</div></div>
-      <div class="past-card"><span class="past-date">5-11-2025</span><div class="past-name">مشاركة النادي بيوم المحاسبة العالمي</div></div>
-      <div class="past-card"><span class="past-date">3-10-2025</span><div class="past-name">أبعاد محاسبية النسخة الثانية</div></div>
-      <div class="past-card"><span class="past-date">29-8-2025</span><div class="past-name">ملتقى إضاءة</div></div>
-      <div class="past-card"><span class="past-date">21-5-2025</span><div class="past-name">أبعاد محاسبية النسخة الأولى</div></div>
-      <div class="past-card"><span class="past-date">20-5-2025</span><div class="past-name">جلسة محاسب المستقبل</div></div>
-      <div class="past-card"><span class="past-date">17-3-2025</span><div class="past-name">مبادرة أثر</div></div>
-      <div class="past-card"><span class="past-date">24-12-2024</span><div class="past-name">مشاركة النادي في ملتقى الأندية الطلابية</div></div>
-      <div class="past-card"><span class="past-date">12-11-2024</span><div class="past-name">مشاركة النادي في ملتقى تجمع المحاسبين الثالث</div></div>
-      <div class="past-card"><span class="past-date">18-9-2024</span><div class="past-name">انطلاقة مهنية</div></div>
-      <div class="past-card"><span class="past-date">3-10-2023</span><div class="past-name">تدشين هوية النادي الجديدة في معرض هواوي</div></div>
-      <div class="past-card"><span class="past-date">15-9-2023</span><div class="past-name">اللقاء التعريفي لطلاب مدارس المناهج الأهلية</div></div>
-      <div class="past-card"><span class="past-date">9-3-2023</span><div class="past-name">ملتقى المحاسبة والمراجعة</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/01-nawafeth-3.jpg" alt="نوافذ محاسبية النسخة الثالثة" loading="lazy"></div><span class="past-date">15-6-2026</span><div class="past-name">نوافذ محاسبية النسخة الثالثة</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/02-wazen.jpg" alt="وازن" loading="lazy"></div><span class="past-date">20-5-2026</span><div class="past-name">وازن</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/03-internal-audit-day.jpg" alt="يوم المراجعة الداخلية" loading="lazy"></div><span class="past-date">10-5-2026</span><div class="past-name">يوم المراجعة الداخلية</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/04-foundation-day.jpg" alt="احتفال النادي بيوم التأسيس" loading="lazy"></div><span class="past-date">24-2-2026</span><div class="past-name">احتفال النادي بيوم التأسيس</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/05-lammat-accountants.jpg" alt="لَمّة المحاسبين" loading="lazy"></div><span class="past-date">17-2-2026</span><div class="past-name">لَمّة المحاسبين</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/06-abaad-3.jpg" alt="أبعاد محاسبية النسخة الثالثة" loading="lazy"></div><span class="past-date">14-2-2026</span><div class="past-name">أبعاد محاسبية النسخة الثالثة</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/07-world-accounting-day.jpg" alt="مشاركة النادي بيوم المحاسبة العالمي" loading="lazy"></div><span class="past-date">5-11-2025</span><div class="past-name">مشاركة النادي بيوم المحاسبة العالمي</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/08-abaad-2.jpg" alt="أبعاد محاسبية النسخة الثانية" loading="lazy"></div><span class="past-date">3-10-2025</span><div class="past-name">أبعاد محاسبية النسخة الثانية</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/09-multaqa-idaah.jpg" alt="ملتقى إضاءة" loading="lazy"></div><span class="past-date">29-8-2025</span><div class="past-name">ملتقى إضاءة</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/10-abaad-1.jpg" alt="أبعاد محاسبية النسخة الأولى" loading="lazy"></div><span class="past-date">21-5-2025</span><div class="past-name">أبعاد محاسبية النسخة الأولى</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/11-future-accountant.jpg" alt="جلسة محاسب المستقبل" loading="lazy"></div><span class="past-date">20-5-2025</span><div class="past-name">جلسة محاسب المستقبل</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/12-athar-initiative.jpg" alt="مبادرة أثر" loading="lazy"></div><span class="past-date">17-3-2025</span><div class="past-name">مبادرة أثر</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/13-student-clubs-multaqa.jpg" alt="مشاركة النادي في ملتقى الأندية الطلابية" loading="lazy"></div><span class="past-date">24-12-2024</span><div class="past-name">مشاركة النادي في ملتقى الأندية الطلابية</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/14-accountants-gathering-3.jpg" alt="مشاركة النادي في ملتقى تجمع المحاسبين الثالث" loading="lazy"></div><span class="past-date">12-11-2024</span><div class="past-name">مشاركة النادي في ملتقى تجمع المحاسبين الثالث</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/15-career-launch.jpg" alt="انطلاقة مهنية" loading="lazy"></div><span class="past-date">18-9-2024</span><div class="past-name">انطلاقة مهنية</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/16-huawei-identity-launch.jpg" alt="تدشين هوية النادي الجديدة في معرض هواوي" loading="lazy"></div><span class="past-date">3-10-2023</span><div class="past-name">تدشين هوية النادي الجديدة في معرض هواوي</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/17-schools-intro-meeting.jpg" alt="اللقاء التعريفي لطلاب مدارس المناهج الأهلية" loading="lazy"></div><span class="past-date">15-9-2023</span><div class="past-name">اللقاء التعريفي لطلاب مدارس المناهج الأهلية</div></div>
+      <div class="past-card"><div class="past-photo"><img src="assets/events/18-accounting-audit-multaqa.jpg" alt="ملتقى المحاسبة والمراجعة" loading="lazy"></div><span class="past-date">9-3-2023</span><div class="past-name">ملتقى المحاسبة والمراجعة</div></div>
     </div>
   </section>
 
