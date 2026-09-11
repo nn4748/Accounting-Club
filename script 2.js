@@ -181,11 +181,18 @@ async function fetchRegistrationCounts() {
 
 async function loadEvents() {
     try {
-        const [response, counts] = await Promise.all([fetch(API_URL), fetchRegistrationCounts()]);
+        const [response, counts] = await Promise.all([
+            fetch(API_URL + "?t=" + Date.now()),
+            fetchRegistrationCounts()
+        ]);
         const events = await response.json();
         displayEvents(events, counts);
     } catch (error) {
         console.error("Error:", error);
+        const container = document.getElementById("eventsContainer");
+        if (container) {
+            container.innerHTML = '<p class="events-loading">تعذّر تحميل الفعاليات، حاولي تحديث الصفحة.</p>';
+        }
     }
 }
 
