@@ -73,6 +73,9 @@
     box-shadow:0 1px 0 rgba(0,8,120,.08);
     padding:12px 0;
   }
+  .header-inner{position:relative;display:flex;align-items:center;justify-content:center;}
+  .site-logo{position:absolute;top:50%;left:28px;transform:translateY(-50%);display:flex;flex:none;}
+  .site-logo img{width:52px;height:52px;object-fit:contain;}
   nav{display:flex;align-items:center;justify-content:center;gap:14px;}
   /* ---- nav bar ---- */
   .nav-links{
@@ -106,6 +109,10 @@
     .wrap{padding:0 16px;}
     nav{flex-wrap:wrap;}
   }
+  @media(max-width:760px){
+    .site-logo{left:16px;}
+    .site-logo img{width:38px;height:38px;}
+  }
 
 
   /* ============ HERO ============ */
@@ -113,8 +120,8 @@
     min-height:100vh;
     display:flex;flex-direction:column;justify-content:center;
     background:
-      radial-gradient(600px 500px at var(--mx) var(--my), rgba(108,207,246,.20), transparent 60%),
-      linear-gradient(160deg, #000878 0%, #04044a 55%, #000878 100%);
+      radial-gradient(700px 600px at var(--mx) var(--my), rgba(108,207,246,.12), transparent 65%),
+      linear-gradient(135deg, #000878 0%, #10125c 100%);
     color:var(--white);
     padding:140px 0 90px;
     position:relative;
@@ -152,13 +159,29 @@
   .hero-highlight{
     display:flex;flex-direction:column;align-items:center;gap:14px;
   }
-  .hero-highlight img{width:52px;height:52px;object-fit:contain;}
+  .hl-icon{position:relative;display:inline-flex;}
+  .hl-icon img{position:relative;z-index:2;display:block;width:52px;height:52px;object-fit:contain;}
+  .hl-icon::before{content:"";position:absolute;inset:0;z-index:1;display:none;}
+  /* graduated accent color across the four icons, matching the reference design */
+  .hero-highlight:nth-child(1) .hl-icon::before{
+    display:block;background:var(--sky);
+  }
+  .hero-highlight:nth-child(2) .hl-icon::before,
+  .hero-highlight:nth-child(3) .hl-icon::before{
+    display:block;z-index:3;background:var(--sky);
+    -webkit-mask-image:url(assets/club-mark-white.webp);mask-image:url(assets/club-mark-white.webp);
+    -webkit-mask-size:contain;mask-size:contain;
+    -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+    -webkit-mask-position:center;mask-position:center;
+  }
+  .hero-highlight:nth-child(2) .hl-icon::before{opacity:.7;}
+  .hero-highlight:nth-child(3) .hl-icon::before{opacity:.4;}
   .hero-highlight span{font-size:14px;font-weight:700;color:var(--white);}
   @media(max-width:600px){
     .hero h1{font-size:clamp(40px,20vw,280px);}
     .hero-highlights{gap:10px;margin-top:60px;}
     .hero-highlight{flex:1;min-width:0;gap:8px;}
-    .hero-highlight img{width:32px;height:32px;}
+    .hl-icon img{width:32px;height:32px;}
     .hero-highlight span{font-size:10.5px;line-height:1.3;}
   }
 
