@@ -275,7 +275,7 @@
   }
 
   /* ============ ABOUT ============ */
-  .about{padding:80px 0;}
+  .about{padding:50px 0;}
   .about-grid{
     display:grid;grid-template-columns:1.3fr 1fr;gap:50px;align-items:center;
     max-width:1100px;margin:0 auto;
@@ -290,7 +290,7 @@
 
   /* ============ VISION (dark band) ============ */
   .vision{
-    color:var(--white);padding:80px 0;position:relative;
+    color:var(--white);padding:50px 0;position:relative;
   }
   .vision-grid{
     display:grid;grid-template-columns:1.3fr 1fr;gap:50px;align-items:center;
@@ -309,7 +309,7 @@
   }
 
   /* ============ GOALS ============ */
-  .goals{padding:80px 0;}
+  .goals{padding:50px 0;}
   .goals-block{border-right:4px solid var(--sky);padding-right:26px;}
   .goals-title{color:var(--sky);}
   .goals p.section-copy{
