@@ -170,7 +170,7 @@
   }
   .hero-mark{
     position:absolute;inset:0;z-index:1;
-    background:url('assets/club-mark-white.png') no-repeat center center;
+    background:url('assets/club-mark-white.webp') no-repeat center center;
     background-size:min(620px,62vw) auto;
     opacity:.07;
     filter:blur(4px);
