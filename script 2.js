@@ -117,13 +117,6 @@ if(statsSection){
   }, { threshold: 0.3, rootMargin: '0px 0px -50px 0px' });
   statsObserver.observe(statsSection);
 }
-const VISITS_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFDEZv-P6YxohrZPYeVvUY1BY1eirg0czoWkqOuLras-AS9GemQBmNnE9ubT_oXzBm_VhNN8xeTLCh/pub?gid=329727116&single=true&output=csv";
-
-function driveDirectLink(url){
-  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-  if(match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
-  return url;
-}
 function parseCSV(text) {
   const rows = [];
   let row = [];
@@ -174,69 +167,6 @@ function parseCSV(text) {
 
   return rows;
 }
-
-async function loadVisits() {
-  try {
-    const res = await fetch(VISITS_SHEET_CSV_URL + '&t=' + Date.now());
-
-    if (!res.ok) {
-      throw new Error(`HTTP Error: ${res.status}`);
-    }
-
-    const csv = await res.text();
-
-    const rows = parseCSV(csv);
-
-    // أول صف هو أسماء الأعمدة
-    const headers = rows[0].map(h => h.trim());
-
-    console.log("Headers:", headers);
-    console.log("Rows:", rows);
-
-    return rows.slice(1)
-      .filter(row => row.length > 1)
-      .map(row => {
-
-        return {
-          name: row[1]?.trim() || "",
-          date: row[2]?.trim() || "",
-          image: driveDirectLink(row[3]?.trim() || "")
-        };
-
-      })
-      .filter(v => v.name);
-
-  } catch (e) {
-    console.error("تعذر تحميل بيانات الزيارات:", e);
-    return [];
-  }
-}
-
-function buildVisitCard(v){
-  return `
-    <div class="mini-card mini-card--visits">
-      <div class="visit-header">
-        <span class="mini-date">${v.date}</span>
-        <span class="company-name">${v.name}</span>
-        <div class="company-logo"><img src="${v.image}" alt="${v.name}" onerror="this.closest('.company-logo').remove()"></div>
-      </div>
-    </div>`;
-}
-
-async function renderVisits(){
-  const track = document.querySelector('#featured-visits .mini-track');
-  if(!track) return;
-  const visits = await loadVisits();
-  if(visits.length === 0) return;
-  const cardsHtml = visits.map(buildVisitCard).join('');
-  track.innerHTML = cardsHtml + cardsHtml;
-  setMarqueeShift('#featured-visits .mini-track', '.mini-card', '--mini-shift');
-}
-
-renderVisits();
-
-
-
 
 // ================= EVENTS =================
 
