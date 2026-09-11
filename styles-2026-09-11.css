@@ -77,10 +77,9 @@
     padding:12px 0;
   }
   .header-inner{position:relative;display:flex;align-items:center;justify-content:center;}
-  /* single brand mark, top-left — scrolls away naturally with the header/hero
-     instead of staying pinned, so it never overlaps content further down the page */
+  /* single brand mark, top-left — stays in view as the page scrolls */
   .site-logo{
-    position:absolute;top:14px;left:24px;z-index:60;display:flex;flex:none;
+    position:fixed;top:14px;left:24px;z-index:60;display:flex;flex:none;
     padding:8px;border-radius:50%;
     background:rgba(0,8,120,.55);
     backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
@@ -277,7 +276,7 @@
   /* ============ ABOUT ============ */
   .about{padding:50px 0;}
   .about-grid{
-    display:grid;grid-template-columns:1.3fr 1fr;gap:50px;align-items:center;
+    display:grid;grid-template-columns:1.1fr 1fr;gap:50px;align-items:center;
     max-width:1100px;margin:0 auto;
   }
   .about-block{}
@@ -293,7 +292,7 @@
     color:var(--white);padding:50px 0;position:relative;
   }
   .vision-grid{
-    display:grid;grid-template-columns:1.3fr 1fr;gap:50px;align-items:center;
+    display:grid;grid-template-columns:1.1fr 1fr;gap:50px;align-items:center;
     max-width:1100px;margin:0 auto;position:relative;z-index:1;
   }
   .vision-block{}
@@ -304,8 +303,9 @@
   .vision-photo img{width:100%;border-radius:20px;}
 
   @media(max-width:760px){
-    .about-grid,.vision-grid{grid-template-columns:1fr .8fr;gap:16px;align-items:center;}
-    .about-photo img,.vision-photo img{border-radius:14px;}
+    .about-grid,.vision-grid{grid-template-columns:1fr;gap:26px;}
+    .about-photo,.vision-photo{max-width:340px;margin:0 auto;}
+    .about-photo img,.vision-photo img{border-radius:18px;}
   }
 
   /* ============ GOALS ============ */
