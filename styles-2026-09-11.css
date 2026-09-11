@@ -124,7 +124,7 @@
     display:flex;flex-direction:column;justify-content:center;
     background:
       radial-gradient(600px 500px at var(--mx) var(--my), rgba(108,207,246,.20), transparent 60%),
-      linear-gradient(160deg, #000878 0%, #04044a 55%, #1a1a1a 100%);
+      linear-gradient(160deg, #000878 0%, #04044a 55%, #000878 100%);
     color:var(--white);
     padding:140px 0 90px;
     position:relative;
@@ -163,8 +163,11 @@
   .hero h1 .word:nth-child(2){animation-delay:.46s;}
 
   /* ============ ABOUT ============ */
-  .about{padding:130px 0 100px;background:var(--paper);}
+  .about{padding:130px 0 100px;background:var(--ink);}
   .about-grid{max-width:760px;margin:0 auto;}
+  .about .eyebrow{color:var(--sky);}
+  .about h2{color:var(--white);}
+  .about p.section-copy{color:rgba(255,255,255,.75);}
 
   /* ============ VISION (dark band) ============ */
   .vision{
@@ -184,7 +187,10 @@
   .vision .eyebrow{color:var(--sky);}
 
   /* ============ GOALS ============ */
-  .goals{padding:120px 0;background:var(--paper);}
+  .goals{padding:120px 0;background:var(--ink);}
+  .goals .eyebrow{color:var(--sky);}
+  .goals h2{color:var(--white);}
+  .goals p.section-copy{color:rgba(255,255,255,.75);}
   .goals-list{
     display:grid;grid-template-columns:1fr;gap:1px;
     background:rgba(0,8,120,.1);border:1px solid rgba(0,8,120,.1);
