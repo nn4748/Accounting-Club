@@ -27,9 +27,9 @@
   <div class="wrap header-inner">
     <nav>
       <div class="nav-links">
-        <a href="#top" class="nav-mark" aria-label="نادي المحاسبة">
+        <button id="menuToggle" class="nav-mark" type="button" aria-label="فتح القائمة" aria-expanded="false" aria-controls="sideMenu">
           <span class="chevrons"><span></span><span></span><span></span></span>
-        </a>
+        </button>
         <a href="#about">من نحن</a>
         <a href="#stats">أرقامنا</a>
         <a href="#featured-events">فعاليتنا</a>
@@ -38,6 +38,23 @@
     </nav>
   </div>
 </header>
+
+<div id="menuOverlay" class="menu-overlay"></div>
+<aside id="sideMenu" class="side-menu" aria-hidden="true">
+  <div class="side-menu-head">
+    <span class="side-menu-title">القائمة</span>
+    <button id="menuClose" class="menu-close" type="button" aria-label="إغلاق القائمة">&times;</button>
+  </div>
+  <nav class="side-menu-links">
+    <a href="#about">من نحن</a>
+    <a href="#events">الفعاليات المتاحة للتسجيل</a>
+    <a href="#featured-events">الفعاليات</a>
+    <a href="#featured-visits">الزيارات</a>
+    <a href="#membership">هيكلة النادي</a>
+    <a href="volunteer-hours.html">الاستعلام عن الساعات التطوعية</a>
+    <a href="#contact">تواصل معنا</a>
+  </nav>
+</aside>
 
 <div class="navy-cluster">
 <section class="hero" id="top">
