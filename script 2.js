@@ -206,7 +206,7 @@ async function fetchRegistrationCounts() {
     return counts;
 }
 
-async function loadEvents() {
+async function loadEvents(isRetry) {
     try {
         const [response, counts] = await Promise.all([
             fetch(API_URL + "?t=" + Date.now()),
@@ -216,9 +216,13 @@ async function loadEvents() {
         displayEvents(events, counts);
     } catch (error) {
         console.error("Error:", error);
+        if (!isRetry) {
+            setTimeout(() => loadEvents(true), 1500);
+            return;
+        }
         const container = document.getElementById("eventsContainer");
         if (container) {
-            container.innerHTML = '<p class="events-loading">تعذّر تحميل الفعاليات، حاولي تحديث الصفحة.</p>';
+            container.innerHTML = '<p class="events-loading">تعذّر تحميل الفعاليات، يرجى تحديث الصفحة.</p>';
         }
     }
 }
