@@ -61,7 +61,7 @@
 
   /* ============ NAV ============ */
   header{
-    position:fixed;top:0;left:0;right:0;z-index:50;
+    position:absolute;top:0;left:0;right:0;z-index:50;
     padding:18px 0;
     background:rgba(246,247,251,0);
     backdrop-filter:blur(0px);
@@ -86,9 +86,7 @@
   }
   .nav-mark .chevrons{width:24px;gap:4px;}
   .nav-mark .chevrons span{height:5px;background:var(--white);transition:background .3s ease;}
-  .nav-mark .chevrons span:nth-child(1){background:var(--sky);}
   header.scrolled .nav-mark .chevrons span{background:var(--ink);}
-  header.scrolled .nav-mark .chevrons span:nth-child(1){background:var(--sky);}
   .nav-links a{
     color:var(--white);font-weight:700;font-size:14.5px;
     padding:10px 18px;border-radius:100px;white-space:nowrap;
@@ -167,8 +165,8 @@
   /* ============ ABOUT ============ */
   .about{padding:130px 0 100px;background:var(--ink);}
   .about-grid{max-width:760px;margin:0 auto;}
-  .about .eyebrow{color:var(--sky);}
-  .about h2{color:var(--white);}
+  .about-block{border-right:4px solid var(--sky);padding-right:26px;}
+  .about h2{color:var(--sky);}
   .about p.section-copy{color:rgba(255,255,255,.75);}
 
   /* ============ VISION (dark band) ============ */
@@ -182,43 +180,40 @@
     pointer-events:none;
   }
   .vision-inner{max-width:820px;position:relative;z-index:1;}
+  .vision-title{color:var(--sky);}
   .vision blockquote{
     font-size:clamp(22px,3vw,32px);font-weight:700;line-height:1.65;color:var(--white);
     border-right:4px solid var(--sky);padding-right:26px;
   }
-  .vision .eyebrow{color:var(--sky);}
 
   /* ============ GOALS ============ */
   .goals{padding:120px 0;background:var(--ink);}
-  .goals .eyebrow{color:var(--sky);}
-  .goals h2{color:var(--white);}
+  .goals-title{color:var(--sky);}
   .goals p.section-copy{color:rgba(255,255,255,.75);}
   .goals-list{
     display:grid;grid-template-columns:1fr;gap:1px;
-    background:rgba(0,8,120,.1);border:1px solid rgba(0,8,120,.1);
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);
     border-radius:18px;overflow:hidden;margin-top:50px;
   }
   @media(min-width:760px){.goals-list{grid-template-columns:1fr 1fr;}}
   .goal-item{
-    background:var(--white);padding:38px 34px;
+    background:transparent;padding:38px 34px;
     display:flex;flex-direction:column;gap:18px;
     transition:background .3s ease;
   }
-  .goal-item:hover{background:#fbfcff;}
+  .goal-item:hover{background:rgba(255,255,255,.05);}
   .chevrons{display:flex;flex-direction:column;gap:6px;width:46px;}
   .chevrons span{
     display:block;height:8px;border-radius:2px;
     clip-path:polygon(14% 0,100% 0,100% 100%,14% 100%,0 50%);
     background:var(--sky);
   }
-  .goal-item:nth-child(1) .chevrons span{background:var(--sky);}
-  .goal-item:nth-child(2) .chevrons span{background:var(--ink);}
-  .goal-item:nth-child(3) .chevrons span{background:var(--mauve);}
-  .goal-item:nth-child(4) .chevrons span{background:var(--sky);}
+  .goal-item:nth-child(odd) .chevrons span{background:var(--sky);}
+  .goal-item:nth-child(even) .chevrons span{background:var(--white);}
   .chevrons span:nth-child(1){width:40%;}
   .chevrons span:nth-child(2){width:70%;}
   .chevrons span:nth-child(3){width:100%;}
-  .goal-item p{font-size:16.5px;font-weight:700;color:var(--onyx);max-width:34ch;}
+  .goal-item p{font-size:16.5px;font-weight:700;color:var(--white);max-width:34ch;}
 
   /* ============ STATS / أرقامنا ============ */
   .stats{
