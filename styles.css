@@ -476,14 +476,16 @@
   .mini-card{
     direction:rtl;
     flex:none;width:230px;background:var(--white);border-radius:16px;
-    padding:20px 20px 22px;border:1px solid #eceef5;
+    padding:0 0 20px;border:1px solid #eceef5;overflow:hidden;
     box-shadow:0 10px 26px -16px rgba(0,8,120,.15);
   }
+  .mini-photo{width:100%;height:120px;background:var(--paper);}
+  .mini-photo img{width:100%;height:100%;object-fit:cover;display:block;}
   .mini-card .mini-date{
     display:inline-block;font-size:12px;font-weight:700;color:var(--sky);
-    background:var(--ink);padding:4px 10px;border-radius:999px;margin-bottom:12px;
+    background:var(--ink);padding:4px 10px;border-radius:999px;margin:16px 20px 12px;
   }
-  .mini-card h4{font-size:15.5px;font-weight:800;color:var(--ink);line-height:1.5;}
+  .mini-card h4{font-size:15.5px;font-weight:800;color:var(--ink);line-height:1.5;margin:0 20px;}
   .mini-card--visits .mini-date{background:var(--mauve);color:var(--white);}
 
   /* ============ SPONSORS MARQUEE ============ */
