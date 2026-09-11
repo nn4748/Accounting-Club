@@ -149,7 +149,7 @@
 
   .hero-highlights{
     display:flex;justify-content:center;gap:52px;flex-wrap:nowrap;
-    margin-top:56px;position:relative;z-index:2;
+    margin-top:96px;position:relative;z-index:2;
   }
   .hero-highlight{
     display:flex;flex-direction:column;align-items:center;gap:14px;
@@ -158,7 +158,7 @@
   .hero-highlight span{font-size:14px;font-weight:700;color:var(--white);}
   @media(max-width:600px){
     .hero h1{font-size:clamp(40px,20vw,280px);}
-    .hero-highlights{gap:10px;margin-top:36px;}
+    .hero-highlights{gap:10px;margin-top:60px;}
     .hero-highlight{flex:1;min-width:0;gap:8px;}
     .hero-highlight img{width:32px;height:32px;}
     .hero-highlight span{font-size:10.5px;line-height:1.3;}
