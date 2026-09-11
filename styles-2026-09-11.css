@@ -16,7 +16,8 @@
   html{scroll-behavior:smooth;}
   body{
     font-family:var(--font);
-    background:var(--paper);
+    background:linear-gradient(135deg, #000878 0%, #10125c 100%);
+    background-attachment:fixed;
     color:var(--onyx);
     line-height:1.75;
     overflow-x:hidden;
@@ -126,9 +127,7 @@
   .hero{
     min-height:100vh;
     display:flex;flex-direction:column;justify-content:center;
-    background:
-      radial-gradient(700px 600px at var(--mx) var(--my), rgba(108,207,246,.12), transparent 65%),
-      linear-gradient(135deg, #000878 0%, #10125c 100%);
+    background:radial-gradient(700px 600px at var(--mx) var(--my), rgba(108,207,246,.12), transparent 65%);
     color:var(--white);
     padding:140px 0 90px;
     position:relative;
@@ -225,7 +224,7 @@
   }
 
   /* ============ ABOUT ============ */
-  .about{padding:80px 0;background:linear-gradient(135deg,#000878, #10125c);}
+  .about{padding:80px 0;}
   .about-grid{max-width:820px;margin:0 auto;}
   .about-block{border-right:4px solid var(--sky);padding-right:26px;}
   .about h2{color:var(--sky);}
@@ -236,7 +235,6 @@
 
   /* ============ VISION (dark band) ============ */
   .vision{
-    background:linear-gradient(135deg,#000878, #10125c);
     color:var(--white);padding:80px 0;position:relative;
   }
   .vision::before{
@@ -252,7 +250,7 @@
   }
 
   /* ============ GOALS ============ */
-  .goals{padding:80px 0;background:linear-gradient(135deg,#000878, #10125c);}
+  .goals{padding:80px 0;}
   .goals-block{border-right:4px solid var(--sky);padding-right:26px;}
   .goals-title{color:var(--sky);}
   .goals p.section-copy{
@@ -286,7 +284,7 @@
 
   /* ============ STATS / أرقامنا ============ */
   .stats{
-    padding:110px 0;background:var(--ink);color:var(--white);
+    padding:110px 0;color:var(--white);
     position:relative;overflow:hidden;
   }
   .stats::before{
@@ -587,6 +585,7 @@
   footer{
     text-align:center;padding:34px 0;font-size:13px;color:var(--mauve);
     border-top:1px solid rgba(0,8,120,.08);
+    background:var(--paper);
   }
 
   [data-reveal]{opacity:0;transform:translateY(28px);transition:opacity .8s ease, transform .8s ease;}
