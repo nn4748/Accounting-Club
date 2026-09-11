@@ -170,7 +170,7 @@
   }
   .hero-mark{
     position:absolute;inset:0;z-index:1;
-    background:url('assets/club-mark-white.png') no-repeat center center;
+    background:url('assets/club-mark-white.webp') no-repeat center center;
     background-size:min(620px,62vw) auto;
     opacity:.07;
     filter:blur(4px);
@@ -463,11 +463,11 @@
   .mini-track{
     direction:ltr;
     display:flex;align-items:stretch;gap:20px;width:max-content;
-    animation:miniScroll 20s linear infinite;
+    animation:miniScroll 45s linear infinite;
       will-change: transform;
     --mini-shift:-50%;
   }
-  .mini-track--reverse{animation-direction:reverse;animation-duration:20s;}
+  .mini-track--reverse{animation-direction:reverse;animation-duration:45s;}
   .mini-marquee:hover .mini-track{animation-play-state:paused;}
   @keyframes miniScroll{
     from{transform:translateX(0);}
@@ -498,7 +498,7 @@
   .sponsors-track{
     direction:ltr;
     display:flex;align-items:center;gap:64px;width:max-content;
-    animation:sponsorsScroll 20s linear infinite;
+    animation:sponsorsScroll 45s linear infinite;
     --sponsors-shift:-50%;
   }
   .sponsors-track img{height:46px;width:auto;object-fit:contain;filter:grayscale(15%);opacity:.9;flex:none;}
