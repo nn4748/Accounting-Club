@@ -178,16 +178,30 @@
     display:block;z-index:2;background:var(--sky);
     left:29.2%;top:29.4%;width:41.4%;height:41.1%;
   }
-  .hero-highlight:nth-child(2) .hl-icon::before,
-  .hero-highlight:nth-child(3) .hl-icon::before{
-    display:block;z-index:3;inset:0;background:var(--sky);
+  /* item 2 (الأسس المحاسبية): just the bars recolored sky-blue on top of the
+     icon (frame and square border are left untouched, shown white by the
+     icon itself) */
+  .hero-highlight:nth-child(2) .hl-icon::before{
+    display:block;z-index:4;inset:0;background:var(--sky);
     -webkit-mask-image:url(assets/club-mark-white.webp);mask-image:url(assets/club-mark-white.webp);
     -webkit-mask-size:contain;mask-size:contain;
     -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
     -webkit-mask-position:center;mask-position:center;
+    clip-path:inset(46.4% 34.4% 32.8% 34.2%);
   }
-  .hero-highlight:nth-child(2) .hl-icon::before{opacity:.7;}
-  .hero-highlight:nth-child(3) .hl-icon::before{opacity:.4;}
+  /* item 3 (المعايير المحاسبية): frame recolored sky-blue on top of the icon
+     (square interior and bars are left untouched, shown white by the icon) */
+  .hero-highlight:nth-child(3) .hl-icon::after{
+    display:block;z-index:4;inset:0;background:var(--sky);
+    -webkit-mask-image:url(assets/club-mark-white.webp);mask-image:url(assets/club-mark-white.webp);
+    -webkit-mask-size:contain;mask-size:contain;
+    -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+    -webkit-mask-position:center;mask-position:center;
+    clip-path:polygon(
+      0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 24.6%,
+      24.4% 24.6%, 24.4% 75.3%, 75.6% 75.3%, 75.6% 24.6%, 24.4% 24.6%, 0% 24.6%
+    );
+  }
   .hero-highlight span{font-size:14px;font-weight:700;color:var(--white);}
   @media(max-width:600px){
     .hero h1{font-size:clamp(40px,20vw,280px);}
