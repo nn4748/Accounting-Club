@@ -16,12 +16,14 @@
   html{scroll-behavior:smooth;}
   body{
     font-family:var(--font);
-    background:linear-gradient(135deg, #000878 0%, #10125c 100%);
-    background-attachment:fixed;
+    background:var(--paper);
     color:var(--onyx);
     line-height:1.75;
     overflow-x:hidden;
   }
+  /* one continuous background behind hero→about→vision→goals→stats,
+     so the gradient never restarts/seams at a section boundary */
+  .navy-cluster{background:linear-gradient(135deg, #000878 0%, #10125c 100%);}
   img,svg{display:block;max-width:100%;}
   a{color:inherit;text-decoration:none;}
   ul{list-style:none;}
@@ -184,12 +186,15 @@
      punched back white on top of it (frame stays white, drawn by the icon
      itself on top of both) */
   .hero-highlight:nth-child(2) .hl-icon::before{
-    display:block;z-index:1;background:var(--sky);
-    left:24.4%;top:24.6%;width:51.2%;height:50.7%;
-  }
-  .hero-highlight:nth-child(2) .hl-icon::after{
-    display:block;z-index:2;background:var(--white);
-    left:29.2%;top:29.4%;width:41.4%;height:41.1%;
+    display:block;z-index:4;inset:0;background:var(--sky);
+    -webkit-mask-image:url(assets/club-mark-white.webp);mask-image:url(assets/club-mark-white.webp);
+    -webkit-mask-size:contain;mask-size:contain;
+    -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+    -webkit-mask-position:center;mask-position:center;
+    clip-path:polygon(
+      24.4% 24.6%, 75.6% 24.6%, 75.6% 75.3%, 24.4% 75.3%, 24.4% 29.4%,
+      29.2% 29.4%, 29.2% 70.4%, 70.6% 70.4%, 70.6% 29.4%, 29.2% 29.4%, 24.4% 29.4%
+    );
   }
   /* item 3 (المعايير المحاسبية): frame recolored sky-blue on top of the icon
      (square interior and bars are left untouched, shown white by the icon) */
