@@ -660,7 +660,8 @@
   .contact-form button:hover{background:var(--ink-soft);}
   .contact-form button:disabled{opacity:.7;cursor:default;}
   .contact-success{text-align:center;padding:16px 10px 6px;}
-  .contact-success .icon{font-size:34px;margin-bottom:10px;}
+  .contact-success .icon{color:var(--ink);margin-bottom:10px;}
+  .contact-success .icon svg{width:44px;height:44px;margin:0 auto;}
   .contact-success p{color:var(--ink);font-weight:700;font-size:14.5px;line-height:1.7;}
   @media(max-width:500px){
     .contact-form-card{padding:24px 20px;}
