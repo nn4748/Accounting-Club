@@ -351,31 +351,44 @@ window.addEventListener('resize', () => {
    CONTACT FORM
 ========================================= */
 
+const CONTACT_GOOGLE_FORM_ID = "1FAIpQLSfz-sNgJOFstVXY9jnM_9TG8GuKESjhhj4-CINPHVu-MTLNJQ";
+const CONTACT_FORM_ENTRY = {
+    fullName: "entry.1422228765",
+    phone: "entry.761529735",
+    purpose: "entry.865066341",
+    details: "entry.1444229277"
+};
+
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const name = document.getElementById('contactName').value.trim();
-        const phone = document.getElementById('contactPhone').value.trim();
-        const purpose = document.getElementById('contactPurpose').value;
-        const details = document.getElementById('contactDetails').value.trim();
+        const submitBtn = contactForm.querySelector('button[type=submit]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'جارِ الإرسال...';
 
-        const subject = 'تواصل من الموقع' + (purpose ? ' - ' + purpose : '');
-        const body = [
-            'الاسم الثلاثي: ' + name,
-            'رقم الجوال: ' + phone,
-            'الغرض من التواصل: ' + (purpose || 'غير محدد'),
-            '',
-            'التفاصيل:',
-            details
-        ].join('\n');
+        const body = new URLSearchParams();
+        body.set(CONTACT_FORM_ENTRY.fullName, document.getElementById('contactName').value.trim());
+        body.set(CONTACT_FORM_ENTRY.phone, document.getElementById('contactPhone').value.trim());
+        body.set(CONTACT_FORM_ENTRY.purpose, document.getElementById('contactPurpose').value);
+        body.set(CONTACT_FORM_ENTRY.details, document.getElementById('contactDetails').value.trim());
 
-        window.location.href = 'mailto:accclub.imamu@gmail.com'
-            + '?subject=' + encodeURIComponent(subject)
-            + '&body=' + encodeURIComponent(body);
-
-        contactForm.style.display = 'none';
-        document.getElementById('contactSuccess').style.display = 'block';
+        fetch(`https://docs.google.com/forms/d/e/${CONTACT_GOOGLE_FORM_ID}/formResponse`, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+        })
+            .then(() => {
+                contactForm.style.display = 'none';
+                document.getElementById('contactSuccess').style.display = 'block';
+            })
+            .catch(error => {
+                console.error(error);
+                alert('تعذر إرسال رسالتك، يرجى المحاولة مرة أخرى.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'إرسال';
+            });
     });
 }
