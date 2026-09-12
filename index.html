@@ -672,6 +672,27 @@
       <p class="eyebrow" style="color:var(--ink);justify-content:center;">تواصل معنا</p>
       <h2 class="tagline">نحو أثر يبقى.. وبصمة تلهم</h2>
       <p class="section-copy" style="margin:0 auto 34px;">تابع النادي وكن على تواصل دائم مع آخر البرامج والفعاليات.</p>
+
+      <div class="contact-form-card">
+        <h2>تواصل معنا</h2>
+        <form id="contactForm" class="contact-form">
+          <input type="text" id="contactName" placeholder="الاسم الثلاثي" required>
+          <input type="tel" id="contactPhone" placeholder="رقم الجوال" required>
+          <select id="contactPurpose">
+            <option value="">الغرض من التواصل (اختياري)</option>
+            <option value="استفسار">استفسار</option>
+            <option value="انضمام">انضمام</option>
+            <option value="شكوى">شكوى</option>
+          </select>
+          <textarea id="contactDetails" placeholder="التفاصيل" required rows="4"></textarea>
+          <button type="submit">إرسال</button>
+        </form>
+        <div class="contact-success" id="contactSuccess" style="display:none;">
+          <div class="icon">✉️</div>
+          <p>سيتم فتح تطبيق البريد لإتمام إرسال رسالتك إلى النادي.</p>
+        </div>
+      </div>
+
       <div class="social-row">
         <a class="social-pill" href="https://twitter.com/acc_imam" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-7l-5.5-6.7L4.5 22H1.4l8.1-9.3L.7 2h7.2l5 6.1L18.9 2Zm-1.2 18h1.7L6.4 4H4.6l13.1 16Z"/></svg>
