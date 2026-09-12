@@ -351,12 +351,12 @@ window.addEventListener('resize', () => {
    CONTACT FORM
 ========================================= */
 
-const CONTACT_GOOGLE_FORM_ID = "1FAIpQLSfz-sNgJOFstVXY9jnM_9TG8GuKESjhhj4-CINPHVu-MTLNJQ";
+const CONTACT_GOOGLE_FORM_ID = "1FAIpQLSf8CwFnVbwnpmwnzVSdUboC_5UZFISnrF2u_X4QwEDAQgE2AQ";
 const CONTACT_FORM_ENTRY = {
-    fullName: "entry.1422228765",
-    phone: "entry.761529735",
-    purpose: "entry.865066341",
-    details: "entry.1444229277"
+    fullName: "entry.101466725",
+    phone: "entry.1395194922",
+    purpose: "entry.652943622",
+    details: "entry.1485803505"
 };
 
 const contactForm = document.getElementById('contactForm');
