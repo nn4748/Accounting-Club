@@ -354,7 +354,7 @@ window.addEventListener('resize', () => {
 const CONTACT_GOOGLE_FORM_ID = "1FAIpQLSf8CwFnVbwnpmwnzVSdUboC_5UZFISnrF2u_X4QwEDAQgE2AQ";
 const CONTACT_FORM_ENTRY = {
     fullName: "entry.101466725",
-    phone: "entry.1395194922",
+    email: "entry.1395194922",
     purpose: "entry.652943622",
     details: "entry.1485803505"
 };
@@ -370,7 +370,7 @@ if (contactForm) {
 
         const body = new URLSearchParams();
         body.set(CONTACT_FORM_ENTRY.fullName, document.getElementById('contactName').value.trim());
-        body.set(CONTACT_FORM_ENTRY.phone, document.getElementById('contactPhone').value.trim());
+        body.set(CONTACT_FORM_ENTRY.email, document.getElementById('contactEmail').value.trim());
         body.set(CONTACT_FORM_ENTRY.purpose, document.getElementById('contactPurpose').value);
         body.set(CONTACT_FORM_ENTRY.details, document.getElementById('contactDetails').value.trim());
 
