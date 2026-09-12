@@ -669,7 +669,6 @@
 <section class="contact" id="contact">
   <div class="wrap contact-inner">
     <div data-reveal>
-      <p class="eyebrow" style="color:var(--ink);justify-content:center;">تواصل معنا</p>
       <h2 class="tagline">نحو أثر يبقى.. وبصمة تلهم</h2>
       <p class="section-copy" style="margin:0 auto 34px;">تابع النادي وكن على تواصل دائم مع آخر البرامج والفعاليات.</p>
 
@@ -678,8 +677,8 @@
         <form id="contactForm" class="contact-form">
           <input type="text" id="contactName" placeholder="الاسم الثلاثي" required>
           <input type="tel" id="contactPhone" placeholder="رقم الجوال" required>
-          <select id="contactPurpose">
-            <option value="">الغرض من التواصل (اختياري)</option>
+          <select id="contactPurpose" required>
+            <option value="" disabled selected>الغرض من التواصل</option>
             <option value="استفسار">استفسار</option>
             <option value="انضمام">انضمام</option>
             <option value="شكوى">شكوى</option>
