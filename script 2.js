@@ -346,3 +346,36 @@ window.addEventListener('resize', () => {
     setMarqueeShift('#featured-events .mini-track', '.mini-card', '--mini-shift');
     setMarqueeShift('#featured-visits .mini-track', '.mini-card', '--mini-shift');
 });
+
+/* =========================================
+   CONTACT FORM
+========================================= */
+
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('contactName').value.trim();
+        const phone = document.getElementById('contactPhone').value.trim();
+        const purpose = document.getElementById('contactPurpose').value;
+        const details = document.getElementById('contactDetails').value.trim();
+
+        const subject = 'تواصل من الموقع' + (purpose ? ' - ' + purpose : '');
+        const body = [
+            'الاسم الثلاثي: ' + name,
+            'رقم الجوال: ' + phone,
+            'الغرض من التواصل: ' + (purpose || 'غير محدد'),
+            '',
+            'التفاصيل:',
+            details
+        ].join('\n');
+
+        window.location.href = 'mailto:accclub.imamu@gmail.com'
+            + '?subject=' + encodeURIComponent(subject)
+            + '&body=' + encodeURIComponent(body);
+
+        contactForm.style.display = 'none';
+        document.getElementById('contactSuccess').style.display = 'block';
+    });
+}
