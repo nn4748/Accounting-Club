@@ -155,6 +155,13 @@
       background: #fff;
     }
 
+    .team-member-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #000878;
+      margin: 4px 0 8px;
+    }
+
     .check {
       display: flex;
       align-items: center;
@@ -245,12 +252,35 @@
         </div>
 
         <div id="teamFields" style="display:none;">
-          <input type="text" id="member1" placeholder="اسم ورقم جوال العضو الأول" required>
-          <input type="text" id="member2" placeholder="اسم ورقم جوال العضو الثاني" required>
-          <input type="text" id="member3" placeholder="اسم ورقم جوال العضو الثالث" required>
-          <input type="text" id="member4" placeholder="اسم ورقم جوال العضو الرابع" required>
-          <input type="text" id="member5" placeholder="اسم ورقم جوال العضو الخامس (اختياري)">
-          <input type="text" id="member6" placeholder="اسم ورقم جوال العضو السادس (اختياري)">
+          <div class="team-member-label">العضو الأول</div>
+          <input type="text" id="member1Name" placeholder="اسم العضو الأول" required>
+          <input type="tel" id="member1Phone" placeholder="رقم جوال العضو الأول" required>
+          <input type="email" id="member1Email" placeholder="البريد الإلكتروني للعضو الأول" required>
+
+          <div class="team-member-label">العضو الثاني</div>
+          <input type="text" id="member2Name" placeholder="اسم العضو الثاني" required>
+          <input type="tel" id="member2Phone" placeholder="رقم جوال العضو الثاني" required>
+          <input type="email" id="member2Email" placeholder="البريد الإلكتروني للعضو الثاني" required>
+
+          <div class="team-member-label">العضو الثالث</div>
+          <input type="text" id="member3Name" placeholder="اسم العضو الثالث" required>
+          <input type="tel" id="member3Phone" placeholder="رقم جوال العضو الثالث" required>
+          <input type="email" id="member3Email" placeholder="البريد الإلكتروني للعضو الثالث" required>
+
+          <div class="team-member-label">العضو الرابع</div>
+          <input type="text" id="member4Name" placeholder="اسم العضو الرابع" required>
+          <input type="tel" id="member4Phone" placeholder="رقم جوال العضو الرابع" required>
+          <input type="email" id="member4Email" placeholder="البريد الإلكتروني للعضو الرابع" required>
+
+          <div class="team-member-label">العضو الخامس</div>
+          <input type="text" id="member5Name" placeholder="اسم العضو الخامس" required>
+          <input type="tel" id="member5Phone" placeholder="رقم جوال العضو الخامس" required>
+          <input type="email" id="member5Email" placeholder="البريد الإلكتروني للعضو الخامس" required>
+
+          <div class="team-member-label">العضو السادس</div>
+          <input type="text" id="member6Name" placeholder="اسم العضو السادس" required>
+          <input type="tel" id="member6Phone" placeholder="رقم جوال العضو السادس" required>
+          <input type="email" id="member6Email" placeholder="البريد الإلكتروني للعضو السادس" required>
         </div>
 
         <label class="check">
@@ -334,9 +364,14 @@
     // فعالية تسجيل فرق (6 أعضاء) بفورم ومسار عدّ مستقل عن الفعاليات العادية.
     // المطابقة بنمط عام (مو بالاسم بالضبط) عشان تشتغل بنفس الشكل وهي لسا
     // "قريبًا" بجدول الفعاليات، قبل ما يتغيّر اسمها للاسم النهائي.
-    const TEAM_EVENT_LIMIT = 7;
-    const TEAM_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1W653y4Kgt3iJ-loSZZBc357cv8_3URkcx-t_bc012gE/export?format=csv";
+    const TEAM_EVENT_LIMIT = 6;
+    const TEAM_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1Lj4eFd80c0mBs4huE6lQnKoh1USjDhEJn7OnnRRFGlM/export?format=csv";
     const isTeamEvent = /بعاد\s*محاسبية/.test(eventData.name || "");
+
+    // مفتاح تفعيل يدوي: يخلي رابط فورم "أبعاد محاسبية" ثابت وقابل للمشاركة
+    // من الحين، بحيث يفتح الفورم للتعبئة لكن يمنع الإرسال لين نفعّل التسجيل
+    // فعليًا بتغيير هذا السطر فقط — بدون ما يحتاج الرابط المُرسَل يتغيّر.
+    const TEAM_EVENT_REGISTRATION_OPEN = false;
 
     // فعاليات "قريبًا" يقدر الزائر يفتح نموذجها ويعبيه، لكن الإرسال
     // يُمنع برسالة اعتذار لين تُفعَّل الفعالية فعليًا.
@@ -443,14 +478,26 @@
       eventName: "entry.266454573"
     };
 
-    const TEAM_GOOGLE_FORM_ID = "1FAIpQLSd5tB9PcD40oFxqYGwI9deKqVM9Zck5OeTO0Vd8wnDatVYS7A";
+    const TEAM_GOOGLE_FORM_ID = "1FAIpQLSd1uLgrGir_e0UiBF4F0gbfOXdg8UtJ9wRdH7prUbTu7sle_Q";
     const TEAM_FORM_ENTRY = {
-      member1: "entry.183583322",
-      member2: "entry.1696645733",
-      member3: "entry.361236406",
-      member4: "entry.519360358",
-      member5: "entry.1885605145",
-      member6: "entry.314765626"
+      member1Name: "entry.812052277",
+      member1Phone: "entry.1192713865",
+      member1Email: "entry.482223790",
+      member2Name: "entry.935539111",
+      member2Phone: "entry.1665941750",
+      member2Email: "entry.1236812955",
+      member3Name: "entry.166426017",
+      member3Phone: "entry.160016647",
+      member3Email: "entry.332933279",
+      member4Name: "entry.1318352171",
+      member4Phone: "entry.99679106",
+      member4Email: "entry.1423914885",
+      member5Name: "entry.839094841",
+      member5Phone: "entry.857137368",
+      member5Email: "entry.1365447753",
+      member6Name: "entry.1310397210",
+      member6Phone: "entry.711283581",
+      member6Email: "entry.1415696903"
     };
 
     const registerForm = document.getElementById("registerForm");
@@ -465,7 +512,7 @@
         return;
       }
 
-      if (isComingSoon) {
+      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN)) {
         registerForm.style.display = "none";
         document.getElementById("notStartedMessage").style.display = "block";
         return;
@@ -480,12 +527,11 @@
 
       if (isTeamEvent) {
         formId = TEAM_GOOGLE_FORM_ID;
-        body.set(TEAM_FORM_ENTRY.member1, document.getElementById("member1").value);
-        body.set(TEAM_FORM_ENTRY.member2, document.getElementById("member2").value);
-        body.set(TEAM_FORM_ENTRY.member3, document.getElementById("member3").value);
-        body.set(TEAM_FORM_ENTRY.member4, document.getElementById("member4").value);
-        body.set(TEAM_FORM_ENTRY.member5, document.getElementById("member5").value);
-        body.set(TEAM_FORM_ENTRY.member6, document.getElementById("member6").value);
+        for (let i = 1; i <= 6; i++) {
+          body.set(TEAM_FORM_ENTRY["member" + i + "Name"], document.getElementById("member" + i + "Name").value);
+          body.set(TEAM_FORM_ENTRY["member" + i + "Phone"], document.getElementById("member" + i + "Phone").value);
+          body.set(TEAM_FORM_ENTRY["member" + i + "Email"], document.getElementById("member" + i + "Email").value);
+        }
       } else {
         formId = GOOGLE_FORM_ID;
         body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
