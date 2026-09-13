@@ -338,6 +338,11 @@
     const TEAM_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1W653y4Kgt3iJ-loSZZBc357cv8_3URkcx-t_bc012gE/export?format=csv";
     const isTeamEvent = /بعاد\s*محاسبية/.test(eventData.name || "");
 
+    // مفتاح تفعيل يدوي: يخلي رابط فورم "أبعاد محاسبية" ثابت وقابل للمشاركة
+    // من الحين، بحيث يفتح الفورم للتعبئة لكن يمنع الإرسال لين نفعّل التسجيل
+    // فعليًا بتغيير هذا السطر فقط — بدون ما يحتاج الرابط المُرسَل يتغيّر.
+    const TEAM_EVENT_REGISTRATION_OPEN = false;
+
     // فعاليات "قريبًا" يقدر الزائر يفتح نموذجها ويعبيه، لكن الإرسال
     // يُمنع برسالة اعتذار لين تُفعَّل الفعالية فعليًا.
     const isComingSoon = /قريب/.test(eventData.name || "") || /قريب/.test(eventData.description || "");
@@ -465,7 +470,7 @@
         return;
       }
 
-      if (isComingSoon) {
+      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN)) {
         registerForm.style.display = "none";
         document.getElementById("notStartedMessage").style.display = "block";
         return;
