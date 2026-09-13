@@ -250,7 +250,7 @@ function displayEvents(events, counts) {
             || (limit && (counts[(event.name || "").trim()] || 0) >= limit);
 
         const actionHtml = comingSoon
-            ? `<span class="register-btn register-btn--soon">قريبًا</span>`
+            ? `<a class="register-btn register-btn--soon" href="${buildRegisterUrl(event)}">قريبًا</a>`
             : isFull
             ? `<span class="register-btn register-btn--soon">انتهى التسجيل</span>`
             : `<a class="register-btn" href="${buildRegisterUrl(event)}">سجل الآن</a>`;
