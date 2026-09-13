@@ -519,6 +519,10 @@
     cursor:default;
 }
 
+a.register-btn--soon{
+    cursor:pointer;
+}
+
 .register-btn:hover{
     background:var(--ink-soft);
 }
