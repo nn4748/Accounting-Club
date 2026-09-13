@@ -237,10 +237,21 @@
       <h2>التسجيل في الفعالية</h2>
 
       <form id="registerForm">
-        <input type="text" id="name" placeholder="الاسم الثلاثي" required>
-        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-        <input type="tel" id="phone" placeholder="+966 " required>
-        <input type="text" id="major" placeholder="التخصص" required>
+        <div id="individualFields">
+          <input type="text" id="name" placeholder="الاسم الثلاثي" required>
+          <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+          <input type="tel" id="phone" placeholder="+966 " required>
+          <input type="text" id="major" placeholder="التخصص" required>
+        </div>
+
+        <div id="teamFields" style="display:none;">
+          <input type="text" id="member1" placeholder="اسم ورقم جوال العضو الأول" required>
+          <input type="text" id="member2" placeholder="اسم ورقم جوال العضو الثاني" required>
+          <input type="text" id="member3" placeholder="اسم ورقم جوال العضو الثالث" required>
+          <input type="text" id="member4" placeholder="اسم ورقم جوال العضو الرابع" required>
+          <input type="text" id="member5" placeholder="اسم ورقم جوال العضو الخامس (اختياري)">
+          <input type="text" id="member6" placeholder="اسم ورقم جوال العضو السادس (اختياري)">
+        </div>
 
         <label class="check">
           <input type="checkbox" id="agree" required>
@@ -316,6 +327,20 @@
 
     const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
 
+    // فعالية تسجيل فرق (6 أعضاء) بفورم ومسار عدّ مستقل عن الفعاليات العادية.
+    const TEAM_EVENT_NAME = "أبعاد محاسبية #4";
+    const TEAM_EVENT_LIMIT = 7;
+    const TEAM_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1W653y4Kgt3iJ-loSZZBc357cv8_3URkcx-t_bc012gE/export?format=csv";
+    const isTeamEvent = eventData.name.trim() === TEAM_EVENT_NAME;
+
+    if (isTeamEvent) {
+      document.getElementById("individualFields").style.display = "none";
+      document.getElementById("teamFields").style.display = "block";
+      document.querySelectorAll("#individualFields [required]").forEach(el => el.required = false);
+    } else {
+      document.querySelectorAll("#teamFields [required]").forEach(el => el.required = false);
+    }
+
     function parseCSV(text) {
       const rows = [];
       let row = [];
@@ -358,6 +383,21 @@
         return;
       }
 
+      if (isTeamEvent) {
+        fetch(TEAM_RESPONSES_CSV_URL + "&t=" + Date.now())
+          .then(res => res.text())
+          .then(text => {
+            const rows = parseCSV(text);
+            const count = Math.max(0, rows.length - 1);
+            if (count >= TEAM_EVENT_LIMIT) {
+              registerForm.style.display = "none";
+              document.getElementById("fullMessage").style.display = "block";
+            }
+          })
+          .catch(err => console.error("تعذر التحقق من عدد الفرق المسجلة:", err));
+        return;
+      }
+
       const limit = REGISTRATION_LIMITS[eventData.name.trim()];
       if (!limit) return;
 
@@ -394,6 +434,16 @@
       eventName: "entry.266454573"
     };
 
+    const TEAM_GOOGLE_FORM_ID = "1FAIpQLSd5tB9PcD40oFxqYGwI9deKqVM9Zck5OeTO0Vd8wnDatVYS7A";
+    const TEAM_FORM_ENTRY = {
+      member1: "entry.183583322",
+      member2: "entry.1696645733",
+      member3: "entry.361236406",
+      member4: "entry.519360358",
+      member5: "entry.1885605145",
+      member6: "entry.314765626"
+    };
+
     const registerForm = document.getElementById("registerForm");
 
     checkRegistrationCap();
@@ -411,13 +461,26 @@
       submitBtn.textContent = "جارِ الإرسال...";
 
       const body = new URLSearchParams();
-      body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
-      body.set(FORM_ENTRY.email, document.getElementById("email").value);
-      body.set(FORM_ENTRY.phone, document.getElementById("phone").value);
-      body.set(FORM_ENTRY.major, document.getElementById("major").value);
-      body.set(FORM_ENTRY.eventName, eventData.name);
+      let formId;
 
-      fetch(`https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`, {
+      if (isTeamEvent) {
+        formId = TEAM_GOOGLE_FORM_ID;
+        body.set(TEAM_FORM_ENTRY.member1, document.getElementById("member1").value);
+        body.set(TEAM_FORM_ENTRY.member2, document.getElementById("member2").value);
+        body.set(TEAM_FORM_ENTRY.member3, document.getElementById("member3").value);
+        body.set(TEAM_FORM_ENTRY.member4, document.getElementById("member4").value);
+        body.set(TEAM_FORM_ENTRY.member5, document.getElementById("member5").value);
+        body.set(TEAM_FORM_ENTRY.member6, document.getElementById("member6").value);
+      } else {
+        formId = GOOGLE_FORM_ID;
+        body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
+        body.set(FORM_ENTRY.email, document.getElementById("email").value);
+        body.set(FORM_ENTRY.phone, document.getElementById("phone").value);
+        body.set(FORM_ENTRY.major, document.getElementById("major").value);
+        body.set(FORM_ENTRY.eventName, eventData.name);
+      }
+
+      fetch(`https://docs.google.com/forms/d/e/${formId}/formResponse`, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
