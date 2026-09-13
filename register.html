@@ -252,10 +252,10 @@
         </div>
 
         <div id="teamFields" style="display:none;">
-          <div class="team-member-label">العضو الأول</div>
-          <input type="text" id="member1Name" placeholder="اسم العضو الأول" required>
-          <input type="tel" id="member1Phone" placeholder="رقم جوال العضو الأول" required>
-          <input type="email" id="member1Email" placeholder="البريد الإلكتروني للعضو الأول" required>
+          <div class="team-member-label">قائد الفريق</div>
+          <input type="text" id="member1Name" placeholder="اسم قائد الفريق" required>
+          <input type="tel" id="member1Phone" placeholder="رقم جوال قائد الفريق" required>
+          <input type="email" id="member1Email" placeholder="البريد الإلكتروني لقائد الفريق" required>
 
           <div class="team-member-label">العضو الثاني</div>
           <input type="text" id="member2Name" placeholder="اسم العضو الثاني" required>
@@ -365,7 +365,7 @@
     // المطابقة بنمط عام (مو بالاسم بالضبط) عشان تشتغل بنفس الشكل وهي لسا
     // "قريبًا" بجدول الفعاليات، قبل ما يتغيّر اسمها للاسم النهائي.
     const TEAM_EVENT_LIMIT = 6;
-    const TEAM_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1Lj4eFd80c0mBs4huE6lQnKoh1USjDhEJn7OnnRRFGlM/export?format=csv";
+    const TEAM_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1ear_4e-64w5I4b4VXRdnQh62txgjJUYglqi8ZT4qF3o/export?format=csv";
     const isTeamEvent = /بعاد\s*محاسبية/.test(eventData.name || "");
 
     // مفتاح تفعيل يدوي: يخلي رابط فورم "أبعاد محاسبية" ثابت وقابل للمشاركة
@@ -480,9 +480,9 @@
 
     const TEAM_GOOGLE_FORM_ID = "1FAIpQLSd1uLgrGir_e0UiBF4F0gbfOXdg8UtJ9wRdH7prUbTu7sle_Q";
     const TEAM_FORM_ENTRY = {
-      member1Name: "entry.812052277",
-      member1Phone: "entry.1192713865",
-      member1Email: "entry.482223790",
+      member1Name: "entry.1310397210",
+      member1Phone: "entry.711283581",
+      member1Email: "entry.1415696903",
       member2Name: "entry.935539111",
       member2Phone: "entry.1665941750",
       member2Email: "entry.1236812955",
@@ -495,9 +495,9 @@
       member5Name: "entry.839094841",
       member5Phone: "entry.857137368",
       member5Email: "entry.1365447753",
-      member6Name: "entry.1310397210",
-      member6Phone: "entry.711283581",
-      member6Email: "entry.1415696903"
+      member6Name: "entry.812052277",
+      member6Phone: "entry.1192713865",
+      member6Email: "entry.482223790"
     };
 
     const registerForm = document.getElementById("registerForm");
