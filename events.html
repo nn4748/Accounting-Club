@@ -432,6 +432,10 @@
       cursor: default;
     }
 
+    a.event-action-page--soon {
+      cursor: pointer;
+    }
+
 
     /* =========================================
        LOADING
@@ -841,7 +845,7 @@
         image: event.image || ""
       });
       const actionHtml = soon
-        ? `<span class="event-action-page event-action-page--soon">قريبًا</span>`
+        ? `<a class="event-action-page event-action-page--soon" href="register.html?${registerParams.toString()}">قريبًا</a>`
         : isFull
         ? `<span class="event-action-page event-action-page--soon">انتهى التسجيل</span>`
         : `<a class="event-action-page" href="register.html?${registerParams.toString()}">سجل الآن</a>`;
