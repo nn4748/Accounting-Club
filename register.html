@@ -332,10 +332,11 @@
     const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
 
     // فعالية تسجيل فرق (6 أعضاء) بفورم ومسار عدّ مستقل عن الفعاليات العادية.
-    const TEAM_EVENT_NAME = "أبعاد محاسبية #4";
+    // المطابقة بنمط عام (مو بالاسم بالضبط) عشان تشتغل بنفس الشكل وهي لسا
+    // "قريبًا" بجدول الفعاليات، قبل ما يتغيّر اسمها للاسم النهائي.
     const TEAM_EVENT_LIMIT = 7;
     const TEAM_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1W653y4Kgt3iJ-loSZZBc357cv8_3URkcx-t_bc012gE/export?format=csv";
-    const isTeamEvent = eventData.name.trim() === TEAM_EVENT_NAME;
+    const isTeamEvent = /بعاد\s*محاسبية/.test(eventData.name || "");
 
     // فعاليات "قريبًا" يقدر الزائر يفتح نموذجها ويعبيه، لكن الإرسال
     // يُمنع برسالة اعتذار لين تُفعَّل الفعالية فعليًا.
