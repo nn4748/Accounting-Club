@@ -213,6 +213,18 @@
       line-height: 1.7;
     }
 
+    .success-message a.whatsapp-link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 12px 22px;
+      background: #000878;
+      color: #fff;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14.5px;
+      text-decoration: none;
+    }
+
     @media (max-width: 500px) {
       .event-detail-name { font-size: 18px; }
       .register-card { padding: 22px 18px; }
@@ -294,6 +306,12 @@
       <div class="success-message" id="successMessage" style="display:none;">
         <div class="icon">🎉</div>
         <p>تم التسجيل بنجاح، شكراً لك.</p>
+      </div>
+
+      <div class="success-message" id="teamSuccessMessage" style="display:none;">
+        <div class="icon">🎉</div>
+        <p>تم التسجيل بنجاح، شكراً لك.<br>يرجى دخول القائد وأعضاء الفريق هذه المجموعة.</p>
+        <a class="whatsapp-link" id="teamWhatsappLink" href="https://chat.whatsapp.com/JdcVLfVhfEZ76t5zUhC7Pz?s=cl&amp;p=i&amp;mlu=4&amp;ilr=4" target="_blank" rel="noopener">الانضمام لمجموعة الواتساب</a>
       </div>
 
       <div class="success-message" id="fullMessage" style="display:none;">
@@ -549,7 +567,11 @@
       })
         .then(() => {
           registerForm.style.display = "none";
-          document.getElementById("successMessage").style.display = "block";
+          if (isTeamEvent) {
+            document.getElementById("teamSuccessMessage").style.display = "block";
+          } else {
+            document.getElementById("successMessage").style.display = "block";
+          }
         })
         .catch(error => {
           console.error(error);
