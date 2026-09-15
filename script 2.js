@@ -182,7 +182,7 @@ const REGISTRATION_LIMITS = {
     "جلسة حوارية": 43
 };
 // فعاليات مقفولة يدويًا بغض النظر عن عدد المسجلين.
-const CLOSED_EVENTS = ["جلسة حوارية"];
+const CLOSED_EVENTS = ["جلسة حوارية", "أبعاد محاسبية"];
 const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
 
 async function fetchRegistrationCounts() {
