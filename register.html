@@ -352,8 +352,8 @@
     document.getElementById("eventDescription").textContent = eventData.description;
 
     const infoParts = [];
-    if (eventData.date) infoParts.push("📅 " + eventData.date);
-    if (eventData.location) infoParts.push("📍 " + eventData.location);
+    if (eventData.date) infoParts.push(eventData.date);
+    if (eventData.location) infoParts.push(eventData.location);
     document.getElementById("eventInfo").innerHTML = infoParts.map(p => `<span>${escapeHTML(p)}</span>`).join("");
 
     if (eventData.image) {
