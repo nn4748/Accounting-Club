@@ -269,8 +269,8 @@ function displayEvents(events, counts) {
                     <p>${event.description}</p>
 
                     <div class="event-info">
-                        <span>📍 ${event.location}</span>
-                        <span>📅 ${event.date}</span>
+                        <span>${event.location}</span>
+                        <span>${event.date}</span>
                     </div>
 
                     ${actionHtml}
