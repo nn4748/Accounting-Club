@@ -394,6 +394,11 @@
     // إغلاق يدوي فوري للتسجيل (بغض النظر عن عدد الفرق المسجّلة فعليًا).
     const TEAM_EVENT_CLOSED = true;
 
+    // ورشة "بين دقة المحاسبة ورؤية المالية" — فورم وشيت ردود مخصصين لها
+    // بدل الفورم العام، نفس حقول التسجيل الفردي العادية (اسم/بريد/تخصص/جوال).
+    const isFinanceWorkshop = /دقة المحاسبة/.test(eventData.name || "");
+    const FINANCE_WORKSHOP_REGISTRATION_OPEN = false;
+
     // فعاليات "قريبًا" يقدر الزائر يفتح نموذجها ويعبيه، لكن الإرسال
     // يُمنع برسالة اعتذار لين تُفعَّل الفعالية فعليًا.
     const isComingSoon = /قريب/.test(eventData.name || "") || /قريب/.test(eventData.description || "");
@@ -526,6 +531,14 @@
       member6Email: "entry.482223790"
     };
 
+    const FINANCE_WORKSHOP_GOOGLE_FORM_ID = "1FAIpQLSfUdTaH_UWYCIvvAtaAzECPxy4tc5DOCyOtRwjYd9cnTNPFYA";
+    const FINANCE_WORKSHOP_FORM_ENTRY = {
+      fullName: "entry.213361214",
+      email: "entry.1221092309",
+      major: "entry.643310764",
+      phone: "entry.620026520"
+    };
+
     const registerForm = document.getElementById("registerForm");
 
     checkRegistrationCap();
@@ -544,7 +557,7 @@
         return;
       }
 
-      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN)) {
+      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN) || (isFinanceWorkshop && !FINANCE_WORKSHOP_REGISTRATION_OPEN)) {
         registerForm.style.display = "none";
         document.getElementById("notStartedMessage").style.display = "block";
         return;
@@ -564,6 +577,12 @@
           body.set(TEAM_FORM_ENTRY["member" + i + "Phone"], document.getElementById("member" + i + "Phone").value);
           body.set(TEAM_FORM_ENTRY["member" + i + "Email"], document.getElementById("member" + i + "Email").value);
         }
+      } else if (isFinanceWorkshop) {
+        formId = FINANCE_WORKSHOP_GOOGLE_FORM_ID;
+        body.set(FINANCE_WORKSHOP_FORM_ENTRY.fullName, document.getElementById("name").value);
+        body.set(FINANCE_WORKSHOP_FORM_ENTRY.email, document.getElementById("email").value);
+        body.set(FINANCE_WORKSHOP_FORM_ENTRY.phone, document.getElementById("phone").value);
+        body.set(FINANCE_WORKSHOP_FORM_ENTRY.major, document.getElementById("major").value);
       } else {
         formId = GOOGLE_FORM_ID;
         body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
