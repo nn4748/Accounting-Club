@@ -819,13 +819,22 @@
        CREATE CARD
     ========================================= */
 
+    // روابط Google Drive العادية (مشاركة) ما تشتغل مباشرة كصورة <img>،
+    // فنحولها هنا لصيغة عرض مباشر بالاعتماد على معرّف الملف.
+    function toDirectImageUrl(url) {
+      if (!url) return url;
+      const match = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([\w-]+)/);
+      if (!match) return url;
+      return `https://lh3.googleusercontent.com/d/${match[1]}`;
+    }
+
     function createEventCard(event, index, counts) {
       const card = document.createElement("article");
       card.className = "event-card-page";
 
       const image = document.createElement("img");
       image.className = "event-image-page";
-      image.src = event.image || "";
+      image.src = toDirectImageUrl(event.image) || "";
       image.alt = event.name || "";
       image.loading = "lazy";
       image.onerror = function () { this.style.display = "none"; };
@@ -843,7 +852,7 @@
         date: event.date || "",
         location: event.location || "",
         description: event.description || "",
-        image: event.image || ""
+        image: toDirectImageUrl(event.image) || ""
       });
       const actionHtml = soon
         ? `<a class="event-action-page event-action-page--soon" href="register.html?${registerParams.toString()}">قريبًا</a>`

@@ -227,6 +227,15 @@ async function loadEvents(isRetry) {
     }
 }
 
+// روابط Google Drive العادية (مشاركة) ما تشتغل مباشرة كصورة <img>،
+// فنحولها هنا لصيغة عرض مباشر بالاعتماد على معرّف الملف.
+function toDirectImageUrl(url) {
+    if (!url) return url;
+    const match = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([\w-]+)/);
+    if (!match) return url;
+    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+}
+
 function displayEvents(events, counts) {
 
     counts = counts || {};
@@ -259,7 +268,7 @@ function displayEvents(events, counts) {
             <div class="event-card">
 
                 <div class="event-image">
-                    <img src="${event.image}" alt="${event.name}" onerror="this.closest('.event-image').remove()">
+                    <img src="${toDirectImageUrl(event.image)}" alt="${event.name}" onerror="this.closest('.event-image').remove()">
                 </div>
 
                 <div class="event-content">
@@ -294,7 +303,7 @@ function buildRegisterUrl(event) {
         date: event.date || "",
         location: event.location || "",
         description: event.description || "",
-        image: event.image || ""
+        image: toDirectImageUrl(event.image) || ""
     });
     return "register.html?" + params.toString();
 }
