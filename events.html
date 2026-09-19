@@ -774,6 +774,12 @@
     const CLOSED_EVENTS = ["جلسة حوارية", "أبعاد محاسبية"];
     const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
 
+    // ورشة "بين دقة المحاسبة ورؤية المالية" إلها فورم وشيت ردود مستقلين،
+    // نطابق الاسم بنمط عام (مو بالضبط) عشان تشتغل وهي لسا "قريبًا" بالاسم.
+    const FINANCE_WORKSHOP_LIMIT = 70;
+    const FINANCE_WORKSHOP_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1cVk5tTWBQDsAGfsavvj-cHw0Pj8crrjvHnbkq04y1mM/export?format=csv";
+    const isFinanceWorkshop = (event) => /دقة المحاسبة/.test(event.name || "");
+
     function parseCSV(text) {
       const rows = [];
       let row = [];
@@ -815,6 +821,18 @@
       return counts;
     }
 
+    async function fetchFinanceWorkshopCount() {
+      try {
+        const res = await fetch(FINANCE_WORKSHOP_RESPONSES_CSV_URL + "&t=" + Date.now());
+        const text = await res.text();
+        const rows = parseCSV(text);
+        return Math.max(0, rows.length - 1);
+      } catch (err) {
+        console.error("تعذر التحقق من عدد المسجلين بورشة دقة المحاسبة:", err);
+        return 0;
+      }
+    }
+
     /* =========================================
        CREATE CARD
     ========================================= */
@@ -828,7 +846,7 @@
       return `https://lh3.googleusercontent.com/d/${match[1]}`;
     }
 
-    function createEventCard(event, index, counts) {
+    function createEventCard(event, index, counts, financeWorkshopCount) {
       const card = document.createElement("article");
       card.className = "event-card-page";
 
@@ -845,7 +863,8 @@
       const soon = isComingSoon(event);
       const limit = REGISTRATION_LIMITS[(event.name || "").trim()];
       const isFull = CLOSED_EVENTS.includes((event.name || "").trim())
-        || (limit && ((counts || {})[(event.name || "").trim()] || 0) >= limit);
+        || (limit && ((counts || {})[(event.name || "").trim()] || 0) >= limit)
+        || (isFinanceWorkshop(event) && (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT);
       const registerParams = new URLSearchParams({
         id: event.id || event.event_id || "",
         name: event.name || "",
@@ -890,7 +909,11 @@
 
     async function renderEventsPage() {
       const container = document.getElementById("eventsContainerPage");
-      const [events, counts] = await Promise.all([loadEventsPage(), fetchRegistrationCounts()]);
+      const [events, counts, financeWorkshopCount] = await Promise.all([
+        loadEventsPage(),
+        fetchRegistrationCounts(),
+        fetchFinanceWorkshopCount()
+      ]);
 
       container.innerHTML = "";
       if (events.length === 0) {
@@ -898,7 +921,7 @@
         return;
       }
       events.forEach((event, index) => {
-        container.appendChild(createEventCard(event, index, counts));
+        container.appendChild(createEventCard(event, index, counts, financeWorkshopCount));
       });
     }
 

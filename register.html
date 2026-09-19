@@ -397,7 +397,9 @@
     // ورشة "بين دقة المحاسبة ورؤية المالية" — فورم وشيت ردود مخصصين لها
     // بدل الفورم العام، نفس حقول التسجيل الفردي العادية (اسم/بريد/تخصص/جوال).
     const isFinanceWorkshop = /دقة المحاسبة/.test(eventData.name || "");
-    const FINANCE_WORKSHOP_REGISTRATION_OPEN = false;
+    const FINANCE_WORKSHOP_REGISTRATION_OPEN = true;
+    const FINANCE_WORKSHOP_LIMIT = 70;
+    const FINANCE_WORKSHOP_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1cVk5tTWBQDsAGfsavvj-cHw0Pj8crrjvHnbkq04y1mM/export?format=csv";
 
     // فعاليات "قريبًا" يقدر الزائر يفتح نموذجها ويعبيه، لكن الإرسال
     // يُمنع برسالة اعتذار لين تُفعَّل الفعالية فعليًا.
@@ -470,6 +472,21 @@
             }
           })
           .catch(err => console.error("تعذر التحقق من عدد الفرق المسجلة:", err));
+        return;
+      }
+
+      if (isFinanceWorkshop) {
+        fetch(FINANCE_WORKSHOP_RESPONSES_CSV_URL + "&t=" + Date.now())
+          .then(res => res.text())
+          .then(text => {
+            const rows = parseCSV(text);
+            const count = Math.max(0, rows.length - 1);
+            if (count >= FINANCE_WORKSHOP_LIMIT) {
+              registerForm.style.display = "none";
+              document.getElementById("fullMessage").style.display = "block";
+            }
+          })
+          .catch(err => console.error("تعذر التحقق من عدد المسجلين بورشة دقة المحاسبة:", err));
         return;
       }
 

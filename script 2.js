@@ -185,6 +185,24 @@ const REGISTRATION_LIMITS = {
 const CLOSED_EVENTS = ["جلسة حوارية", "أبعاد محاسبية"];
 const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv";
 
+// ورشة "بين دقة المحاسبة ورؤية المالية" إلها فورم وشيت ردود مستقلين،
+// نطابق الاسم بنمط عام (مو بالضبط) عشان تشتغل وهي لسا "قريبًا" بالاسم.
+const FINANCE_WORKSHOP_LIMIT = 70;
+const FINANCE_WORKSHOP_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1cVk5tTWBQDsAGfsavvj-cHw0Pj8crrjvHnbkq04y1mM/export?format=csv";
+const isFinanceWorkshop = (event) => /دقة المحاسبة/.test(event.name || "");
+
+async function fetchFinanceWorkshopCount() {
+    try {
+        const res = await fetch(FINANCE_WORKSHOP_RESPONSES_CSV_URL + "&t=" + Date.now());
+        const text = await res.text();
+        const rows = parseCSV(text);
+        return Math.max(0, rows.length - 1);
+    } catch (err) {
+        console.error("تعذر التحقق من عدد المسجلين بورشة دقة المحاسبة:", err);
+        return 0;
+    }
+}
+
 async function fetchRegistrationCounts() {
     const counts = {};
     try {
@@ -208,12 +226,13 @@ async function fetchRegistrationCounts() {
 
 async function loadEvents(isRetry) {
     try {
-        const [response, counts] = await Promise.all([
+        const [response, counts, financeWorkshopCount] = await Promise.all([
             fetch(API_URL + "?t=" + Date.now()),
-            fetchRegistrationCounts()
+            fetchRegistrationCounts(),
+            fetchFinanceWorkshopCount()
         ]);
         const events = await response.json();
-        displayEvents(events, counts);
+        displayEvents(events, counts, financeWorkshopCount);
     } catch (error) {
         console.error("Error:", error);
         if (!isRetry) {
@@ -236,7 +255,7 @@ function toDirectImageUrl(url) {
     return `https://lh3.googleusercontent.com/d/${match[1]}`;
 }
 
-function displayEvents(events, counts) {
+function displayEvents(events, counts, financeWorkshopCount) {
 
     counts = counts || {};
 
@@ -256,7 +275,8 @@ function displayEvents(events, counts) {
         const comingSoon = /قريب/.test(event.name) || /قريب/.test(event.description);
         const limit = REGISTRATION_LIMITS[(event.name || "").trim()];
         const isFull = CLOSED_EVENTS.includes((event.name || "").trim())
-            || (limit && (counts[(event.name || "").trim()] || 0) >= limit);
+            || (limit && (counts[(event.name || "").trim()] || 0) >= limit)
+            || (isFinanceWorkshop(event) && (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT);
 
         const actionHtml = comingSoon
             ? `<a class="register-btn register-btn--soon" href="${buildRegisterUrl(event)}">قريبًا</a>`
