@@ -213,7 +213,7 @@
       line-height: 1.7;
     }
 
-    .success-message a.whatsapp-link {
+    .success-message a.action-link {
       display: inline-block;
       margin-top: 10px;
       padding: 12px 22px;
@@ -310,8 +310,13 @@
 
       <div class="success-message" id="teamSuccessMessage" style="display:none;">
         <div class="icon">🎉</div>
-        <p>تم التسجيل بنجاح، شكراً لك.<br>يرجى دخول القائد وأعضاء الفريق هذه المجموعة.</p>
-        <a class="whatsapp-link" id="teamWhatsappLink" href="https://chat.whatsapp.com/JdcVLfVhfEZ76t5zUhC7Pz?s=cl&amp;p=i&amp;mlu=4&amp;ilr=4" target="_blank" rel="noopener">الانضمام لمجموعة الواتساب</a>
+        <p>تم التسجيل بنجاح، شكراً لك.</p>
+      </div>
+
+      <div class="success-message" id="financeWorkshopSuccessMessage" style="display:none;">
+        <div class="icon">🎉</div>
+        <p>تم التسجيل بنجاح، شكراً لك.</p>
+        <a class="action-link" href="https://maps.app.goo.gl/Rdgft2haMmEX22PS8?g_st=iw" target="_blank" rel="noopener">موقع الورشة</a>
       </div>
 
       <div class="success-message" id="fullMessage" style="display:none;">
@@ -619,6 +624,8 @@
           registerForm.style.display = "none";
           if (isTeamEvent) {
             document.getElementById("teamSuccessMessage").style.display = "block";
+          } else if (isFinanceWorkshop) {
+            document.getElementById("financeWorkshopSuccessMessage").style.display = "block";
           } else {
             document.getElementById("successMessage").style.display = "block";
           }
