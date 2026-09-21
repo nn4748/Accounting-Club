@@ -190,6 +190,8 @@ const REGISTRATIONS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Sbv_pomVe
 const FINANCE_WORKSHOP_LIMIT = 70;
 const FINANCE_WORKSHOP_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1cVk5tTWBQDsAGfsavvj-cHw0Pj8crrjvHnbkq04y1mM/export?format=csv";
 const isFinanceWorkshop = (event) => /دقة المحاسبة/.test(event.name || "");
+// إغلاق يدوي فوري لتسجيل ورشة دقة المحاسبة بغض النظر عن عدد المسجلين.
+const FINANCE_WORKSHOP_CLOSED = true;
 
 async function fetchFinanceWorkshopCount() {
     try {
@@ -276,7 +278,7 @@ function displayEvents(events, counts, financeWorkshopCount) {
         const limit = REGISTRATION_LIMITS[(event.name || "").trim()];
         const isFull = CLOSED_EVENTS.includes((event.name || "").trim())
             || (limit && (counts[(event.name || "").trim()] || 0) >= limit)
-            || (isFinanceWorkshop(event) && (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT);
+            || (isFinanceWorkshop(event) && (FINANCE_WORKSHOP_CLOSED || (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT));
 
         const actionHtml = comingSoon
             ? `<a class="register-btn register-btn--soon" href="${buildRegisterUrl(event)}">قريبًا</a>`
