@@ -405,6 +405,8 @@
     const FINANCE_WORKSHOP_REGISTRATION_OPEN = true;
     const FINANCE_WORKSHOP_LIMIT = 70;
     const FINANCE_WORKSHOP_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1cVk5tTWBQDsAGfsavvj-cHw0Pj8crrjvHnbkq04y1mM/export?format=csv";
+    // إغلاق يدوي فوري لتسجيل ورشة دقة المحاسبة بغض النظر عن عدد المسجلين.
+    const FINANCE_WORKSHOP_CLOSED = true;
 
     // فعاليات "قريبًا" يقدر الزائر يفتح نموذجها ويعبيه، لكن الإرسال
     // يُمنع برسالة اعتذار لين تُفعَّل الفعالية فعليًا.
@@ -481,6 +483,11 @@
       }
 
       if (isFinanceWorkshop) {
+        if (FINANCE_WORKSHOP_CLOSED) {
+          registerForm.style.display = "none";
+          document.getElementById("fullMessage").style.display = "block";
+          return;
+        }
         fetch(FINANCE_WORKSHOP_RESPONSES_CSV_URL + "&t=" + Date.now())
           .then(res => res.text())
           .then(text => {
@@ -574,6 +581,12 @@
       }
 
       if (isTeamEvent && TEAM_EVENT_CLOSED) {
+        registerForm.style.display = "none";
+        document.getElementById("fullMessage").style.display = "block";
+        return;
+      }
+
+      if (isFinanceWorkshop && FINANCE_WORKSHOP_CLOSED) {
         registerForm.style.display = "none";
         document.getElementById("fullMessage").style.display = "block";
         return;
