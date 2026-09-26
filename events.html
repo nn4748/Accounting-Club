@@ -932,7 +932,7 @@
         image: toDirectImageUrl(event.image) || ""
       });
       const actionHtml = soon
-        ? `<a class="event-action-page event-action-page--soon" href="register.html?${registerParams.toString()}">قريبًا</a>`
+        ? `<a class="event-action-page event-action-page--soon" href="register.html?${registerParams.toString()}">التسجيل غير متاح حالياً</a>`
         : isFull
         ? `<span class="event-action-page event-action-page--soon">انتهى التسجيل</span>`
         : `<a class="event-action-page" href="register.html?${registerParams.toString()}">سجل الآن</a>`;

@@ -281,7 +281,7 @@ function displayEvents(events, counts, financeWorkshopCount) {
             || (isFinanceWorkshop(event) && (FINANCE_WORKSHOP_CLOSED || (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT));
 
         const actionHtml = comingSoon
-            ? `<a class="register-btn register-btn--soon" href="${buildRegisterUrl(event)}">قريبًا</a>`
+            ? `<a class="register-btn register-btn--soon" href="${buildRegisterUrl(event)}">التسجيل غير متاح حالياً</a>`
             : isFull
             ? `<span class="register-btn register-btn--soon">انتهى التسجيل</span>`
             : `<a class="register-btn" href="${buildRegisterUrl(event)}">سجل الآن</a>`;
