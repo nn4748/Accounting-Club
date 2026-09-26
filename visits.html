@@ -432,40 +432,6 @@
       to { transform: rotate(360deg); }
     }
 
-    .back-to-top {
-      position: fixed;
-      bottom: 24px;
-      left: 24px;
-      z-index: 60;
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: #000878;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 8px 20px -6px rgba(0, 8, 120, 0.5);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(10px);
-      transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease, background 0.3s ease;
-      cursor: pointer;
-      border: none;
-    }
-
-    .back-to-top.visible {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .back-to-top:hover {
-      background: #0a1470;
-    }
-
-
     /* =========================================
        ERROR
     ========================================= */
@@ -720,8 +686,6 @@
       <div class="past-card"><div class="past-photo"><img src="assets/visits/12-accrual-center.jpg" alt="مركز الاستحقاق المحاسبي" loading="lazy"></div><span class="past-date">10-11-2022</span><div class="past-name">مركز الاستحقاق المحاسبي</div></div>
     </div>
   </section>
-
-  <button type="button" class="back-to-top" id="backToTop" aria-label="الرجوع لأعلى الصفحة">↑</button>
 
   <script>
 
@@ -1271,16 +1235,6 @@
       );
     }
     renderVisits();
-
-    const backToTopBtn = document.getElementById('backToTop');
-    if (backToTopBtn) {
-      window.addEventListener('scroll', () => {
-        backToTopBtn.classList.toggle('visible', window.scrollY > 400);
-      });
-      backToTopBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    }
   </script>
 </body>
 </html>
