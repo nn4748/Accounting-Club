@@ -423,17 +423,3 @@ if (contactForm) {
             });
     });
 }
-
-/* =========================================
-   BACK TO TOP
-========================================= */
-
-const backToTopBtn = document.getElementById('backToTop');
-if (backToTopBtn) {
-    window.addEventListener('scroll', () => {
-        backToTopBtn.classList.toggle('visible', window.scrollY > 400);
-    });
-    backToTopBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-}
