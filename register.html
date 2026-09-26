@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000878">
   <title>التسجيل في الفعالية | نادي المحاسبة</title>
   <meta name="description" content="سجل في فعاليات نادي المحاسبة بجامعة الإمام محمد بن سعود الإسلامية.">
   <meta property="og:type" content="website">
@@ -30,6 +31,34 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    html {
+      scrollbar-color: #6ccff6 rgba(255, 255, 255, 0.1);
+      scrollbar-width: thin;
+    }
+
+    ::selection {
+      background: #6ccff6;
+      color: #000878;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #6ccff6;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4db8e8;
     }
 
     body {
