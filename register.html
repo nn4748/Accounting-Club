@@ -500,6 +500,11 @@
     // إغلاق يدوي فوري لتسجيل ورشة دقة المحاسبة بغض النظر عن عدد المسجلين.
     const FINANCE_WORKSHOP_CLOSED = true;
 
+    // ورشة "CIA & CISA" — فورم وشيت ردود مخصصين لها، نفس حقول
+    // التسجيل الفردي العادية (اسم/تخصص/جوال/بريد).
+    const isCiaCisaWorkshop = /CISA/i.test(eventData.name || "");
+    const CIA_CISA_REGISTRATION_OPEN = false;
+
     // فعاليات "قريبًا" يقدر الزائر يفتح نموذجها ويعبيه، لكن الإرسال
     // يُمنع برسالة اعتذار لين تُفعَّل الفعالية فعليًا.
     const isComingSoon = /قريب/.test(eventData.name || "") || /قريب/.test(eventData.description || "");
@@ -660,6 +665,14 @@
       phone: "entry.620026520"
     };
 
+    const CIA_CISA_GOOGLE_FORM_ID = "1FAIpQLSe6zflK40UNvcljBM7NXzDIO1MAjwx2B11cllGetx8DJGxEzg";
+    const CIA_CISA_FORM_ENTRY = {
+      fullName: "entry.724115232",
+      major: "entry.1509891781",
+      phone: "entry.663282156",
+      email: "entry.756746240"
+    };
+
     const registerForm = document.getElementById("registerForm");
 
     checkRegistrationCap();
@@ -684,7 +697,7 @@
         return;
       }
 
-      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN) || (isFinanceWorkshop && !FINANCE_WORKSHOP_REGISTRATION_OPEN)) {
+      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN) || (isFinanceWorkshop && !FINANCE_WORKSHOP_REGISTRATION_OPEN) || (isCiaCisaWorkshop && !CIA_CISA_REGISTRATION_OPEN)) {
         registerForm.style.display = "none";
         document.getElementById("notStartedMessage").style.display = "block";
         return;
@@ -710,6 +723,12 @@
         body.set(FINANCE_WORKSHOP_FORM_ENTRY.email, document.getElementById("email").value);
         body.set(FINANCE_WORKSHOP_FORM_ENTRY.phone, document.getElementById("phone").value);
         body.set(FINANCE_WORKSHOP_FORM_ENTRY.major, document.getElementById("major").value);
+      } else if (isCiaCisaWorkshop) {
+        formId = CIA_CISA_GOOGLE_FORM_ID;
+        body.set(CIA_CISA_FORM_ENTRY.fullName, document.getElementById("name").value);
+        body.set(CIA_CISA_FORM_ENTRY.email, document.getElementById("email").value);
+        body.set(CIA_CISA_FORM_ENTRY.phone, document.getElementById("phone").value);
+        body.set(CIA_CISA_FORM_ENTRY.major, document.getElementById("major").value);
       } else {
         formId = GOOGLE_FORM_ID;
         body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
