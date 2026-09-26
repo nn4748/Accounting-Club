@@ -357,6 +357,12 @@
         <a class="action-link add-to-calendar" style="display:none;" target="_blank" rel="noopener">أضف للتقويم</a>
       </div>
 
+      <div class="success-message" id="ciaCisaSuccessMessage" style="display:none;">
+        <p>تم التسجيل بنجاح، شكراً لك.<br>يرجى الانضمام للمجموعة.</p>
+        <a class="action-link" href="https://chat.whatsapp.com/DQV9m0goV92HTWWYp3JHIr?mode=gi_t" target="_blank" rel="noopener">الانضمام لمجموعة الواتساب</a>
+        <a class="action-link add-to-calendar" style="display:none;" target="_blank" rel="noopener">أضف للتقويم</a>
+      </div>
+
       <div class="success-message" id="fullMessage" style="display:none;">
         <div class="icon">🚫</div>
         <p>انتهى التسجيل.</p>
@@ -750,6 +756,8 @@
             document.getElementById("teamSuccessMessage").style.display = "block";
           } else if (isFinanceWorkshop) {
             document.getElementById("financeWorkshopSuccessMessage").style.display = "block";
+          } else if (isCiaCisaWorkshop) {
+            document.getElementById("ciaCisaSuccessMessage").style.display = "block";
           } else {
             document.getElementById("successMessage").style.display = "block";
           }
