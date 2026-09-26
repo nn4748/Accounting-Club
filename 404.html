@@ -21,7 +21,15 @@
     padding:40px 24px;
     gap:18px;
   }
-  .error-page img{width:120px;height:120px;object-fit:contain;margin-bottom:10px;}
+  .error-page .mark{
+    width:120px;height:120px;margin-bottom:10px;
+    background:var(--ink);
+    -webkit-mask-image:url(assets/club-mark-white.webp);
+    mask-image:url(assets/club-mark-white.webp);
+    -webkit-mask-size:contain;mask-size:contain;
+    -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+    -webkit-mask-position:center;mask-position:center;
+  }
   .error-page .code{
     font-size:clamp(56px,10vw,96px);
     font-weight:800;
@@ -42,11 +50,11 @@
 
 <body>
   <div class="error-page">
-    <img src="assets/club.webp" alt="شعار نادي المحاسبة">
-    <div class="code">٤٠٤</div>
-    <h1>الصفحة اللي تدورها مو موجودة</h1>
-    <p>يمكن الرابط قديم أو مكتوب غلط. تقدر ترجع للصفحة الرئيسية وتكمل من جديد.</p>
-    <a href="index.html" class="btn">الرجوع للرئيسية</a>
+    <div class="mark" role="img" aria-label="شعار نادي المحاسبة"></div>
+    <div class="code">404</div>
+    <h1>الصفحة عليها ضغط</h1>
+    <p>ثوانٍ وترجع، أو بإمكانك الرجوع للصفحة الرئيسية.</p>
+    <a href="index.html" class="btn">الصفحة الرئيسية</a>
   </div>
 </body>
 
