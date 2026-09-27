@@ -738,6 +738,49 @@
   © <span id="year"></span> نادي المحاسبة — جامعة الإمام محمد بن سعود الإسلامية
 </footer>
 
+<button type="button" class="game-fab" id="gameFab" aria-label="العب مع نادي المحاسبة">
+  <span class="game-fab-icon">🎮</span>
+</button>
+
+<div class="game-overlay" id="gameOverlay" role="dialog" aria-modal="true" aria-label="مدين ولا دائن">
+  <div class="game-modal">
+    <button type="button" class="game-close" id="gameClose" aria-label="إغلاق">✕</button>
+
+    <div class="game-screen" id="gameStartScreen">
+      <div class="game-icon">⚖️</div>
+      <h3>مدين ولا دائن؟</h3>
+      <p class="game-copy">معاملة محاسبية... وأنت تحدد: مدين ولا دائن؟ ١٠ أسئلة، وقت محدود لكل سؤال.</p>
+      <p class="game-best" id="gameBestLine" style="display:none;"></p>
+      <button type="button" class="btn game-start-btn" id="gameStartBtn">ابدأ اللعبة</button>
+    </div>
+
+    <div class="game-screen" id="gamePlayScreen" style="display:none;">
+      <div class="game-progress">
+        <span id="gameQuestionNum">١ / ١٠</span>
+        <span id="gameScoreLine">النقاط: ٠</span>
+      </div>
+      <div class="game-timer-track"><div class="game-timer-bar" id="gameTimerBar"></div></div>
+      <div class="game-question-card">
+        <span class="game-account" id="gameAccount"></span>
+        <p class="game-event" id="gameEvent"></p>
+      </div>
+      <div class="game-answers">
+        <button type="button" class="game-answer-btn debit" id="gameDebitBtn">مدين</button>
+        <button type="button" class="game-answer-btn credit" id="gameCreditBtn">دائن</button>
+      </div>
+      <div class="game-feedback" id="gameFeedback"></div>
+    </div>
+
+    <div class="game-screen" id="gameEndScreen" style="display:none;">
+      <div class="game-icon" id="gameEndIcon">🏆</div>
+      <h3 id="gameEndTitle">مراجع حسابات</h3>
+      <p class="game-copy">نتيجتك: <strong id="gameFinalScore">٠</strong> من ١٠</p>
+      <p class="game-best" id="gameEndBestLine"></p>
+      <button type="button" class="btn game-start-btn" id="gameRetryBtn">حاول مرة ثانية</button>
+    </div>
+  </div>
+</div>
+
 <script src="script 2.js"></script>
 
 </body>
