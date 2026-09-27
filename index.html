@@ -749,7 +749,7 @@
     <div class="game-screen" id="gameStartScreen">
       <div class="game-icon">⚖️</div>
       <h3>مدين ولا دائن؟</h3>
-      <p class="game-copy">معاملة محاسبية أو قاعدة... وأنت تحدد: مدين ولا دائن؟ ١٠ أسئلة متنوعة، خذ وقتك.</p>
+      <p class="game-copy">أسئلة محاسبية متنوعة من الواقع العملي: مدين أو دائن، تصنيف الحسابات، صح أو خطأ وأكثر. ١٠ أسئلة، خذ وقتك.</p>
       <p class="game-best" id="gameBestLine" style="display:none;"></p>
       <button type="button" class="btn game-start-btn" id="gameStartBtn">ابدأ اللعبة</button>
     </div>
@@ -763,15 +763,12 @@
         <span class="game-account" id="gameAccount"></span>
         <p class="game-event" id="gameEvent"></p>
       </div>
-      <div class="game-answers">
-        <button type="button" class="game-answer-btn debit" id="gameDebitBtn">مدين</button>
-        <button type="button" class="game-answer-btn credit" id="gameCreditBtn">دائن</button>
-      </div>
+      <div class="game-answers" id="gameAnswers"></div>
       <div class="game-feedback" id="gameFeedback"></div>
     </div>
 
     <div class="game-screen" id="gameEndScreen" style="display:none;">
-      <p class="game-rank-label">لقبك</p>
+      <div class="game-icon" id="gameEndIcon">🏆</div>
       <h3 id="gameEndTitle">مراجع حسابات</h3>
       <p class="game-copy">نتيجتك: <strong id="gameFinalScore">٠</strong> من ١٠</p>
       <p class="game-best" id="gameEndBestLine"></p>
