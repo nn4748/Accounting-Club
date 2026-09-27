@@ -428,7 +428,33 @@ if (contactForm) {
    لعبة "مدين ولا دائن؟"
 ========================================= */
 
-const GAME_QUESTIONS = [
+const GAME_ANSWER_SETS = {
+    debitCredit: [
+        { value: "debit", label: "مدين" },
+        { value: "credit", label: "دائن" }
+    ],
+    classify: [
+        { value: "asset", label: "أصل" },
+        { value: "liability", label: "خصم" },
+        { value: "equity", label: "حقوق ملكية" },
+        { value: "revenue", label: "إيراد" },
+        { value: "expense", label: "مصروف" }
+    ],
+    statement: [
+        { value: "income", label: "قائمة الدخل" },
+        { value: "position", label: "المركز المالي" }
+    ],
+    trueFalse: [
+        { value: "true", label: "صح" },
+        { value: "false", label: "خطأ" }
+    ],
+    currentNonCurrent: [
+        { value: "current", label: "متداول" },
+        { value: "noncurrent", label: "غير متداول" }
+    ]
+};
+
+const GAME_DEBIT_CREDIT_QUESTIONS = [
     // معاملات مالية
     { label: "حساب النقدية", question: "الشركة استلمت مبلغ نقدي من عميل", answer: "debit" },
     { label: "حساب النقدية", question: "الشركة سددت فاتورة الكهرباء نقدًا", answer: "credit" },
@@ -484,9 +510,74 @@ const GAME_QUESTIONS = [
     { label: "قيد الإقفال", question: "إقفال حساب الإيرادات في نهاية الفترة", answer: "debit" },
     { label: "قيد الإقفال", question: "إقفال حساب المصروفات في نهاية الفترة", answer: "credit" },
     { label: "قيد الإقفال", question: "إقفال حساب المسحوبات الشخصية في نهاية الفترة", answer: "credit" }
+].map(q => ({ ...q, type: "debitCredit" }));
+
+const GAME_CLASSIFY_QUESTIONS = [
+    { label: "تصنيف الحساب", question: "حساب النقدية", answer: "asset" },
+    { label: "تصنيف الحساب", question: "حساب المخزون (البضاعة)", answer: "asset" },
+    { label: "تصنيف الحساب", question: "حساب الأثاث والمعدات", answer: "asset" },
+    { label: "تصنيف الحساب", question: "حساب الذمم المدينة (العملاء)", answer: "asset" },
+    { label: "تصنيف الحساب", question: "حساب الذمم الدائنة (الموردون)", answer: "liability" },
+    { label: "تصنيف الحساب", question: "حساب القروض طويلة الأجل", answer: "liability" },
+    { label: "تصنيف الحساب", question: "حساب أوراق الدفع", answer: "liability" },
+    { label: "تصنيف الحساب", question: "حساب رأس المال", answer: "equity" },
+    { label: "تصنيف الحساب", question: "حساب الأرباح المحتجزة", answer: "equity" },
+    { label: "تصنيف الحساب", question: "حساب المسحوبات الشخصية", answer: "equity" },
+    { label: "تصنيف الحساب", question: "حساب إيرادات الخدمات", answer: "revenue" },
+    { label: "تصنيف الحساب", question: "حساب إيرادات الفوائد", answer: "revenue" },
+    { label: "تصنيف الحساب", question: "حساب مصروف الرواتب", answer: "expense" },
+    { label: "تصنيف الحساب", question: "حساب مصروف الإيجار", answer: "expense" },
+    { label: "تصنيف الحساب", question: "حساب مصروف الإهلاك", answer: "expense" }
+].map(q => ({ ...q, type: "classify" }));
+
+const GAME_STATEMENT_QUESTIONS = [
+    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب الإيرادات", answer: "income" },
+    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب المصروفات", answer: "income" },
+    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب مصروف الإهلاك", answer: "income" },
+    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب إيرادات الفوائد", answer: "income" },
+    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب النقدية", answer: "position" },
+    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب الذمم المدينة", answer: "position" },
+    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب المخزون", answer: "position" },
+    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب رأس المال", answer: "position" },
+    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب الذمم الدائنة", answer: "position" },
+    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب القروض طويلة الأجل", answer: "position" }
+].map(q => ({ ...q, type: "statement" }));
+
+const GAME_TRUEFALSE_QUESTIONS = [
+    { label: "صح أم خطأ؟", question: "المصروفات المدفوعة مقدمًا تُعتبر من الأصول", answer: "true" },
+    { label: "صح أم خطأ؟", question: "الإيرادات المقبوضة مقدمًا تُعتبر من الخصوم", answer: "true" },
+    { label: "صح أم خطأ؟", question: "زيادة حساب الأصول تُسجَّل في الجانب الدائن", answer: "false" },
+    { label: "صح أم خطأ؟", question: "المسحوبات الشخصية تزيد من حقوق الملكية", answer: "false" },
+    { label: "صح أم خطأ؟", question: "حساب مجمع الإهلاك رصيده الطبيعي دائن", answer: "true" },
+    { label: "صح أم خطأ؟", question: "كل الأصول تظهر في قائمة الدخل", answer: "false" },
+    { label: "صح أم خطأ؟", question: "إقفال حساب المصروفات يكون بجعله دائنًا", answer: "true" },
+    { label: "صح أم خطأ؟", question: "الذمم الدائنة (الموردون) من حسابات الأصول", answer: "false" },
+    { label: "صح أم خطأ؟", question: "زيادة استثمار المالك تزيد حساب رأس المال", answer: "true" },
+    { label: "صح أم خطأ؟", question: "مصروف الإهلاك يُخصم مباشرة من حساب الأصل نفسه", answer: "false" }
+].map(q => ({ ...q, type: "trueFalse" }));
+
+const GAME_CURRENT_QUESTIONS = [
+    { label: "متداول أم غير متداول؟", question: "حساب النقدية", answer: "current" },
+    { label: "متداول أم غير متداول؟", question: "حساب الذمم المدينة", answer: "current" },
+    { label: "متداول أم غير متداول؟", question: "حساب المخزون", answer: "current" },
+    { label: "متداول أم غير متداول؟", question: "حساب الأراضي", answer: "noncurrent" },
+    { label: "متداول أم غير متداول؟", question: "حساب المباني", answer: "noncurrent" },
+    { label: "متداول أم غير متداول؟", question: "حساب الأثاث والمعدات", answer: "noncurrent" },
+    { label: "متداول أم غير متداول؟", question: "حساب الذمم الدائنة (الموردون)", answer: "current" },
+    { label: "متداول أم غير متداول؟", question: "حساب القروض طويلة الأجل", answer: "noncurrent" },
+    { label: "متداول أم غير متداول؟", question: "حساب أوراق الدفع قصيرة الأجل", answer: "current" },
+    { label: "متداول أم غير متداول؟", question: "حساب الشهرة (أصل غير ملموس)", answer: "noncurrent" }
+].map(q => ({ ...q, type: "currentNonCurrent" }));
+
+const GAME_QUESTIONS = [
+    ...GAME_DEBIT_CREDIT_QUESTIONS,
+    ...GAME_CLASSIFY_QUESTIONS,
+    ...GAME_STATEMENT_QUESTIONS,
+    ...GAME_TRUEFALSE_QUESTIONS,
+    ...GAME_CURRENT_QUESTIONS
 ];
 
-const GAME_QUESTIONS_PER_ROUND = 10;
+const GAME_QUESTIONS_PER_ROUND = 20;
 const GAME_BEST_SCORE_KEY = "accClubGameBestScore";
 
 const gameFab = document.getElementById("gameFab");
@@ -504,10 +595,10 @@ if (gameFab) {
     const gameScoreLine = document.getElementById("gameScoreLine");
     const gameAccount = document.getElementById("gameAccount");
     const gameEvent = document.getElementById("gameEvent");
-    const gameDebitBtn = document.getElementById("gameDebitBtn");
-    const gameCreditBtn = document.getElementById("gameCreditBtn");
+    const gameAnswers = document.getElementById("gameAnswers");
     const gameFeedback = document.getElementById("gameFeedback");
     const gameEndTitle = document.getElementById("gameEndTitle");
+    const gameEndIcon = document.getElementById("gameEndIcon");
     const gameFinalScore = document.getElementById("gameFinalScore");
 
     const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
@@ -537,10 +628,10 @@ if (gameFab) {
     }
 
     function scoreTitle(score) {
-        if (score >= 9) return "خبير مالي";
-        if (score >= 7) return "مراجع حسابات";
-        if (score >= 4) return "محاسب";
-        return "متدرب";
+        if (score >= 18) return { title: "خبير مالي", icon: "🏆" };
+        if (score >= 14) return { title: "مراجع حسابات", icon: "🥇" };
+        if (score >= 8) return { title: "محاسب", icon: "📊" };
+        return { title: "متدرب", icon: "🌱" };
     }
 
     let gameRoundQuestions = [];
@@ -579,24 +670,31 @@ if (gameFab) {
     function renderQuestion() {
         gameFeedback.textContent = "";
         gameFeedback.className = "game-feedback";
-        gameDebitBtn.disabled = false;
-        gameCreditBtn.disabled = false;
-        gameDebitBtn.className = "game-answer-btn debit";
-        gameCreditBtn.className = "game-answer-btn credit";
 
         const q = gameRoundQuestions[gameIndex];
         gameAccount.textContent = q.label;
         gameEvent.textContent = q.question;
         gameQuestionNum.textContent = `${toArabicDigits(gameIndex + 1)} / ${toArabicDigits(gameRoundQuestions.length)}`;
         gameScoreLine.textContent = `النقاط: ${toArabicDigits(gameScore)}`;
+
+        gameAnswers.innerHTML = "";
+        GAME_ANSWER_SETS[q.type].forEach(opt => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "game-answer-btn";
+            btn.textContent = opt.label;
+            btn.dataset.value = opt.value;
+            btn.addEventListener("click", () => handleAnswer(opt.value));
+            gameAnswers.appendChild(btn);
+        });
     }
 
     function handleAnswer(choice) {
-        gameDebitBtn.disabled = true;
-        gameCreditBtn.disabled = true;
-
         const q = gameRoundQuestions[gameIndex];
-        const correctBtn = q.answer === "debit" ? gameDebitBtn : gameCreditBtn;
+        const buttons = Array.from(gameAnswers.querySelectorAll(".game-answer-btn"));
+        buttons.forEach(b => { b.disabled = true; });
+
+        const correctBtn = buttons.find(b => b.dataset.value === q.answer);
         correctBtn.classList.add("correct");
 
         if (choice === q.answer) {
@@ -604,8 +702,8 @@ if (gameFab) {
             gameFeedback.textContent = "إجابة صحيحة!";
             gameFeedback.classList.add("correct");
         } else {
-            const wrongBtn = choice === "debit" ? gameDebitBtn : gameCreditBtn;
-            wrongBtn.classList.add("wrong");
+            const wrongBtn = buttons.find(b => b.dataset.value === choice);
+            if (wrongBtn) wrongBtn.classList.add("wrong");
             gameFeedback.textContent = "إجابة خاطئة";
             gameFeedback.classList.add("wrong");
         }
@@ -625,10 +723,12 @@ if (gameFab) {
         const isNewBest = gameScore > best;
         if (isNewBest) setBestScore(gameScore);
 
-        gameEndTitle.textContent = scoreTitle(gameScore);
+        const { title, icon } = scoreTitle(gameScore);
+        gameEndIcon.textContent = icon;
+        gameEndTitle.textContent = title;
         gameFinalScore.textContent = toArabicDigits(gameScore);
         gameEndBestLine.textContent = isNewBest
-            ? "رقم قياسي جديد لك!"
+            ? "رقم قياسي جديد لك! 🎉"
             : `أفضل نتيجة لك: ${toArabicDigits(Math.max(best, gameScore))} / ${toArabicDigits(GAME_QUESTIONS_PER_ROUND)}`;
 
         showScreen(gameEndScreen);
@@ -639,6 +739,4 @@ if (gameFab) {
     gameOverlay.addEventListener("click", (e) => { if (e.target === gameOverlay) closeGame(); });
     gameStartBtn.addEventListener("click", startGame);
     gameRetryBtn.addEventListener("click", startGame);
-    gameDebitBtn.addEventListener("click", () => handleAnswer("debit"));
-    gameCreditBtn.addEventListener("click", () => handleAnswer("credit"));
 }
