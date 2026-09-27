@@ -743,18 +743,18 @@ a.register-btn--soon{
 .game-fab{
   position:fixed;
   bottom:24px;left:24px;z-index:70;
-  width:52px;height:52px;
+  width:66px;height:66px;
   border-radius:50%;
   background:var(--ink);
   border:none;
-  box-shadow:0 8px 22px -6px rgba(0,8,120,.55);
+  box-shadow:0 10px 26px -6px rgba(0,8,120,.6);
   cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   animation:gamePulse 2.4s ease-in-out infinite;
   transition:transform .25s ease;
 }
 .game-fab:hover{transform:scale(1.08);}
-.game-fab-icon{font-size:24px;line-height:1;}
+.game-fab-icon{font-size:30px;line-height:1;}
 @keyframes gamePulse{
   0%,100%{box-shadow:0 8px 22px -6px rgba(0,8,120,.55);}
   50%{box-shadow:0 8px 26px -4px rgba(108,207,246,.65);}
@@ -789,7 +789,6 @@ a.register-btn--soon{
   display:flex;align-items:center;justify-content:center;
 }
 .game-icon{font-size:44px;margin-bottom:8px;}
-.game-rank-label{color:var(--mauve);font-size:13px;font-weight:700;letter-spacing:.3px;margin-bottom:4px;}
 .game-modal h3{color:var(--ink);font-size:22px;margin-bottom:10px;}
 .game-copy{color:#3a3a44;font-size:15px;line-height:1.7;margin-bottom:14px;}
 .game-best{color:var(--mauve);font-size:13.5px;font-weight:700;margin-bottom:16px;}
@@ -815,11 +814,11 @@ a.register-btn--soon{
   letter-spacing:.3px;
 }
 .game-event{color:var(--white);font-size:16.5px;font-weight:700;line-height:1.6;margin:0;}
-.game-answers{display:flex;gap:12px;margin-bottom:14px;}
+.game-answers{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
 .game-answer-btn{
-  flex:1;padding:15px 10px;border-radius:14px;
+  flex:1 1 calc(50% - 5px);min-width:110px;padding:14px 8px;border-radius:14px;
   border:2px solid var(--ink);background:var(--white);color:var(--ink);
-  font-weight:800;font-size:16px;cursor:pointer;
+  font-weight:800;font-size:15px;cursor:pointer;
   transition:all .2s ease;
 }
 .game-answer-btn:hover{background:var(--ink);color:var(--white);}
@@ -831,6 +830,7 @@ a.register-btn--soon{
 .game-feedback.wrong{color:#e0455a;}
 
 @media (max-width:480px){
-  .game-fab{width:48px;height:48px;bottom:18px;left:18px;}
+  .game-fab{width:58px;height:58px;bottom:18px;left:18px;}
+  .game-fab-icon{font-size:26px;}
   .game-modal{padding:28px 18px 22px;}
 }

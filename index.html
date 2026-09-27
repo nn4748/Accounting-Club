@@ -749,31 +749,28 @@
     <div class="game-screen" id="gameStartScreen">
       <div class="game-icon">⚖️</div>
       <h3>مدين ولا دائن؟</h3>
-      <p class="game-copy">معاملة محاسبية أو قاعدة... وأنت تحدد: مدين ولا دائن؟ ١٠ أسئلة متنوعة، خذ وقتك.</p>
+      <p class="game-copy">أسئلة محاسبية متنوعة من الواقع العملي: مدين أو دائن، تصنيف الحسابات، صح أو خطأ وأكثر. ٢٠ سؤال، خذ وقتك.</p>
       <p class="game-best" id="gameBestLine" style="display:none;"></p>
       <button type="button" class="btn game-start-btn" id="gameStartBtn">ابدأ اللعبة</button>
     </div>
 
     <div class="game-screen" id="gamePlayScreen" style="display:none;">
       <div class="game-progress">
-        <span id="gameQuestionNum">١ / ١٠</span>
+        <span id="gameQuestionNum">١ / ٢٠</span>
         <span id="gameScoreLine">النقاط: ٠</span>
       </div>
       <div class="game-question-card">
         <span class="game-account" id="gameAccount"></span>
         <p class="game-event" id="gameEvent"></p>
       </div>
-      <div class="game-answers">
-        <button type="button" class="game-answer-btn debit" id="gameDebitBtn">مدين</button>
-        <button type="button" class="game-answer-btn credit" id="gameCreditBtn">دائن</button>
-      </div>
+      <div class="game-answers" id="gameAnswers"></div>
       <div class="game-feedback" id="gameFeedback"></div>
     </div>
 
     <div class="game-screen" id="gameEndScreen" style="display:none;">
-      <p class="game-rank-label">لقبك</p>
+      <div class="game-icon" id="gameEndIcon">🏆</div>
       <h3 id="gameEndTitle">مراجع حسابات</h3>
-      <p class="game-copy">نتيجتك: <strong id="gameFinalScore">٠</strong> من ١٠</p>
+      <p class="game-copy">نتيجتك: <strong id="gameFinalScore">٠</strong> من ٢٠</p>
       <p class="game-best" id="gameEndBestLine"></p>
       <button type="button" class="btn game-start-btn" id="gameRetryBtn">حاول مرة ثانية</button>
     </div>
