@@ -423,3 +423,220 @@ if (contactForm) {
             });
     });
 }
+
+/* =========================================
+   لعبة "مدين ولا دائن؟"
+========================================= */
+
+const GAME_QUESTIONS = [
+    // سهل
+    { account: "حساب النقدية", event: "الشركة استلمت مبلغ نقدي من عميل", answer: "debit", level: "easy" },
+    { account: "حساب النقدية", event: "الشركة سددت فاتورة الكهرباء نقدًا", answer: "credit", level: "easy" },
+    { account: "حساب الأثاث", event: "الشركة اشترت أثاث مكتبي نقدًا", answer: "debit", level: "easy" },
+    { account: "حساب البضاعة (المخزون)", event: "الشركة باعت جزء من مخزونها وسلّمته للعميل", answer: "credit", level: "easy" },
+    { account: "حساب الذمم المدينة", event: "الشركة باعت بضاعة لعميل على الحساب (بالأجل)", answer: "debit", level: "easy" },
+    { account: "حساب الذمم المدينة", event: "الشركة حصّلت مبلغ من عميل مدين سابق", answer: "credit", level: "easy" },
+    { account: "حساب رأس المال", event: "المالك أضاف مبلغ نقدي كزيادة في رأس المال", answer: "credit", level: "easy" },
+    { account: "حساب الإيرادات", event: "الشركة قدمت خدمة استشارية واستلمت أجرها فورًا", answer: "credit", level: "easy" },
+    // متوسط
+    { account: "حساب الدائنين (الموردين)", event: "الشركة اشترت بضاعة من مورد على الحساب", answer: "credit", level: "medium" },
+    { account: "حساب الدائنين (الموردين)", event: "الشركة سددت جزء من دين مستحق لمورد", answer: "debit", level: "medium" },
+    { account: "حساب المصروفات", event: "الشركة دفعت إيجار المكتب الشهري", answer: "debit", level: "medium" },
+    { account: "حساب أوراق القبض", event: "الشركة استلمت كمبيالة من عميل مقابل دين عليه", answer: "debit", level: "medium" },
+    { account: "حساب أوراق الدفع", event: "الشركة وقّعت كمبيالة لمورد بدل السداد النقدي", answer: "credit", level: "medium" },
+    { account: "حساب مصروف مقدم", event: "الشركة دفعت تأمين سنوي مقدمًا لمكتبها", answer: "debit", level: "medium" },
+    { account: "حساب إيراد مقدم", event: "الشركة استلمت دفعة من عميل مقابل خدمة لم تُقدَّم بعد", answer: "credit", level: "medium" },
+    { account: "حساب رأس المال", event: "المالك سحب مبلغ لاستخدامه الشخصي", answer: "debit", level: "medium" },
+    // صعب
+    { account: "حساب مجمع إهلاك الأثاث", event: "الشركة سجّلت قسط إهلاك سنوي على الأثاث", answer: "credit", level: "hard" },
+    { account: "حساب مصروف الإهلاك", event: "تسجيل قسط الإهلاك السنوي على الأثاث", answer: "debit", level: "hard" },
+    { account: "حساب مردودات المبيعات", event: "عميل أرجع بضاعة معيبة اشتراها سابقًا", answer: "debit", level: "hard" },
+    { account: "حساب الخصم المسموح به", event: "الشركة منحت عميلها خصم نقدي عند السداد المبكر", answer: "debit", level: "hard" },
+    { account: "حساب مصروف مستحق", event: "نهاية الفترة، فائدة على قرض مستحقة ولم تُدفع بعد", answer: "credit", level: "hard" },
+    { account: "حساب إيراد مستحق", event: "نهاية الفترة، خدمة قُدّمت لعميل ولم يُحصَّل أجرها بعد", answer: "debit", level: "hard" },
+    { account: "حساب ضريبة القيمة المضافة المستحقة", event: "الشركة باعت بضاعة خاضعة لضريبة القيمة المضافة", answer: "credit", level: "hard" },
+    { account: "قيد الإقفال (حساب الإيرادات)", event: "نهاية الفترة، إقفال رصيد الإيرادات بتحويله لملخص الدخل", answer: "debit", level: "hard" }
+];
+
+const GAME_QUESTIONS_PER_ROUND = 10;
+const GAME_SECONDS_PER_QUESTION = 8;
+const GAME_BEST_SCORE_KEY = "accClubGameBestScore";
+
+const gameFab = document.getElementById("gameFab");
+if (gameFab) {
+    const gameOverlay = document.getElementById("gameOverlay");
+    const gameClose = document.getElementById("gameClose");
+    const gameStartScreen = document.getElementById("gameStartScreen");
+    const gamePlayScreen = document.getElementById("gamePlayScreen");
+    const gameEndScreen = document.getElementById("gameEndScreen");
+    const gameStartBtn = document.getElementById("gameStartBtn");
+    const gameRetryBtn = document.getElementById("gameRetryBtn");
+    const gameBestLine = document.getElementById("gameBestLine");
+    const gameEndBestLine = document.getElementById("gameEndBestLine");
+    const gameQuestionNum = document.getElementById("gameQuestionNum");
+    const gameScoreLine = document.getElementById("gameScoreLine");
+    const gameTimerBar = document.getElementById("gameTimerBar");
+    const gameAccount = document.getElementById("gameAccount");
+    const gameEvent = document.getElementById("gameEvent");
+    const gameDebitBtn = document.getElementById("gameDebitBtn");
+    const gameCreditBtn = document.getElementById("gameCreditBtn");
+    const gameFeedback = document.getElementById("gameFeedback");
+    const gameEndTitle = document.getElementById("gameEndTitle");
+    const gameEndIcon = document.getElementById("gameEndIcon");
+    const gameFinalScore = document.getElementById("gameFinalScore");
+
+    const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+    const toArabicDigits = (n) => String(n).replace(/[0-9]/g, d => ARABIC_DIGITS[d]);
+
+    function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    function getBestScore() {
+        try {
+            return parseInt(localStorage.getItem(GAME_BEST_SCORE_KEY), 10) || 0;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    function setBestScore(score) {
+        try {
+            localStorage.setItem(GAME_BEST_SCORE_KEY, String(score));
+        } catch (e) { /* تجاهل لو التخزين ممنوع */ }
+    }
+
+    function scoreTitle(score) {
+        if (score >= 9) return { title: "خبير مالي", icon: "🏆" };
+        if (score >= 7) return { title: "مراجع حسابات", icon: "🥇" };
+        if (score >= 4) return { title: "محاسب", icon: "📊" };
+        return { title: "متدرب", icon: "🌱" };
+    }
+
+    let gameRoundQuestions = [];
+    let gameIndex = 0;
+    let gameScore = 0;
+    let gameTimerId = null;
+    let gameTimeLeft = 0;
+
+    function showScreen(el) {
+        [gameStartScreen, gamePlayScreen, gameEndScreen].forEach(s => { s.style.display = "none"; });
+        el.style.display = "block";
+    }
+
+    function openGame() {
+        gameOverlay.classList.add("open");
+        const best = getBestScore();
+        if (best > 0) {
+            gameBestLine.textContent = `أفضل نتيجة لك: ${toArabicDigits(best)} / ${toArabicDigits(GAME_QUESTIONS_PER_ROUND)}`;
+            gameBestLine.style.display = "block";
+        } else {
+            gameBestLine.style.display = "none";
+        }
+        showScreen(gameStartScreen);
+    }
+
+    function closeGame() {
+        gameOverlay.classList.remove("open");
+        clearInterval(gameTimerId);
+    }
+
+    function startGame() {
+        gameRoundQuestions = shuffle(GAME_QUESTIONS).slice(0, GAME_QUESTIONS_PER_ROUND);
+        gameIndex = 0;
+        gameScore = 0;
+        showScreen(gamePlayScreen);
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        clearInterval(gameTimerId);
+        gameFeedback.textContent = "";
+        gameFeedback.className = "game-feedback";
+        gameDebitBtn.disabled = false;
+        gameCreditBtn.disabled = false;
+        gameDebitBtn.className = "game-answer-btn debit";
+        gameCreditBtn.className = "game-answer-btn credit";
+
+        const q = gameRoundQuestions[gameIndex];
+        gameAccount.textContent = q.account;
+        gameEvent.textContent = q.event;
+        gameQuestionNum.textContent = `${toArabicDigits(gameIndex + 1)} / ${toArabicDigits(gameRoundQuestions.length)}`;
+        gameScoreLine.textContent = `النقاط: ${toArabicDigits(gameScore)}`;
+
+        gameTimeLeft = GAME_SECONDS_PER_QUESTION;
+        gameTimerBar.style.width = "100%";
+        gameTimerBar.style.background = "";
+        gameTimerId = setInterval(() => {
+            gameTimeLeft -= 0.1;
+            const pct = Math.max(0, (gameTimeLeft / GAME_SECONDS_PER_QUESTION) * 100);
+            gameTimerBar.style.width = pct + "%";
+            if (pct < 30) gameTimerBar.style.background = "#e0455a";
+            if (gameTimeLeft <= 0) {
+                clearInterval(gameTimerId);
+                handleAnswer(null);
+            }
+        }, 100);
+    }
+
+    function handleAnswer(choice) {
+        clearInterval(gameTimerId);
+        gameDebitBtn.disabled = true;
+        gameCreditBtn.disabled = true;
+
+        const q = gameRoundQuestions[gameIndex];
+        const correctBtn = q.answer === "debit" ? gameDebitBtn : gameCreditBtn;
+        correctBtn.classList.add("correct");
+
+        if (choice === q.answer) {
+            gameScore++;
+            gameFeedback.textContent = "إجابة صحيحة!";
+            gameFeedback.classList.add("correct");
+        } else {
+            if (choice) {
+                const wrongBtn = choice === "debit" ? gameDebitBtn : gameCreditBtn;
+                wrongBtn.classList.add("wrong");
+            }
+            gameFeedback.textContent = choice ? "إجابة خاطئة" : "خلص الوقت!";
+            gameFeedback.classList.add("wrong");
+        }
+
+        setTimeout(() => {
+            gameIndex++;
+            if (gameIndex < gameRoundQuestions.length) {
+                renderQuestion();
+            } else {
+                endGame();
+            }
+        }, 900);
+    }
+
+    function endGame() {
+        const best = getBestScore();
+        const isNewBest = gameScore > best;
+        if (isNewBest) setBestScore(gameScore);
+
+        const { title, icon } = scoreTitle(gameScore);
+        gameEndIcon.textContent = icon;
+        gameEndTitle.textContent = title;
+        gameFinalScore.textContent = toArabicDigits(gameScore);
+        gameEndBestLine.textContent = isNewBest
+            ? "رقم قياسي جديد لك! 🎉"
+            : `أفضل نتيجة لك: ${toArabicDigits(Math.max(best, gameScore))} / ${toArabicDigits(GAME_QUESTIONS_PER_ROUND)}`;
+
+        showScreen(gameEndScreen);
+    }
+
+    gameFab.addEventListener("click", openGame);
+    gameClose.addEventListener("click", closeGame);
+    gameOverlay.addEventListener("click", (e) => { if (e.target === gameOverlay) closeGame(); });
+    gameStartBtn.addEventListener("click", startGame);
+    gameRetryBtn.addEventListener("click", startGame);
+    gameDebitBtn.addEventListener("click", () => handleAnswer("debit"));
+    gameCreditBtn.addEventListener("click", () => handleAnswer("credit"));
+}

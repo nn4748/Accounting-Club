@@ -738,3 +738,109 @@ a.register-btn--soon{
   object-fit:contain;
   display:block;
 }
+
+/* ============ MINI GAME: مدين ولا دائن؟ ============ */
+.game-fab{
+  position:fixed;
+  bottom:24px;left:24px;z-index:70;
+  width:52px;height:52px;
+  border-radius:50%;
+  background:var(--ink);
+  border:none;
+  box-shadow:0 8px 22px -6px rgba(0,8,120,.55);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  animation:gamePulse 2.4s ease-in-out infinite;
+  transition:transform .25s ease;
+}
+.game-fab:hover{transform:scale(1.08);}
+.game-fab-icon{font-size:24px;line-height:1;}
+@keyframes gamePulse{
+  0%,100%{box-shadow:0 8px 22px -6px rgba(0,8,120,.55);}
+  50%{box-shadow:0 8px 26px -4px rgba(108,207,246,.65);}
+}
+
+.game-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(4,6,40,.72);
+  display:none;
+  align-items:center;justify-content:center;
+  padding:20px;
+  backdrop-filter:blur(2px);
+}
+.game-overlay.open{display:flex;}
+
+.game-modal{
+  position:relative;
+  width:100%;max-width:420px;
+  background:var(--white);
+  border-radius:22px;
+  padding:34px 26px 28px;
+  box-shadow:0 30px 70px -20px rgba(0,0,0,.55);
+  text-align:center;
+  max-height:90vh;
+  overflow-y:auto;
+}
+.game-close{
+  position:absolute;top:14px;left:14px;
+  width:32px;height:32px;border-radius:50%;
+  border:none;background:var(--paper);color:var(--ink);
+  font-size:15px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.game-icon{font-size:44px;margin-bottom:8px;}
+.game-modal h3{color:var(--ink);font-size:22px;margin-bottom:10px;}
+.game-copy{color:#3a3a44;font-size:15px;line-height:1.7;margin-bottom:14px;}
+.game-best{color:var(--mauve);font-size:13.5px;font-weight:700;margin-bottom:16px;}
+.game-start-btn{width:100%;justify-content:center;font-size:15.5px;}
+
+.game-progress{
+  display:flex;justify-content:space-between;
+  font-size:13px;font-weight:700;color:var(--ink);
+  margin-top:16px;margin-bottom:10px;
+}
+.game-timer-track{
+  width:100%;height:6px;border-radius:6px;
+  background:var(--paper);overflow:hidden;margin-bottom:18px;
+}
+.game-timer-bar{
+  height:100%;width:100%;
+  background:var(--sky);
+  border-radius:6px;
+  transform-origin:right;
+  transition:width .1s linear, background .3s ease;
+}
+.game-question-card{
+  background:linear-gradient(135deg, var(--ink), var(--ink-soft));
+  border-radius:16px;
+  padding:26px 18px;
+  margin-bottom:20px;
+  min-height:120px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:10px;
+}
+.game-account{
+  color:var(--sky);font-size:13px;font-weight:700;
+  letter-spacing:.3px;
+}
+.game-event{color:var(--white);font-size:16.5px;font-weight:700;line-height:1.6;margin:0;}
+.game-answers{display:flex;gap:12px;margin-bottom:14px;}
+.game-answer-btn{
+  flex:1;padding:15px 10px;border-radius:14px;
+  border:2px solid var(--ink);background:var(--white);color:var(--ink);
+  font-weight:800;font-size:16px;cursor:pointer;
+  transition:all .2s ease;
+}
+.game-answer-btn:hover{background:var(--ink);color:var(--white);}
+.game-answer-btn:disabled{opacity:.6;cursor:default;}
+.game-answer-btn.correct{background:#1fa967;border-color:#1fa967;color:var(--white);}
+.game-answer-btn.wrong{background:#e0455a;border-color:#e0455a;color:var(--white);}
+.game-feedback{min-height:20px;font-weight:700;font-size:14px;}
+.game-feedback.correct{color:#1fa967;}
+.game-feedback.wrong{color:#e0455a;}
+
+@media (max-width:480px){
+  .game-fab{width:48px;height:48px;bottom:18px;left:18px;}
+  .game-modal{padding:28px 18px 22px;}
+}
