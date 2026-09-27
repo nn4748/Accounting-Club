@@ -577,7 +577,7 @@ const GAME_QUESTIONS = [
     ...GAME_CURRENT_QUESTIONS
 ];
 
-const GAME_QUESTIONS_PER_ROUND = 10;
+const GAME_QUESTIONS_PER_ROUND = 20;
 const GAME_BEST_SCORE_KEY = "accClubGameBestScore";
 
 const gameFab = document.getElementById("gameFab");
@@ -628,9 +628,9 @@ if (gameFab) {
     }
 
     function scoreTitle(score) {
-        if (score >= 9) return { title: "خبير مالي", icon: "🏆" };
-        if (score >= 7) return { title: "مراجع حسابات", icon: "🥇" };
-        if (score >= 4) return { title: "محاسب", icon: "📊" };
+        if (score >= 18) return { title: "خبير مالي", icon: "🏆" };
+        if (score >= 14) return { title: "مراجع حسابات", icon: "🥇" };
+        if (score >= 8) return { title: "محاسب", icon: "📊" };
         return { title: "متدرب", icon: "🌱" };
     }
 
