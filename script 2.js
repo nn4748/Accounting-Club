@@ -597,8 +597,6 @@ if (gameFab) {
     const gameEvent = document.getElementById("gameEvent");
     const gameAnswers = document.getElementById("gameAnswers");
     const gameFeedback = document.getElementById("gameFeedback");
-    const gameEndTitle = document.getElementById("gameEndTitle");
-    const gameEndIcon = document.getElementById("gameEndIcon");
     const gameFinalScore = document.getElementById("gameFinalScore");
 
     const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
@@ -627,6 +625,7 @@ if (gameFab) {
         } catch (e) { /* تجاهل لو التخزين ممنوع */ }
     }
 
+    // محفوظة لإعادة تفعيل مسميات النتيجة لاحقًا (غير مستخدمة حاليًا بطلب النادي)
     function scoreTitle(score) {
         if (score >= 18) return { title: "خبير مالي", icon: "🏆" };
         if (score >= 14) return { title: "مراجع حسابات", icon: "🥇" };
@@ -723,9 +722,6 @@ if (gameFab) {
         const isNewBest = gameScore > best;
         if (isNewBest) setBestScore(gameScore);
 
-        const { title, icon } = scoreTitle(gameScore);
-        gameEndIcon.textContent = icon;
-        gameEndTitle.textContent = title;
         gameFinalScore.textContent = toArabicDigits(gameScore);
         gameEndBestLine.textContent = isNewBest
             ? "رقم قياسي جديد لك! 🎉"
