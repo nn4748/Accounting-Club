@@ -429,37 +429,64 @@ if (contactForm) {
 ========================================= */
 
 const GAME_QUESTIONS = [
-    // سهل
-    { account: "حساب النقدية", event: "الشركة استلمت مبلغ نقدي من عميل", answer: "debit", level: "easy" },
-    { account: "حساب النقدية", event: "الشركة سددت فاتورة الكهرباء نقدًا", answer: "credit", level: "easy" },
-    { account: "حساب الأثاث", event: "الشركة اشترت أثاث مكتبي نقدًا", answer: "debit", level: "easy" },
-    { account: "حساب البضاعة (المخزون)", event: "الشركة باعت جزء من مخزونها وسلّمته للعميل", answer: "credit", level: "easy" },
-    { account: "حساب الذمم المدينة", event: "الشركة باعت بضاعة لعميل على الحساب (بالأجل)", answer: "debit", level: "easy" },
-    { account: "حساب الذمم المدينة", event: "الشركة حصّلت مبلغ من عميل مدين سابق", answer: "credit", level: "easy" },
-    { account: "حساب رأس المال", event: "المالك أضاف مبلغ نقدي كزيادة في رأس المال", answer: "credit", level: "easy" },
-    { account: "حساب الإيرادات", event: "الشركة قدمت خدمة استشارية واستلمت أجرها فورًا", answer: "credit", level: "easy" },
-    // متوسط
-    { account: "حساب الدائنين (الموردين)", event: "الشركة اشترت بضاعة من مورد على الحساب", answer: "credit", level: "medium" },
-    { account: "حساب الدائنين (الموردين)", event: "الشركة سددت جزء من دين مستحق لمورد", answer: "debit", level: "medium" },
-    { account: "حساب المصروفات", event: "الشركة دفعت إيجار المكتب الشهري", answer: "debit", level: "medium" },
-    { account: "حساب أوراق القبض", event: "الشركة استلمت كمبيالة من عميل مقابل دين عليه", answer: "debit", level: "medium" },
-    { account: "حساب أوراق الدفع", event: "الشركة وقّعت كمبيالة لمورد بدل السداد النقدي", answer: "credit", level: "medium" },
-    { account: "حساب مصروف مقدم", event: "الشركة دفعت تأمين سنوي مقدمًا لمكتبها", answer: "debit", level: "medium" },
-    { account: "حساب إيراد مقدم", event: "الشركة استلمت دفعة من عميل مقابل خدمة لم تُقدَّم بعد", answer: "credit", level: "medium" },
-    { account: "حساب رأس المال", event: "المالك سحب مبلغ لاستخدامه الشخصي", answer: "debit", level: "medium" },
-    // صعب
-    { account: "حساب مجمع إهلاك الأثاث", event: "الشركة سجّلت قسط إهلاك سنوي على الأثاث", answer: "credit", level: "hard" },
-    { account: "حساب مصروف الإهلاك", event: "تسجيل قسط الإهلاك السنوي على الأثاث", answer: "debit", level: "hard" },
-    { account: "حساب مردودات المبيعات", event: "عميل أرجع بضاعة معيبة اشتراها سابقًا", answer: "debit", level: "hard" },
-    { account: "حساب الخصم المسموح به", event: "الشركة منحت عميلها خصم نقدي عند السداد المبكر", answer: "debit", level: "hard" },
-    { account: "حساب مصروف مستحق", event: "نهاية الفترة، فائدة على قرض مستحقة ولم تُدفع بعد", answer: "credit", level: "hard" },
-    { account: "حساب إيراد مستحق", event: "نهاية الفترة، خدمة قُدّمت لعميل ولم يُحصَّل أجرها بعد", answer: "debit", level: "hard" },
-    { account: "حساب ضريبة القيمة المضافة المستحقة", event: "الشركة باعت بضاعة خاضعة لضريبة القيمة المضافة", answer: "credit", level: "hard" },
-    { account: "قيد الإقفال (حساب الإيرادات)", event: "نهاية الفترة، إقفال رصيد الإيرادات بتحويله لملخص الدخل", answer: "debit", level: "hard" }
+    // معاملات مالية
+    { label: "حساب النقدية", question: "الشركة استلمت مبلغ نقدي من عميل", answer: "debit" },
+    { label: "حساب النقدية", question: "الشركة سددت فاتورة الكهرباء نقدًا", answer: "credit" },
+    { label: "حساب الأثاث", question: "الشركة اشترت أثاث مكتبي نقدًا", answer: "debit" },
+    { label: "حساب البضاعة (المخزون)", question: "الشركة باعت جزء من مخزونها وسلّمته للعميل", answer: "credit" },
+    { label: "حساب الذمم المدينة", question: "الشركة باعت بضاعة لعميل على الحساب (بالأجل)", answer: "debit" },
+    { label: "حساب الذمم المدينة", question: "الشركة حصّلت مبلغ من عميل مدين سابق", answer: "credit" },
+    { label: "حساب رأس المال", question: "المالك أضاف مبلغ نقدي كزيادة في رأس المال", answer: "credit" },
+    { label: "حساب الإيرادات", question: "الشركة قدمت خدمة استشارية واستلمت أجرها فورًا", answer: "credit" },
+    { label: "حساب الدائنين (الموردين)", question: "الشركة اشترت بضاعة من مورد على الحساب", answer: "credit" },
+    { label: "حساب الدائنين (الموردين)", question: "الشركة سددت جزء من دين مستحق لمورد", answer: "debit" },
+    { label: "حساب المصروفات", question: "الشركة دفعت إيجار المكتب الشهري", answer: "debit" },
+    { label: "حساب أوراق القبض", question: "الشركة استلمت كمبيالة من عميل مقابل دين عليه", answer: "debit" },
+    { label: "حساب أوراق الدفع", question: "الشركة وقّعت كمبيالة لمورد بدل السداد النقدي", answer: "credit" },
+    { label: "حساب مصروف مقدم", question: "الشركة دفعت تأمين سنوي مقدمًا لمكتبها", answer: "debit" },
+    { label: "حساب إيراد مقدم", question: "الشركة استلمت دفعة من عميل مقابل خدمة لم تُقدَّم بعد", answer: "credit" },
+    { label: "حساب رأس المال", question: "المالك سحب مبلغ لاستخدامه الشخصي", answer: "debit" },
+    { label: "حساب مجمع إهلاك الأثاث", question: "الشركة سجّلت قسط إهلاك سنوي على الأثاث", answer: "credit" },
+    { label: "حساب مصروف الإهلاك", question: "تسجيل قسط الإهلاك السنوي على الأثاث", answer: "debit" },
+    { label: "حساب مردودات المبيعات", question: "عميل أرجع بضاعة معيبة اشتراها سابقًا", answer: "debit" },
+    { label: "حساب الخصم المسموح به", question: "الشركة منحت عميلها خصم نقدي عند السداد المبكر", answer: "debit" },
+    { label: "حساب مصروف مستحق", question: "نهاية الفترة، فائدة على قرض مستحقة ولم تُدفع بعد", answer: "credit" },
+    { label: "حساب إيراد مستحق", question: "نهاية الفترة، خدمة قُدّمت لعميل ولم يُحصَّل أجرها بعد", answer: "debit" },
+    { label: "حساب ضريبة القيمة المضافة المستحقة", question: "الشركة باعت بضاعة خاضعة لضريبة القيمة المضافة", answer: "credit" },
+
+    // زيادة في الحساب
+    { label: "زيادة في الحساب", question: "حساب الأصول", answer: "debit" },
+    { label: "زيادة في الحساب", question: "حساب الالتزامات (الخصوم)", answer: "credit" },
+    { label: "زيادة في الحساب", question: "حساب حقوق الملكية", answer: "credit" },
+    { label: "زيادة في الحساب", question: "حساب الإيرادات", answer: "credit" },
+    { label: "زيادة في الحساب", question: "حساب المصروفات", answer: "debit" },
+
+    // نقصان في الحساب
+    { label: "نقصان في الحساب", question: "حساب الأصول", answer: "credit" },
+    { label: "نقصان في الحساب", question: "حساب الالتزامات (الخصوم)", answer: "debit" },
+    { label: "نقصان في الحساب", question: "حساب حقوق الملكية", answer: "debit" },
+    { label: "نقصان في الحساب", question: "حساب الإيرادات", answer: "debit" },
+    { label: "نقصان في الحساب", question: "حساب المصروفات", answer: "credit" },
+
+    // الرصيد الطبيعي
+    { label: "الرصيد الطبيعي", question: "حساب الأصول", answer: "debit" },
+    { label: "الرصيد الطبيعي", question: "حساب الالتزامات (الخصوم)", answer: "credit" },
+    { label: "الرصيد الطبيعي", question: "حساب حقوق الملكية", answer: "credit" },
+    { label: "الرصيد الطبيعي", question: "حساب الإيرادات", answer: "credit" },
+    { label: "الرصيد الطبيعي", question: "حساب المصروفات", answer: "debit" },
+    { label: "الرصيد الطبيعي", question: "حساب المسحوبات الشخصية (السحب)", answer: "debit" },
+    { label: "الرصيد الطبيعي", question: "حساب مجمع إهلاك الأصول الثابتة", answer: "credit" },
+    { label: "الرصيد الطبيعي", question: "حساب مخصص الديون المشكوك في تحصيلها", answer: "credit" },
+    { label: "الرصيد الطبيعي", question: "حساب مردودات ومسموحات المبيعات", answer: "debit" },
+    { label: "الرصيد الطبيعي", question: "حساب الخصم المكتسب", answer: "credit" },
+
+    // قيد الإقفال
+    { label: "قيد الإقفال", question: "إقفال حساب الإيرادات في نهاية الفترة", answer: "debit" },
+    { label: "قيد الإقفال", question: "إقفال حساب المصروفات في نهاية الفترة", answer: "credit" },
+    { label: "قيد الإقفال", question: "إقفال حساب المسحوبات الشخصية في نهاية الفترة", answer: "credit" }
 ];
 
 const GAME_QUESTIONS_PER_ROUND = 10;
-const GAME_SECONDS_PER_QUESTION = 8;
 const GAME_BEST_SCORE_KEY = "accClubGameBestScore";
 
 const gameFab = document.getElementById("gameFab");
@@ -475,14 +502,12 @@ if (gameFab) {
     const gameEndBestLine = document.getElementById("gameEndBestLine");
     const gameQuestionNum = document.getElementById("gameQuestionNum");
     const gameScoreLine = document.getElementById("gameScoreLine");
-    const gameTimerBar = document.getElementById("gameTimerBar");
     const gameAccount = document.getElementById("gameAccount");
     const gameEvent = document.getElementById("gameEvent");
     const gameDebitBtn = document.getElementById("gameDebitBtn");
     const gameCreditBtn = document.getElementById("gameCreditBtn");
     const gameFeedback = document.getElementById("gameFeedback");
     const gameEndTitle = document.getElementById("gameEndTitle");
-    const gameEndIcon = document.getElementById("gameEndIcon");
     const gameFinalScore = document.getElementById("gameFinalScore");
 
     const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
@@ -512,17 +537,15 @@ if (gameFab) {
     }
 
     function scoreTitle(score) {
-        if (score >= 9) return { title: "خبير مالي", icon: "🏆" };
-        if (score >= 7) return { title: "مراجع حسابات", icon: "🥇" };
-        if (score >= 4) return { title: "محاسب", icon: "📊" };
-        return { title: "متدرب", icon: "🌱" };
+        if (score >= 9) return "خبير مالي";
+        if (score >= 7) return "مراجع حسابات";
+        if (score >= 4) return "محاسب";
+        return "متدرب";
     }
 
     let gameRoundQuestions = [];
     let gameIndex = 0;
     let gameScore = 0;
-    let gameTimerId = null;
-    let gameTimeLeft = 0;
 
     function showScreen(el) {
         [gameStartScreen, gamePlayScreen, gameEndScreen].forEach(s => { s.style.display = "none"; });
@@ -543,7 +566,6 @@ if (gameFab) {
 
     function closeGame() {
         gameOverlay.classList.remove("open");
-        clearInterval(gameTimerId);
     }
 
     function startGame() {
@@ -555,7 +577,6 @@ if (gameFab) {
     }
 
     function renderQuestion() {
-        clearInterval(gameTimerId);
         gameFeedback.textContent = "";
         gameFeedback.className = "game-feedback";
         gameDebitBtn.disabled = false;
@@ -564,28 +585,13 @@ if (gameFab) {
         gameCreditBtn.className = "game-answer-btn credit";
 
         const q = gameRoundQuestions[gameIndex];
-        gameAccount.textContent = q.account;
-        gameEvent.textContent = q.event;
+        gameAccount.textContent = q.label;
+        gameEvent.textContent = q.question;
         gameQuestionNum.textContent = `${toArabicDigits(gameIndex + 1)} / ${toArabicDigits(gameRoundQuestions.length)}`;
         gameScoreLine.textContent = `النقاط: ${toArabicDigits(gameScore)}`;
-
-        gameTimeLeft = GAME_SECONDS_PER_QUESTION;
-        gameTimerBar.style.width = "100%";
-        gameTimerBar.style.background = "";
-        gameTimerId = setInterval(() => {
-            gameTimeLeft -= 0.1;
-            const pct = Math.max(0, (gameTimeLeft / GAME_SECONDS_PER_QUESTION) * 100);
-            gameTimerBar.style.width = pct + "%";
-            if (pct < 30) gameTimerBar.style.background = "#e0455a";
-            if (gameTimeLeft <= 0) {
-                clearInterval(gameTimerId);
-                handleAnswer(null);
-            }
-        }, 100);
     }
 
     function handleAnswer(choice) {
-        clearInterval(gameTimerId);
         gameDebitBtn.disabled = true;
         gameCreditBtn.disabled = true;
 
@@ -598,11 +604,9 @@ if (gameFab) {
             gameFeedback.textContent = "إجابة صحيحة!";
             gameFeedback.classList.add("correct");
         } else {
-            if (choice) {
-                const wrongBtn = choice === "debit" ? gameDebitBtn : gameCreditBtn;
-                wrongBtn.classList.add("wrong");
-            }
-            gameFeedback.textContent = choice ? "إجابة خاطئة" : "خلص الوقت!";
+            const wrongBtn = choice === "debit" ? gameDebitBtn : gameCreditBtn;
+            wrongBtn.classList.add("wrong");
+            gameFeedback.textContent = "إجابة خاطئة";
             gameFeedback.classList.add("wrong");
         }
 
@@ -621,12 +625,10 @@ if (gameFab) {
         const isNewBest = gameScore > best;
         if (isNewBest) setBestScore(gameScore);
 
-        const { title, icon } = scoreTitle(gameScore);
-        gameEndIcon.textContent = icon;
-        gameEndTitle.textContent = title;
+        gameEndTitle.textContent = scoreTitle(gameScore);
         gameFinalScore.textContent = toArabicDigits(gameScore);
         gameEndBestLine.textContent = isNewBest
-            ? "رقم قياسي جديد لك! 🎉"
+            ? "رقم قياسي جديد لك!"
             : `أفضل نتيجة لك: ${toArabicDigits(Math.max(best, gameScore))} / ${toArabicDigits(GAME_QUESTIONS_PER_ROUND)}`;
 
         showScreen(gameEndScreen);
