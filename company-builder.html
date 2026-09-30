@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000878">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <title>ابنِ شركتك — نادي المحاسبة</title>
+  <meta name="description" content="محاكي مالي تفاعلي: خذ قرارات إدارية وشاهد أثرها لحظيًا على قوائمك المالية الثلاث.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://accclubimamu.com/company-builder.html">
+  <meta property="og:title" content="ابنِ شركتك — نادي المحاسبة">
+  <meta property="og:description" content="محاكي مالي تفاعلي: خذ قرارات إدارية وشاهد أثرها لحظيًا على قوائمك المالية الثلاث.">
+  <meta property="og:image" content="https://accclubimamu.com/assets/club.webp">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scrollbar-color: #6ccff6 rgba(255, 255, 255, 0.1);
+      scrollbar-width: thin;
+    }
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); }
+    ::-webkit-scrollbar-thumb { background: #6ccff6; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4db8e8; }
+    ::selection { background: #6ccff6; color: #000878; }
+
+    body {
+      min-height: 100vh;
+      font-family: "Almarai", sans-serif;
+      background: #0a0e6e;
+      padding: 10px 15px 40px;
+      color: #fff;
+    }
+
+    .top-bar {
+      width: 100%; max-width: 900px; margin: 0 auto 10px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .back-button {
+      width: 42px; height: 42px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.22);
+      color: white; text-decoration: none;
+      font-size: 25px; font-weight: 400;
+      transition: background .25s ease, transform .25s ease;
+    }
+    .back-button:hover { background: rgba(255,255,255,0.22); transform: translateX(3px); }
+
+    .club-logo { width: 90px; height: 90px; object-fit: contain; }
+
+    .wrap { width: 100%; max-width: 640px; margin: 0 auto; }
+
+    .page-title { text-align: center; margin: 6px 0 4px; font-size: 26px; font-weight: 800; }
+    .page-subtitle { text-align: center; color: #9fd6f6; font-size: 14.5px; margin-bottom: 22px; line-height: 1.7; }
+
+    /* ===== لمحة سريعة (شريط الحالة الحي) ===== */
+    .snapshot {
+      display: none;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+    .snapshot.show { display: flex; }
+    .snapshot-item { text-align: center; flex: 1; min-width: 80px; }
+    .snapshot-label { font-size: 11.5px; color: #9fd6f6; margin-bottom: 2px; }
+    .snapshot-value { font-size: 15px; font-weight: 800; transition: color .3s ease; }
+
+    /* ===== شاشات القرار ===== */
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn .35s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .progress-line { display: flex; gap: 6px; margin-bottom: 20px; }
+    .progress-dot { flex: 1; height: 5px; border-radius: 4px; background: rgba(255,255,255,0.18); transition: background .3s ease; }
+    .progress-dot.done { background: #6ccff6; }
+
+    .step-title { font-size: 19px; font-weight: 800; margin-bottom: 6px; }
+    .step-desc { color: #c4d8f0; font-size: 14px; margin-bottom: 18px; line-height: 1.7; }
+
+    .option-card {
+      display: block; width: 100%; text-align: right;
+      background: rgba(255,255,255,0.07);
+      border: 2px solid rgba(255,255,255,0.16);
+      border-radius: 14px;
+      padding: 15px 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all .2s ease;
+      color: #fff; font-family: inherit;
+    }
+    .option-card:hover:not(:disabled) { border-color: #6ccff6; background: rgba(108,207,246,0.1); }
+    .option-title { font-weight: 800; font-size: 15.5px; margin-bottom: 4px; }
+    .option-detail { font-size: 13px; color: #b9cbe8; line-height: 1.6; }
+    .option-card:disabled { opacity: .4; cursor: not-allowed; }
+    .option-card .option-warn { color: #ffb4b4; font-size: 12.5px; margin-top: 4px; }
+
+    .btn-start {
+      display: block; width: 100%; text-align: center;
+      background: #6ccff6; color: #000878;
+      border: none; border-radius: 14px;
+      padding: 16px; font-size: 16px; font-weight: 800;
+      cursor: pointer; font-family: inherit;
+      transition: transform .2s ease;
+    }
+    .btn-start:hover { transform: scale(1.02); }
+
+    .btn-ghost {
+      display: block; width: 100%; text-align: center; margin-top: 10px;
+      background: transparent; color: #9fd6f6;
+      border: 2px solid rgba(255,255,255,0.2); border-radius: 14px;
+      padding: 13px; font-size: 14.5px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+    }
+
+    /* ===== شاشة الإغلاق ===== */
+    #closingScreen { text-align: center; padding: 60px 0; }
+    .closing-spinner {
+      width: 54px; height: 54px; margin: 0 auto 20px;
+      border: 5px solid rgba(255,255,255,0.15);
+      border-top-color: #6ccff6;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== شاشة النتائج ===== */
+    .result-verdict {
+      text-align: center; padding: 22px 18px; border-radius: 16px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, rgba(108,207,246,.18), rgba(108,207,246,.05));
+      border: 1px solid rgba(108,207,246,.35);
+    }
+    .result-verdict.loss {
+      background: linear-gradient(135deg, rgba(224,69,90,.18), rgba(224,69,90,.05));
+      border-color: rgba(224,69,90,.4);
+    }
+    .verdict-emoji { font-size: 40px; margin-bottom: 8px; }
+    .verdict-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+    .verdict-net { font-size: 26px; font-weight: 800; }
+    .verdict-net.positive { color: #6ccff6; }
+    .verdict-net.negative { color: #ff8b8b; }
+    .verdict-note { font-size: 13px; color: #c4d8f0; margin-top: 8px; line-height: 1.7; }
+
+    .statement-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+    }
+    .statement-title { font-size: 15px; font-weight: 800; color: #6ccff6; margin-bottom: 12px; }
+    .statement-row {
+      display: flex; justify-content: space-between;
+      font-size: 13.5px; padding: 6px 0;
+      border-bottom: 1px dashed rgba(255,255,255,0.1);
+    }
+    .statement-row.total {
+      font-weight: 800; font-size: 14.5px; border-bottom: none;
+      border-top: 2px solid rgba(255,255,255,0.25); margin-top: 4px; padding-top: 10px;
+    }
+    .statement-row.neg .row-value { color: #ff8b8b; }
+    .row-label { color: #d7e4f5; }
+    .row-value { font-weight: 700; }
+
+    .balance-check {
+      text-align: center; font-size: 12.5px; color: #8fe3a8;
+      margin-top: 4px; margin-bottom: 20px;
+    }
+
+    @media (max-width: 480px) {
+      .page-title { font-size: 22px; }
+      .snapshot-value { font-size: 13px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <img class="club-logo" src="assets/club.webp" alt="شعار نادي المحاسبة">
+    <a href="index.html" class="back-button" aria-label="العودة">←</a>
+  </div>
+
+  <div class="wrap">
+    <h1 class="page-title">ابنِ شركتك 🏢</h1>
+    <p class="page-subtitle">خذ قرارات إدارية حقيقية، وشاهد أثرها لحظيًا على قوائمك المالية الثلاث — حتى نهاية السنة المالية الأولى.</p>
+
+    <div class="snapshot" id="snapshot">
+      <div class="snapshot-item">
+        <div class="snapshot-label">النقدية</div>
+        <div class="snapshot-value" id="snapCash">٠ ريال</div>
+      </div>
+      <div class="snapshot-item">
+        <div class="snapshot-label">إجمالي الأصول</div>
+        <div class="snapshot-value" id="snapAssets">٠ ريال</div>
+      </div>
+      <div class="snapshot-item">
+        <div class="snapshot-label">حقوق الملكية</div>
+        <div class="snapshot-value" id="snapEquity">٠ ريال</div>
+      </div>
+    </div>
+
+    <!-- شاشة البداية -->
+    <div class="screen active" id="screen-intro">
+      <div class="step-desc" style="margin-top:0;">
+        ستمر بست قرارات إدارية ومالية حقيقية: رأس المال، التمويل، المكتب، التوظيف، المخزون، والبيع.
+        كل قرار له أثر فعلي على شركتك — بعضها يبني ربحًا، وبعضها قد يوقعك بخسارة. جاهز؟
+      </div>
+      <button type="button" class="btn-start" id="startBtn">ابدأ بناء شركتك</button>
+    </div>
+
+    <!-- شاشات القرارات تُبنى ديناميكيًا -->
+    <div class="screen" id="screen-decision">
+      <div class="progress-line" id="progressLine"></div>
+      <div class="step-title" id="stepTitle"></div>
+      <div class="step-desc" id="stepDesc"></div>
+      <div id="optionsContainer"></div>
+    </div>
+
+    <!-- شاشة إغلاق السنة -->
+    <div class="screen" id="screen-closing">
+      <div id="closingScreen">
+        <div class="closing-spinner"></div>
+        <div style="font-size:16px;font-weight:700;">جاري إغلاق السنة المالية...</div>
+      </div>
+    </div>
+
+    <!-- شاشة النتائج -->
+    <div class="screen" id="screen-results">
+      <div id="resultsContent"></div>
+      <button type="button" class="btn-ghost" id="retryBtn">جرّب مسارًا مختلفًا</button>
+    </div>
+  </div>
+
+  <script src="company-builder.js"></script>
+</body>
+</html>
