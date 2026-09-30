@@ -949,3 +949,22 @@ a.register-btn--soon{
   .bot-fab-icon{font-size:26px;}
   .bot-modal{height:88vh;}
 }
+
+/* =========================================
+   دعوة "ابنِ شركتك"
+========================================= */
+
+.builder-cta{
+  background:linear-gradient(135deg, var(--ink), var(--ink-soft));
+  padding:60px 24px;
+}
+.builder-cta-inner{
+  max-width:640px;margin:0 auto;text-align:center;
+}
+.builder-cta-icon{font-size:48px;display:block;margin-bottom:14px;}
+.builder-cta-inner h2{
+  color:var(--white);font-size:clamp(24px,3.4vw,34px);margin-bottom:14px;
+}
+.builder-cta-copy{
+  color:var(--sky);font-size:15.5px;line-height:1.8;margin-bottom:26px;
+}
