@@ -1,12 +1,8 @@
-const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
-function toArabicDigits(n) {
-    return String(n).replace(/[0-9]/g, d => ARABIC_DIGITS[d]);
-}
 function formatSAR(n) {
     const rounded = Math.round(n);
     const sign = rounded < 0 ? "-" : "";
     const abs = Math.abs(rounded).toLocaleString("en-US");
-    return sign + toArabicDigits(abs) + " ريال";
+    return sign + abs + " ريال";
 }
 
 const DECISIONS = [
@@ -15,9 +11,9 @@ const DECISIONS = [
         title: "رأس المال الافتتاحي",
         desc: "كم تضخ من أموالك الخاصة لتأسيس الشركة؟ هذا المبلغ يصبح رصيدك النقدي الأول ويُسجَّل كحقوق ملكية.",
         options: [
-            { id: "c50", title: "٥٠,٠٠٠ ريال", detail: "بداية متحفظة — أقل مخاطرة شخصية.", amount: 50000 },
-            { id: "c100", title: "١٠٠,٠٠٠ ريال", detail: "بداية متوسطة ومتوازنة.", amount: 100000 },
-            { id: "c200", title: "٢٠٠,٠٠٠ ريال", detail: "بداية قوية — تمنحك مرونة أكبر بالقرارات القادمة.", amount: 200000 }
+            { id: "c50", title: "50,000 ريال", detail: "بداية متحفظة — أقل مخاطرة شخصية.", amount: 50000 },
+            { id: "c100", title: "100,000 ريال", detail: "بداية متوسطة ومتوازنة.", amount: 100000 },
+            { id: "c200", title: "200,000 ريال", detail: "بداية قوية — تمنحك مرونة أكبر بالقرارات القادمة.", amount: 200000 }
         ],
         apply(opt, s) {
             s.cash += opt.amount;
@@ -29,8 +25,8 @@ const DECISIONS = [
         title: "مصدر تمويل إضافي",
         desc: "هل تحتاج سيولة إضافية قبل ما تبدأ عملياتك؟",
         options: [
-            { id: "loan", title: "قرض بنكي بـ٥٠,٠٠٠ ريال", detail: "يضيف سيولة فورية، لكن بفائدة سنوية ٥٪ (٢,٥٠٠ ريال) تُخصم من أرباحك.", effect: "loan" },
-            { id: "investor", title: "مستثمر جديد يضخ ٥٠,٠٠٠ ريال", detail: "سيولة إضافية بدون فوائد أو ديون، لكن يتشارك معك ملكية الشركة.", effect: "investor" },
+            { id: "loan", title: "قرض بنكي بـ50,000 ريال", detail: "يضيف سيولة فورية، لكن بفائدة سنوية 5% (2,500 ريال) تُخصم من أرباحك.", effect: "loan" },
+            { id: "investor", title: "مستثمر جديد يضخ 50,000 ريال", detail: "سيولة إضافية بدون فوائد أو ديون، لكن يتشارك معك ملكية الشركة.", effect: "investor" },
             { id: "none", title: "بدون تمويل إضافي", detail: "تعتمد فقط على رأس مالك الحالي.", effect: "none" }
         ],
         apply(opt, s) {
@@ -49,8 +45,8 @@ const DECISIONS = [
         title: "المكتب",
         desc: "وين تباشر عملك؟",
         options: [
-            { id: "rent", title: "استئجار مكتب", detail: "إيجار سنوي ٣٦,٠٠٠ ريال يُخصم من أرباح السنة.", effect: "rent" },
-            { id: "buy", title: "شراء مبنى نقدًا (٨٠,٠٠٠ ريال)", detail: "أصل ثابت يدوم معك، بإهلاك سنوي ٨,٠٠٠ ريال.", effect: "buy", requiresCash: 80000 },
+            { id: "rent", title: "استئجار مكتب", detail: "إيجار سنوي 36,000 ريال يُخصم من أرباح السنة.", effect: "rent" },
+            { id: "buy", title: "شراء مبنى نقدًا (80,000 ريال)", detail: "أصل ثابت يدوم معك، بإهلاك سنوي 8,000 ريال.", effect: "buy", requiresCash: 80000 },
             { id: "home", title: "العمل من المنزل", detail: "بدون أي تكلفة — توفير كامل، لكن بلا مقر رسمي.", effect: "home" }
         ],
         apply(opt, s) {
@@ -68,7 +64,7 @@ const DECISIONS = [
         title: "التوظيف",
         desc: "هل توظف فريقًا يساعدك بالتشغيل؟",
         options: [
-            { id: "hire", title: "توظيف موظفَين", detail: "رواتب سنوية إجمالية ٦٠,٠٠٠ ريال تُخصم من أرباحك.", effect: "hire" },
+            { id: "hire", title: "توظيف موظفَين", detail: "رواتب سنوية إجمالية 60,000 ريال تُخصم من أرباحك.", effect: "hire" },
             { id: "solo", title: "العمل بمفردك", detail: "بدون رواتب — توفير، لكن كل المهام عليك وحدك.", effect: "solo" }
         ],
         apply(opt, s) {
@@ -80,7 +76,7 @@ const DECISIONS = [
     {
         id: "inventory",
         title: "شراء المخزون",
-        desc: "تحتاج بضاعة بقيمة ٤٠,٠٠٠ ريال لتبدأ البيع. كيف تشتريها؟",
+        desc: "تحتاج بضاعة بقيمة 40,000 ريال لتبدأ البيع. كيف تشتريها؟",
         options: [
             { id: "cash", title: "الشراء نقدًا", detail: "يخصم المبلغ من رصيدك النقدي مباشرة.", effect: "cash", requiresCash: 40000 },
             { id: "credit", title: "الشراء بالأجل من مورّد", detail: "تحصل على البضاعة الآن وتسددها لاحقًا — يُسجَّل كذمم دائنة.", effect: "credit" }
@@ -97,7 +93,7 @@ const DECISIONS = [
     {
         id: "sales",
         title: "البيع",
-        desc: "بعت كل مخزونك بـ٧٠,٠٠٠ ريال (أعلى من تكلفته ٤٠,٠٠٠ ريال). كيف تحصّل المبلغ؟",
+        desc: "بعت كل مخزونك بـ70,000 ريال (أعلى من تكلفته 40,000 ريال). كيف تحصّل المبلغ؟",
         options: [
             { id: "cash", title: "البيع نقدًا", detail: "يدخل المبلغ كاملًا لرصيدك النقدي فورًا.", effect: "cash" },
             { id: "credit", title: "البيع بالأجل للعملاء", detail: "العميل يسدد لاحقًا — يُسجَّل كذمم مدينة.", effect: "credit" }
