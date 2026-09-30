@@ -833,3 +833,119 @@ a.register-btn--soon{
   .game-fab-icon{font-size:26px;}
   .game-modal{padding:28px 18px 22px;}
 }
+
+/* =========================================
+   مساعد إدارة الأعمال (الروبوت)
+========================================= */
+
+.bot-fab{
+  position:fixed;
+  bottom:24px;left:24px;z-index:70;
+  width:66px;height:66px;
+  border-radius:50%;
+  background:var(--ink);
+  border:none;
+  box-shadow:0 10px 26px -6px rgba(0,8,120,.6);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  animation:gamePulse 2.4s ease-in-out infinite;
+  transition:transform .25s ease;
+}
+.bot-fab:hover{transform:scale(1.08);}
+.bot-fab-icon{font-size:30px;line-height:1;}
+
+.bot-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(4,6,40,.72);
+  display:none;
+  align-items:center;justify-content:center;
+  padding:20px;
+  backdrop-filter:blur(2px);
+}
+.bot-overlay.open{display:flex;}
+
+.bot-modal{
+  position:relative;
+  width:100%;max-width:420px;height:min(600px,86vh);
+  background:var(--white);
+  border-radius:22px;
+  box-shadow:0 30px 70px -20px rgba(0,0,0,.55);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+
+.bot-header{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 18px;
+  background:linear-gradient(135deg, var(--ink), var(--ink-soft));
+  flex-shrink:0;
+}
+.bot-header-icon{font-size:28px;line-height:1;}
+.bot-header-text{flex:1;}
+.bot-header-text h3{color:var(--white);font-size:16px;margin:0 0 2px;}
+.bot-header-text p{color:var(--sky);font-size:12.5px;margin:0;}
+.bot-close{
+  width:30px;height:30px;border-radius:50%;
+  border:none;background:rgba(255,255,255,.14);color:var(--white);
+  font-size:14px;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.bot-messages{
+  flex:1;overflow-y:auto;
+  padding:16px;
+  display:flex;flex-direction:column;gap:10px;
+  background:var(--paper);
+}
+.bot-msg{display:flex;}
+.bot-msg-user{justify-content:flex-end;}
+.bot-msg-bot{justify-content:flex-start;}
+.bot-bubble{
+  max-width:82%;
+  padding:10px 14px;
+  border-radius:16px;
+  font-size:14px;line-height:1.6;
+  white-space:pre-line;
+}
+.bot-msg-user .bot-bubble{
+  background:var(--ink);color:var(--white);
+  border-bottom-right-radius:4px;
+}
+.bot-msg-bot .bot-bubble{
+  background:var(--white);color:var(--onyx);
+  border:1px solid rgba(0,0,0,.08);
+  border-bottom-left-radius:4px;
+}
+
+.bot-input-row{
+  display:flex;gap:8px;
+  padding:12px;
+  border-top:1px solid rgba(0,0,0,.08);
+  background:var(--white);
+  flex-shrink:0;
+}
+.bot-input-row input{
+  flex:1;min-width:0;
+  padding:11px 14px;
+  border-radius:14px;
+  border:2px solid var(--paper);
+  background:var(--paper);
+  font-size:14px;
+  outline:none;
+  font-family:inherit;
+}
+.bot-input-row input:focus{border-color:var(--ink);}
+.bot-send-btn{
+  width:42px;height:42px;border-radius:12px;
+  border:none;background:var(--ink);color:var(--white);
+  font-size:16px;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transform:rotate(180deg);
+}
+.bot-send-btn:hover{background:var(--ink-soft);}
+
+@media (max-width:480px){
+  .bot-fab{width:58px;height:58px;bottom:18px;left:18px;}
+  .bot-fab-icon{font-size:26px;}
+  .bot-modal{height:88vh;}
+}
