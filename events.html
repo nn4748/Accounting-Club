@@ -427,14 +427,6 @@
     }
 
 
-    .label {
-
-      opacity: 0.6;
-
-      font-weight: 600;
-    }
-
-
     /* =========================================
        ACTION BUTTON
     ========================================= */
@@ -939,18 +931,13 @@
 
       content.innerHTML = `
         <div class="event-name-page">
-          <span class="label">اسم الفعالية:</span>
           ${escapeHTML(event.name)}
         </div>
         <div class="event-date-page">
-          <span class="label">التاريخ:</span>
           ${escapeHTML(event.date)}
           ${event.location ? `&nbsp;|&nbsp; ${escapeHTML(event.location)}` : ""}
         </div>
-        <div class="event-description-page">
-          <span class="label">نبذة:</span>
-          ${escapeHTML(event.description) || "لا توجد نبذة عن الفعالية."}
-        </div>
+        ${event.description ? `<div class="event-description-page">${escapeHTML(event.description)}</div>` : ""}
         ${actionHtml}
       `;
 
