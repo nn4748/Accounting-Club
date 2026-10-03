@@ -510,6 +510,8 @@
     // التسجيل الفردي العادية (اسم/تخصص/جوال/بريد).
     const isCiaCisaWorkshop = /CISA/i.test(eventData.name || "");
     const CIA_CISA_REGISTRATION_OPEN = false;
+    const CIA_CISA_LIMIT = 70;
+    const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1VxTpjfM0cEHb2A5q3T6CmZwc_SnlQFS_mSzVWSwEq8o/export?format=csv";
 
     // فعاليات "قريبًا" يقدر الزائر يفتح نموذجها ويعبيه، لكن الإرسال
     // يُمنع برسالة اعتذار لين تُفعَّل الفعالية فعليًا.
@@ -602,6 +604,21 @@
             }
           })
           .catch(err => console.error("تعذر التحقق من عدد المسجلين بورشة دقة المحاسبة:", err));
+        return;
+      }
+
+      if (isCiaCisaWorkshop) {
+        fetch(CIA_CISA_RESPONSES_CSV_URL + "&t=" + Date.now())
+          .then(res => res.text())
+          .then(text => {
+            const rows = parseCSV(text);
+            const count = Math.max(0, rows.length - 1);
+            if (count >= CIA_CISA_LIMIT) {
+              registerForm.style.display = "none";
+              document.getElementById("fullMessage").style.display = "block";
+            }
+          })
+          .catch(err => console.error("تعذر التحقق من عدد المسجلين بورشة CIA & CISA:", err));
         return;
       }
 
