@@ -205,6 +205,24 @@ async function fetchFinanceWorkshopCount() {
     }
 }
 
+// ورشة "CIA & CISA" إلها فورم وشيت ردود مستقلين، نطابق بالاسم
+// بنمط "CISA" عشان تشتغل حتى بتغيّر صياغة الاسم بالشيت.
+const CIA_CISA_LIMIT = 70;
+const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1VxTpjfM0cEHb2A5q3T6CmZwc_SnlQFS_mSzVWSwEq8o/export?format=csv";
+const isCiaCisaWorkshop = (event) => /CISA/i.test(event.name || "");
+
+async function fetchCiaCisaCount() {
+    try {
+        const res = await fetch(CIA_CISA_RESPONSES_CSV_URL + "&t=" + Date.now());
+        const text = await res.text();
+        const rows = parseCSV(text);
+        return Math.max(0, rows.length - 1);
+    } catch (err) {
+        console.error("تعذر التحقق من عدد المسجلين بورشة CIA & CISA:", err);
+        return 0;
+    }
+}
+
 async function fetchRegistrationCounts() {
     const counts = {};
     try {
@@ -228,13 +246,14 @@ async function fetchRegistrationCounts() {
 
 async function loadEvents(isRetry) {
     try {
-        const [response, counts, financeWorkshopCount] = await Promise.all([
+        const [response, counts, financeWorkshopCount, ciaCisaCount] = await Promise.all([
             fetch(API_URL + "?t=" + Date.now()),
             fetchRegistrationCounts(),
-            fetchFinanceWorkshopCount()
+            fetchFinanceWorkshopCount(),
+            fetchCiaCisaCount()
         ]);
         const events = await response.json();
-        displayEvents(events, counts, financeWorkshopCount);
+        displayEvents(events, counts, financeWorkshopCount, ciaCisaCount);
     } catch (error) {
         console.error("Error:", error);
         if (!isRetry) {
@@ -257,7 +276,7 @@ function toDirectImageUrl(url) {
     return `https://lh3.googleusercontent.com/d/${match[1]}`;
 }
 
-function displayEvents(events, counts, financeWorkshopCount) {
+function displayEvents(events, counts, financeWorkshopCount, ciaCisaCount) {
 
     counts = counts || {};
 
@@ -278,7 +297,8 @@ function displayEvents(events, counts, financeWorkshopCount) {
         const limit = REGISTRATION_LIMITS[(event.name || "").trim()];
         const isFull = CLOSED_EVENTS.includes((event.name || "").trim())
             || (limit && (counts[(event.name || "").trim()] || 0) >= limit)
-            || (isFinanceWorkshop(event) && (FINANCE_WORKSHOP_CLOSED || (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT));
+            || (isFinanceWorkshop(event) && (FINANCE_WORKSHOP_CLOSED || (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT))
+            || (isCiaCisaWorkshop(event) && (ciaCisaCount || 0) >= CIA_CISA_LIMIT);
 
         const actionHtml = comingSoon
             ? `<a class="register-btn register-btn--soon" href="${buildRegisterUrl(event)}">التسجيل غير متاح حالياً</a>`
