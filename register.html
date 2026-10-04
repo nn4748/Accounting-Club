@@ -157,6 +157,80 @@
     }
 
     /* =========================================
+       SPEAKERS (ورشة CIA & CISA)
+    ========================================= */
+
+    .speakers-section {
+      background: #fff;
+      border-radius: 24px;
+      padding: 22px 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 16px rgba(13, 26, 94, 0.25);
+    }
+
+    .speakers-section h2 {
+      color: #000878;
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .speakers-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .speaker-btn {
+      flex: 1;
+      padding: 12px 10px;
+      border-radius: 10px;
+      border: 1.5px solid #000878;
+      background: #fff;
+      color: #000878;
+      font-family: "Almarai", sans-serif;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .speaker-btn.active,
+    .speaker-btn:hover {
+      background: #000878;
+      color: #fff;
+    }
+
+    .speaker-info {
+      display: none;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e6f5;
+    }
+
+    .speaker-info.show {
+      display: block;
+    }
+
+    .speaker-info p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .speaker-info a {
+      display: inline-block;
+      padding: 10px 18px;
+      background: #000878;
+      color: #fff;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13.5px;
+      text-decoration: none;
+    }
+
+    /* =========================================
        REGISTER CARD
     ========================================= */
 
@@ -287,6 +361,22 @@
         <div class="event-detail-name" id="eventName">فعالية</div>
         <div class="event-detail-info" id="eventInfo"></div>
         <div class="event-detail-description" id="eventDescription"></div>
+      </div>
+    </div>
+
+    <div class="speakers-section" id="speakersSection" style="display:none;">
+      <h2>المتحدثات</h2>
+      <div class="speakers-buttons">
+        <button type="button" class="speaker-btn" data-speaker="malak">ملاك بن هديان</button>
+        <button type="button" class="speaker-btn" data-speaker="sarah">ساره الدريس</button>
+      </div>
+      <div class="speaker-info" id="speakerInfo-malak">
+        <p>ملاك بن هديان، متخصصة في مراجعة تقنية المعلومات بخبرة تتجاوز 7 سنوات في المراجعة الداخلية. مدير إدارة مراجعة تقنية المعلومات في المركز الوطني لنظم الموارد الحكومية، وسبق لها العمل في Solutions by stc وstc. حاصلة على شهادتي CISA وCIA.</p>
+        <a href="https://www.linkedin.com/in/malak-bin-hadyan-ba8558168" target="_blank" rel="noopener">الملف الشخصي</a>
+      </div>
+      <div class="speaker-info" id="speakerInfo-sarah">
+        <p>ساره الدريس، متخصصة في مراجعة تقنية المعلومات بخبرة تتجاوز 4 سنوات في المراجعة الداخلية. خبيرة في مراجعة تقنية المعلومات في المركز الوطني لنظم الموارد الحكومية التابع لوزارة المالية، وسبق لها العمل في stc. حاصلة على شهادة CISA.</p>
+        <a href="https://www.linkedin.com/in/sarah-aldrees-cisa-752480208" target="_blank" rel="noopener">الملف الشخصي</a>
       </div>
     </div>
 
@@ -512,6 +602,22 @@
     const CIA_CISA_REGISTRATION_OPEN = false;
     const CIA_CISA_LIMIT = 70;
     const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1VxTpjfM0cEHb2A5q3T6CmZwc_SnlQFS_mSzVWSwEq8o/export?format=csv";
+
+    if (isCiaCisaWorkshop) {
+      document.getElementById("speakersSection").style.display = "block";
+      document.querySelectorAll(".speaker-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+          const info = document.getElementById("speakerInfo-" + this.dataset.speaker);
+          const isOpen = info.classList.contains("show");
+          document.querySelectorAll(".speaker-info").forEach(el => el.classList.remove("show"));
+          document.querySelectorAll(".speaker-btn").forEach(b => b.classList.remove("active"));
+          if (!isOpen) {
+            info.classList.add("show");
+            this.classList.add("active");
+          }
+        });
+      });
+    }
 
     // فعاليات "قريبًا" يقدر الزائر يفتح نموذجها ويعبيه، لكن الإرسال
     // يُمنع برسالة اعتذار لين تُفعَّل الفعالية فعليًا.
