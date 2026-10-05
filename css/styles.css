@@ -237,7 +237,7 @@
      itself on top of both) */
   .hero-highlight:nth-child(2) .hl-icon::before{
     display:block;z-index:4;inset:0;background:var(--sky);
-    -webkit-mask-image:url(assets/club-mark-white.webp);mask-image:url(assets/club-mark-white.webp);
+    -webkit-mask-image:url(../assets/club-mark-white.webp);mask-image:url(../assets/club-mark-white.webp);
     -webkit-mask-size:contain;mask-size:contain;
     -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
     -webkit-mask-position:center;mask-position:center;
@@ -250,7 +250,7 @@
      (square interior and bars are left untouched, shown white by the icon) */
   .hero-highlight:nth-child(3) .hl-icon::after{
     display:block;z-index:4;inset:0;background:var(--sky);
-    -webkit-mask-image:url(assets/club-mark-white.webp);mask-image:url(assets/club-mark-white.webp);
+    -webkit-mask-image:url(../assets/club-mark-white.webp);mask-image:url(../assets/club-mark-white.webp);
     -webkit-mask-size:contain;mask-size:contain;
     -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
     -webkit-mask-position:center;mask-position:center;
@@ -263,7 +263,7 @@
      icon (frame and square border are left untouched, shown white) */
   .hero-highlight:nth-child(4) .hl-icon::before{
     display:block;z-index:4;inset:0;background:var(--sky);
-    -webkit-mask-image:url(assets/club-mark-white.webp);mask-image:url(assets/club-mark-white.webp);
+    -webkit-mask-image:url(../assets/club-mark-white.webp);mask-image:url(../assets/club-mark-white.webp);
     -webkit-mask-size:contain;mask-size:contain;
     -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
     -webkit-mask-position:center;mask-position:center;
