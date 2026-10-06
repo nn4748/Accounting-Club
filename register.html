@@ -619,6 +619,8 @@
     const CIA_CISA_REGISTRATION_OPEN = true;
     const CIA_CISA_LIMIT = 70;
     const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1VxTpjfM0cEHb2A5q3T6CmZwc_SnlQFS_mSzVWSwEq8o/export?format=csv";
+    // إغلاق يدوي فوري لتسجيل ورشة CIA & CISA بغض النظر عن عدد المسجلين.
+    const CIA_CISA_CLOSED = true;
 
     if (isCiaCisaWorkshop) {
       document.getElementById("speakersSection").style.display = "block";
@@ -731,6 +733,11 @@
       }
 
       if (isCiaCisaWorkshop) {
+        if (CIA_CISA_CLOSED) {
+          registerForm.style.display = "none";
+          document.getElementById("fullMessage").style.display = "block";
+          return;
+        }
         fetch(CIA_CISA_RESPONSES_CSV_URL + "&t=" + Date.now())
           .then(res => res.text())
           .then(text => {
@@ -838,6 +845,12 @@
       }
 
       if (isFinanceWorkshop && FINANCE_WORKSHOP_CLOSED) {
+        registerForm.style.display = "none";
+        document.getElementById("fullMessage").style.display = "block";
+        return;
+      }
+
+      if (isCiaCisaWorkshop && CIA_CISA_CLOSED) {
         registerForm.style.display = "none";
         document.getElementById("fullMessage").style.display = "block";
         return;
