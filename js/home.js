@@ -210,6 +210,8 @@ async function fetchFinanceWorkshopCount() {
 const CIA_CISA_LIMIT = 70;
 const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1VxTpjfM0cEHb2A5q3T6CmZwc_SnlQFS_mSzVWSwEq8o/export?format=csv";
 const isCiaCisaWorkshop = (event) => /CISA/i.test(event.name || "");
+// إغلاق يدوي فوري لتسجيل ورشة CIA & CISA بغض النظر عن عدد المسجلين.
+const CIA_CISA_CLOSED = true;
 
 async function fetchCiaCisaCount() {
     try {
@@ -298,7 +300,7 @@ function displayEvents(events, counts, financeWorkshopCount, ciaCisaCount) {
         const isFull = CLOSED_EVENTS.includes((event.name || "").trim())
             || (limit && (counts[(event.name || "").trim()] || 0) >= limit)
             || (isFinanceWorkshop(event) && (FINANCE_WORKSHOP_CLOSED || (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT))
-            || (isCiaCisaWorkshop(event) && (ciaCisaCount || 0) >= CIA_CISA_LIMIT);
+            || (isCiaCisaWorkshop(event) && (CIA_CISA_CLOSED || (ciaCisaCount || 0) >= CIA_CISA_LIMIT));
 
         const actionHtml = comingSoon
             ? `<a class="register-btn register-btn--soon" href="${buildRegisterUrl(event)}">التسجيل غير متاح حالياً</a>`
