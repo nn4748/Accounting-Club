@@ -580,11 +580,11 @@ if (gameFab) {
     }
 
     function scoreTitle(score) {
-        if (score >= 23) return { title: "المدير المالي | CFO", icon: "👑" };
-        if (score >= 19) return { title: "GOAT | الأسطورة", icon: "🐐" };
-        if (score >= 15) return { title: "MVP | النجم", icon: "🌟" };
-        if (score >= 10) return { title: "Clutcher | الحاسم", icon: "🔥" };
-        return { title: "Rookie | المبتدئ", icon: "🌱" };
+        if (score >= 21) return { title: "المدير المالي | CFO" };
+        if (score >= 16) return { title: "GOAT | الأسطورة" };
+        if (score >= 11) return { title: "MVP | النجم" };
+        if (score >= 6) return { title: "Clutcher | الحاسم" };
+        return { title: "Rookie | المبتدئ" };
     }
 
     let gameRoundQuestions = [];
@@ -694,7 +694,7 @@ if (gameFab) {
 
         const tier = scoreTitle(gameScore);
         if (gameGreeting) gameGreeting.textContent = name ? `نتيجتك يا ${name}` : "نتيجتك";
-        if (gameEndTitle) gameEndTitle.textContent = `${tier.icon} ${tier.title}`;
+        if (gameEndTitle) gameEndTitle.textContent = tier.title;
 
         gameFinalScore.textContent = toArabicDigits(gameScore);
         gameEndBestLine.textContent = isNewBest
