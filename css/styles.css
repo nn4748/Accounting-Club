@@ -799,8 +799,8 @@ a.register-btn--soon{
 }
 .game-name-input:focus{outline:none;border-color:var(--ink);background:var(--white);}
 .game-name-error{color:#e0455a;font-size:13px;font-weight:700;margin-bottom:12px;}
-.game-greeting{color:var(--ink);font-size:16px;font-weight:700;margin-bottom:4px;}
-.game-end-title{color:var(--mauve);font-size:21px;font-weight:800;margin-bottom:10px;}
+.game-greeting{color:var(--ink);font-size:16px;font-weight:600;margin-bottom:4px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+.game-end-title{color:var(--ink);font-size:21px;font-weight:700;margin-bottom:10px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
 
 .game-progress{
   display:flex;justify-content:space-between;
