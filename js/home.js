@@ -450,157 +450,71 @@ if (contactForm) {
    لعبة "جاهز تختبر محاسبيتك؟"
 ========================================= */
 
-const GAME_ANSWER_SETS = {
-    debitCredit: [
-        { value: "debit", label: "مدين" },
-        { value: "credit", label: "دائن" }
-    ],
-    classify: [
-        { value: "asset", label: "أصل" },
-        { value: "liability", label: "خصم" },
-        { value: "equity", label: "حقوق ملكية" },
-        { value: "revenue", label: "إيراد" },
-        { value: "expense", label: "مصروف" }
-    ],
-    statement: [
-        { value: "income", label: "قائمة الدخل" },
-        { value: "position", label: "المركز المالي" }
-    ],
-    trueFalse: [
-        { value: "true", label: "صح" },
-        { value: "false", label: "خطأ" }
-    ],
-    currentNonCurrent: [
-        { value: "current", label: "متداول" },
-        { value: "noncurrent", label: "غير متداول" }
-    ]
-};
-
-const GAME_DEBIT_CREDIT_QUESTIONS = [
-    // معاملات مالية
-    { label: "حساب النقدية", question: "الشركة استلمت مبلغ نقدي من عميل", answer: "debit" },
-    { label: "حساب النقدية", question: "الشركة سددت فاتورة الكهرباء نقدًا", answer: "credit" },
-    { label: "حساب الأثاث", question: "الشركة اشترت أثاث مكتبي نقدًا", answer: "debit" },
-    { label: "حساب البضاعة (المخزون)", question: "الشركة باعت جزء من مخزونها وسلّمته للعميل", answer: "credit" },
-    { label: "حساب الذمم المدينة", question: "الشركة باعت بضاعة لعميل على الحساب (بالأجل)", answer: "debit" },
-    { label: "حساب الذمم المدينة", question: "الشركة حصّلت مبلغ من عميل مدين سابق", answer: "credit" },
-    { label: "حساب رأس المال", question: "المالك أضاف مبلغ نقدي كزيادة في رأس المال", answer: "credit" },
-    { label: "حساب الإيرادات", question: "الشركة قدمت خدمة استشارية واستلمت أجرها فورًا", answer: "credit" },
-    { label: "حساب الدائنين (الموردين)", question: "الشركة اشترت بضاعة من مورد على الحساب", answer: "credit" },
-    { label: "حساب الدائنين (الموردين)", question: "الشركة سددت جزء من دين مستحق لمورد", answer: "debit" },
-    { label: "حساب المصروفات", question: "الشركة دفعت إيجار المكتب الشهري", answer: "debit" },
-    { label: "حساب أوراق القبض", question: "الشركة استلمت كمبيالة من عميل مقابل دين عليه", answer: "debit" },
-    { label: "حساب أوراق الدفع", question: "الشركة وقّعت كمبيالة لمورد بدل السداد النقدي", answer: "credit" },
-    { label: "حساب مصروف مقدم", question: "الشركة دفعت تأمين سنوي مقدمًا لمكتبها", answer: "debit" },
-    { label: "حساب إيراد مقدم", question: "الشركة استلمت دفعة من عميل مقابل خدمة لم تُقدَّم بعد", answer: "credit" },
-    { label: "حساب رأس المال", question: "المالك سحب مبلغ لاستخدامه الشخصي", answer: "debit" },
-    { label: "حساب مجمع إهلاك الأثاث", question: "الشركة سجّلت قسط إهلاك سنوي على الأثاث", answer: "credit" },
-    { label: "حساب مصروف الإهلاك", question: "تسجيل قسط الإهلاك السنوي على الأثاث", answer: "debit" },
-    { label: "حساب مردودات المبيعات", question: "عميل أرجع بضاعة معيبة اشتراها سابقًا", answer: "debit" },
-    { label: "حساب الخصم المسموح به", question: "الشركة منحت عميلها خصم نقدي عند السداد المبكر", answer: "debit" },
-    { label: "حساب مصروف مستحق", question: "نهاية الفترة، فائدة على قرض مستحقة ولم تُدفع بعد", answer: "credit" },
-    { label: "حساب إيراد مستحق", question: "نهاية الفترة، خدمة قُدّمت لعميل ولم يُحصَّل أجرها بعد", answer: "debit" },
-    { label: "حساب ضريبة القيمة المضافة المستحقة", question: "الشركة باعت بضاعة خاضعة لضريبة القيمة المضافة", answer: "credit" },
-
-    // زيادة في الحساب
-    { label: "زيادة في الحساب", question: "حساب الأصول", answer: "debit" },
-    { label: "زيادة في الحساب", question: "حساب الالتزامات (الخصوم)", answer: "credit" },
-    { label: "زيادة في الحساب", question: "حساب حقوق الملكية", answer: "credit" },
-    { label: "زيادة في الحساب", question: "حساب الإيرادات", answer: "credit" },
-    { label: "زيادة في الحساب", question: "حساب المصروفات", answer: "debit" },
-
-    // نقصان في الحساب
-    { label: "نقصان في الحساب", question: "حساب الأصول", answer: "credit" },
-    { label: "نقصان في الحساب", question: "حساب الالتزامات (الخصوم)", answer: "debit" },
-    { label: "نقصان في الحساب", question: "حساب حقوق الملكية", answer: "debit" },
-    { label: "نقصان في الحساب", question: "حساب الإيرادات", answer: "debit" },
-    { label: "نقصان في الحساب", question: "حساب المصروفات", answer: "credit" },
-
-    // الرصيد الطبيعي
-    { label: "الرصيد الطبيعي", question: "حساب الأصول", answer: "debit" },
-    { label: "الرصيد الطبيعي", question: "حساب الالتزامات (الخصوم)", answer: "credit" },
-    { label: "الرصيد الطبيعي", question: "حساب حقوق الملكية", answer: "credit" },
-    { label: "الرصيد الطبيعي", question: "حساب الإيرادات", answer: "credit" },
-    { label: "الرصيد الطبيعي", question: "حساب المصروفات", answer: "debit" },
-    { label: "الرصيد الطبيعي", question: "حساب المسحوبات الشخصية (السحب)", answer: "debit" },
-    { label: "الرصيد الطبيعي", question: "حساب مجمع إهلاك الأصول الثابتة", answer: "credit" },
-    { label: "الرصيد الطبيعي", question: "حساب مخصص الديون المشكوك في تحصيلها", answer: "credit" },
-    { label: "الرصيد الطبيعي", question: "حساب مردودات ومسموحات المبيعات", answer: "debit" },
-    { label: "الرصيد الطبيعي", question: "حساب الخصم المكتسب", answer: "credit" },
-
-    // قيد الإقفال
-    { label: "قيد الإقفال", question: "إقفال حساب الإيرادات في نهاية الفترة", answer: "debit" },
-    { label: "قيد الإقفال", question: "إقفال حساب المصروفات في نهاية الفترة", answer: "credit" },
-    { label: "قيد الإقفال", question: "إقفال حساب المسحوبات الشخصية في نهاية الفترة", answer: "credit" }
-].map(q => ({ ...q, type: "debitCredit" }));
-
-const GAME_CLASSIFY_QUESTIONS = [
-    { label: "تصنيف الحساب", question: "حساب النقدية", answer: "asset" },
-    { label: "تصنيف الحساب", question: "حساب المخزون (البضاعة)", answer: "asset" },
-    { label: "تصنيف الحساب", question: "حساب الأثاث والمعدات", answer: "asset" },
-    { label: "تصنيف الحساب", question: "حساب الذمم المدينة (العملاء)", answer: "asset" },
-    { label: "تصنيف الحساب", question: "حساب الذمم الدائنة (الموردون)", answer: "liability" },
-    { label: "تصنيف الحساب", question: "حساب القروض طويلة الأجل", answer: "liability" },
-    { label: "تصنيف الحساب", question: "حساب أوراق الدفع", answer: "liability" },
-    { label: "تصنيف الحساب", question: "حساب رأس المال", answer: "equity" },
-    { label: "تصنيف الحساب", question: "حساب الأرباح المحتجزة", answer: "equity" },
-    { label: "تصنيف الحساب", question: "حساب المسحوبات الشخصية", answer: "equity" },
-    { label: "تصنيف الحساب", question: "حساب إيرادات الخدمات", answer: "revenue" },
-    { label: "تصنيف الحساب", question: "حساب إيرادات الفوائد", answer: "revenue" },
-    { label: "تصنيف الحساب", question: "حساب مصروف الرواتب", answer: "expense" },
-    { label: "تصنيف الحساب", question: "حساب مصروف الإيجار", answer: "expense" },
-    { label: "تصنيف الحساب", question: "حساب مصروف الإهلاك", answer: "expense" }
-].map(q => ({ ...q, type: "classify" }));
-
-const GAME_STATEMENT_QUESTIONS = [
-    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب الإيرادات", answer: "income" },
-    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب المصروفات", answer: "income" },
-    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب مصروف الإهلاك", answer: "income" },
-    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب إيرادات الفوائد", answer: "income" },
-    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب النقدية", answer: "position" },
-    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب الذمم المدينة", answer: "position" },
-    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب المخزون", answer: "position" },
-    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب رأس المال", answer: "position" },
-    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب الذمم الدائنة", answer: "position" },
-    { label: "أي قائمة يظهر فيها الحساب؟", question: "حساب القروض طويلة الأجل", answer: "position" }
-].map(q => ({ ...q, type: "statement" }));
-
-const GAME_TRUEFALSE_QUESTIONS = [
-    { label: "صح أم خطأ؟", question: "المصروفات المدفوعة مقدمًا تُعتبر من الأصول", answer: "true" },
-    { label: "صح أم خطأ؟", question: "الإيرادات المقبوضة مقدمًا تُعتبر من الخصوم", answer: "true" },
-    { label: "صح أم خطأ؟", question: "زيادة حساب الأصول تُسجَّل في الجانب الدائن", answer: "false" },
-    { label: "صح أم خطأ؟", question: "المسحوبات الشخصية تزيد من حقوق الملكية", answer: "false" },
-    { label: "صح أم خطأ؟", question: "حساب مجمع الإهلاك رصيده الطبيعي دائن", answer: "true" },
-    { label: "صح أم خطأ؟", question: "كل الأصول تظهر في قائمة الدخل", answer: "false" },
-    { label: "صح أم خطأ؟", question: "إقفال حساب المصروفات يكون بجعله دائنًا", answer: "true" },
-    { label: "صح أم خطأ؟", question: "الذمم الدائنة (الموردون) من حسابات الأصول", answer: "false" },
-    { label: "صح أم خطأ؟", question: "زيادة استثمار المالك تزيد حساب رأس المال", answer: "true" },
-    { label: "صح أم خطأ؟", question: "مصروف الإهلاك يُخصم مباشرة من حساب الأصل نفسه", answer: "false" }
-].map(q => ({ ...q, type: "trueFalse" }));
-
-const GAME_CURRENT_QUESTIONS = [
-    { label: "متداول أم غير متداول؟", question: "حساب النقدية", answer: "current" },
-    { label: "متداول أم غير متداول؟", question: "حساب الذمم المدينة", answer: "current" },
-    { label: "متداول أم غير متداول؟", question: "حساب المخزون", answer: "current" },
-    { label: "متداول أم غير متداول؟", question: "حساب الأراضي", answer: "noncurrent" },
-    { label: "متداول أم غير متداول؟", question: "حساب المباني", answer: "noncurrent" },
-    { label: "متداول أم غير متداول؟", question: "حساب الأثاث والمعدات", answer: "noncurrent" },
-    { label: "متداول أم غير متداول؟", question: "حساب الذمم الدائنة (الموردون)", answer: "current" },
-    { label: "متداول أم غير متداول؟", question: "حساب القروض طويلة الأجل", answer: "noncurrent" },
-    { label: "متداول أم غير متداول؟", question: "حساب أوراق الدفع قصيرة الأجل", answer: "current" },
-    { label: "متداول أم غير متداول؟", question: "حساب الشهرة (أصل غير ملموس)", answer: "noncurrent" }
-].map(q => ({ ...q, type: "currentNonCurrent" }));
-
 const GAME_QUESTIONS = [
-    ...GAME_DEBIT_CREDIT_QUESTIONS,
-    ...GAME_CLASSIFY_QUESTIONS,
-    ...GAME_STATEMENT_QUESTIONS,
-    ...GAME_TRUEFALSE_QUESTIONS,
-    ...GAME_CURRENT_QUESTIONS
+    // المجال الأول: المحاسبة المالية
+    { domain: "المحاسبة المالية", question: "أي مما يلي يُعد أصلًا؟", options: ["الدائنون", "رأس المال", "النقد", "الإيرادات"], answerIndex: 2 },
+    { domain: "المحاسبة المالية", question: "صح أم خطأ: شراء معدات نقدًا يزيد إجمالي الأصول دائمًا.", options: ["صح", "خطأ"], answerIndex: 1 },
+    { domain: "المحاسبة المالية", question: "ما الحساب الناتج عن البيع بالآجل؟", options: ["الدائنون", "المدينون", "رأس المال", "المصروفات"], answerIndex: 1 },
+    { domain: "المحاسبة المالية", question: "أي عملية تزيد الأصول والخصوم؟", options: ["شراء بضاعة بالآجل", "سداد قرض", "تحصيل دين", "دفع الرواتب"], answerIndex: 0 },
+    { domain: "المحاسبة المالية", question: "أي قائمة توضح الربح أو الخسارة؟", options: ["المركز المالي", "قائمة الدخل", "التدفقات النقدية", "التغيرات في حقوق الملكية"], answerIndex: 1 },
+    { domain: "المحاسبة المالية", question: "صح أم خطأ: توازن ميزان المراجعة يعني خلو الحسابات من الأخطاء.", options: ["صح", "خطأ"], answerIndex: 1 },
+    { domain: "المحاسبة المالية", question: "ماذا يحدث عند الحصول على قرض نقدي؟", options: ["تزيد الأصول والخصوم", "تزيد الإيرادات", "تنخفض الأصول", "تزيد المصروفات"], answerIndex: 0 },
+    { domain: "المحاسبة المالية", question: "مصروف الرواتب طبيعته:", options: ["مدين", "دائن"], answerIndex: 0 },
+    { domain: "المحاسبة المالية", question: "ما أثر دفع الإيجار نقدًا؟", options: ["زيادة المصروفات وانخفاض النقد", "زيادة الإيرادات", "زيادة الخصوم", "زيادة النقد"], answerIndex: 0 },
+    { domain: "المحاسبة المالية", question: "كيف يُسجّل المصروف المستحق غير المدفوع؟", options: ["مدين مصروفات، دائن خصوم", "مدين نقد، دائن مصروفات", "مدين إيرادات، دائن نقد", "مدين خصوم، دائن إيرادات"], answerIndex: 0 },
+
+    // المجال الثاني: المحاسبة الإدارية والتكاليف
+    { domain: "المحاسبة الإدارية والتكاليف", question: "ما هدف المحاسبة الإدارية؟", options: ["دعم القرارات", "حساب الضرائب فقط", "مراجعة الحسابات", "إعداد القوائم الخارجية فقط"], answerIndex: 0 },
+    { domain: "المحاسبة الإدارية والتكاليف", question: "صح أم خطأ: إجمالي التكاليف الثابتة يتغير مع كل زيادة في الإنتاج ضمن المدى الملائم.", options: ["صح", "خطأ"], answerIndex: 1 },
+    { domain: "المحاسبة الإدارية والتكاليف", question: "ما التكلفة المباشرة لصناعة طاولة خشبية؟", options: ["إيجار المصنع", "راتب المشرف", "الخشب", "راتب المدير"], answerIndex: 2 },
+    { domain: "المحاسبة الإدارية والتكاليف", question: "ماذا يحدث للتكلفة الثابتة للوحدة عند زيادة الإنتاج؟", options: ["ترتفع", "تنخفض", "تبقى ثابتة", "تختفي"], answerIndex: 1 },
+    { domain: "المحاسبة الإدارية والتكاليف", question: "صح أم خطأ: تساعد الموازنات في التخطيط والرقابة.", options: ["صح", "خطأ"], answerIndex: 0 },
+    { domain: "المحاسبة الإدارية والتكاليف", question: "متى تتحقق نقطة التعادل؟", options: ["عندما تتساوى الإيرادات والتكاليف الكلية", "عندما تزيد المصروفات", "عند توقف الإنتاج", "عند تحقيق أعلى ربح"], answerIndex: 0 },
+    { domain: "المحاسبة الإدارية والتكاليف", question: "ما التكلفة غير المباشرة في مصنع الأثاث؟", options: ["الخشب", "أجور صانع الطاولة", "راتب مشرف المصنع", "المواد المباشرة"], answerIndex: 2 },
+    { domain: "المحاسبة الإدارية والتكاليف", question: "كيف نتعامل مع التكلفة الغارقة عند مقارنة البدائل؟", options: ["ندرجها دائمًا", "نستبعدها", "نعدّها إيرادًا", "نعدّها أصلًا"], answerIndex: 1 },
+    { domain: "المحاسبة الإدارية والتكاليف", question: "ما التكلفة الغارقة؟", options: ["تكلفة مستقبلية", "تكلفة لا يمكن استردادها", "تكلفة تتغير مع الإنتاج", "تكلفة لم تُدفع"], answerIndex: 1 },
+    { domain: "المحاسبة الإدارية والتكاليف", question: "ماذا نفعل إذا زادت التكلفة الفعلية عن المخططة؟", options: ["نتجاهل الفرق", "نحلل الانحراف وأسبابه", "نوقف الإنتاج", "نحذف التكلفة"], answerIndex: 1 },
+
+    // المجال الثالث: المراجعة
+    { domain: "المراجعة", question: "ما هدف المراجعة الخارجية؟", options: ["إعداد القوائم", "إبداء رأي مستقل في القوائم المالية", "إدارة المنشأة", "تسعير المنتجات"], answerIndex: 1 },
+    { domain: "المراجعة", question: "صح أم خطأ: الإدارة مسؤولة عن إعداد القوائم المالية.", options: ["صح", "خطأ"], answerIndex: 0 },
+    { domain: "المراجعة", question: "أي مما يلي يُعد دليل مراجعة؟", options: ["تأكيد البنك للرصيد", "توقع شخصي", "إعلان الشركة", "رأي غير موثق"], answerIndex: 0 },
+    { domain: "المراجعة", question: "ماذا يفعل المراجع عند اختلاف رصيد البنك عن الدفاتر؟", options: ["يتجاهل الفرق", "يتحقق من أسباب الاختلاف", "يحذف الرصيد", "يغيّر الأرقام دون دليل"], answerIndex: 1 },
+    { domain: "المراجعة", question: "صح أم خطأ: تضمن المراجعة اكتشاف جميع حالات الاحتيال.", options: ["صح", "خطأ"], answerIndex: 1 },
+    { domain: "المراجعة", question: "ما مثال الرقابة الداخلية؟", options: ["فصل المهام", "مشاركة كلمات المرور", "إلغاء المراجعة", "إتاحة الحسابات للجميع"], answerIndex: 0 },
+    { domain: "المراجعة", question: "ماذا يفعل المراجع إذا رفضت الإدارة تصحيح تحريف جوهري؟", options: ["يتجاهله", "يقيّم أثره على رأيه", "يعتمد القوائم مباشرة", "يحذف التحريف"], answerIndex: 1 },
+    { domain: "المراجعة", question: "ما الأهمية النسبية في المراجعة؟", options: ["حجم المنشأة", "تأثير التحريف على القرارات", "عدد الموظفين", "قيمة الأصول فقط"], answerIndex: 1 },
+    { domain: "المراجعة", question: "ماذا يفعل المراجع عند ارتفاع خطر التحريف الجوهري؟", options: ["يقلل الإجراءات", "يزيد إجراءات المراجعة المناسبة", "يتجاهل الخطر", "يوقف العمل مباشرة"], answerIndex: 1 },
+    { domain: "المراجعة", question: "ما الفرق بين المراجعة الداخلية والخارجية؟", options: ["الداخلية تركز على الرقابة والمخاطر، والخارجية على القوائم المالية", "كلاهما يدير المنشأة", "لا فرق بينهما", "الخارجية تراجع الرواتب فقط"], answerIndex: 0 },
+
+    // المجال الرابع: الزكاة والضريبة
+    { domain: "الزكاة والضريبة", question: "على ماذا تُفرض ضريبة القيمة المضافة؟", options: ["التوريدات الخاضعة للضريبة", "الرواتب فقط", "الأرباح فقط", "القروض"], answerIndex: 0 },
+    { domain: "الزكاة والضريبة", question: "صح أم خطأ: ضريبة المدخلات هي الضريبة على مشتريات المنشأة.", options: ["صح", "خطأ"], answerIndex: 0 },
+    { domain: "الزكاة والضريبة", question: "متى تُحتسب ضريبة المخرجات؟", options: ["عند شراء الاحتياجات", "عند إجراء توريدات خاضعة للضريبة", "عند دفع الرواتب", "عند الحصول على قرض"], answerIndex: 1 },
+    { domain: "الزكاة والضريبة", question: "ما هدف الإقرار الضريبي؟", options: ["الإفصاح عن البيانات وتحديد الضريبة المستحقة", "تحديد الرواتب", "تسجيل الأصول فقط", "إعداد الموازنة"], answerIndex: 0 },
+    { domain: "الزكاة والضريبة", question: "صح أم خطأ: يمكن خصم ضريبة المدخلات دائمًا دون شروط.", options: ["صح", "خطأ"], answerIndex: 1 },
+    { domain: "الزكاة والضريبة", question: "ما الفرق بين التوريدات المعفاة والخاضعة لنسبة الصفر؟", options: ["لا فرق بينهما", "تختلف إمكانية خصم ضريبة المدخلات", "كلتاهما تخضعان للنسبة الأساسية", "لا يمكن خصم المدخلات في كلتيهما"], answerIndex: 1 },
+    { domain: "الزكاة والضريبة", question: "صح أم خطأ: تختلف الزكاة عن ضريبة القيمة المضافة في طريقة الاحتساب.", options: ["صح", "خطأ"], answerIndex: 0 },
+    { domain: "الزكاة والضريبة", question: "لماذا نحتفظ بالفواتير الضريبية؟", options: ["لإثبات المعاملات والالتزام بالمتطلبات النظامية", "لزيادة الإيرادات", "لتقليل العمليات", "للاستغناء عن السجلات"], answerIndex: 0 },
+    { domain: "الزكاة والضريبة", question: "ما الجهة المسؤولة عن الزكاة والضرائب والجمارك في السعودية؟", options: ["وزارة التعليم", "هيئة الزكاة والضريبة والجمارك", "وزارة الموارد البشرية", "البنك المركزي"], answerIndex: 1 },
+    { domain: "الزكاة والضريبة", question: "صح أم خطأ: مواعيد الإقرارات واحدة لجميع الضرائب والمكلفين.", options: ["صح", "خطأ"], answerIndex: 1 },
+
+    // المجال الخامس: نظم المعلومات المحاسبية
+    { domain: "نظم المعلومات المحاسبية", question: "ما وظيفة نظام المعلومات المحاسبي؟", options: ["معالجة البيانات المالية وإنتاج المعلومات", "التسويق فقط", "إدارة الموظفين فقط", "تحديد أسعار الأسهم"], answerIndex: 0 },
+    { domain: "نظم المعلومات المحاسبية", question: "صح أم خطأ: تمنع الأتمتة جميع الأخطاء المحاسبية.", options: ["صح", "خطأ"], answerIndex: 1 },
+    { domain: "نظم المعلومات المحاسبية", question: "لماذا تُحدد صلاحيات المستخدمين؟", options: ["لتقييد الوصول حسب الصلاحيات", "للسماح للجميع بالتعديل", "لإلغاء الرقابة", "لحذف العمليات"], answerIndex: 0 },
+    { domain: "نظم المعلومات المحاسبية", question: "ماذا تعني السرية في نظم المعلومات؟", options: ["حماية المعلومات من الوصول غير المصرح به", "إتاحة البيانات للجميع", "حذف البيانات", "منع التقارير"], answerIndex: 0 },
+    { domain: "نظم المعلومات المحاسبية", question: "صح أم خطأ: مشاركة كلمة المرور ممارسة آمنة.", options: ["صح", "خطأ"], answerIndex: 1 },
+    { domain: "نظم المعلومات المحاسبية", question: "ماذا تعني سلامة البيانات (Integrity)؟", options: ["الحفاظ على دقة البيانات واكتمالها", "إتاحة البيانات للجميع", "حذف البيانات القديمة", "تغيير البيانات دون توثيق"], answerIndex: 0 },
+    { domain: "نظم المعلومات المحاسبية", question: "ما فائدة سجل المراجعة الإلكتروني؟", options: ["تتبع العمليات والتغييرات", "حذف الأخطاء تلقائيًا", "منع التقارير", "إلغاء الصلاحيات"], answerIndex: 0 },
+    { domain: "نظم المعلومات المحاسبية", question: "ماذا نفعل عند ظهور فاتورتين بالرقم نفسه من المورد نفسه؟", options: ["ندفعهما مباشرة", "نتحقق من احتمال التكرار", "نحذفهما", "نتجاهلهما"], answerIndex: 1 },
+    { domain: "نظم المعلومات المحاسبية", question: "صح أم خطأ: النسخ الاحتياطية تغني عن الأمن السيبراني.", options: ["صح", "خطأ"], answerIndex: 1 },
+    { domain: "نظم المعلومات المحاسبية", question: "ماذا نفعل عند اكتشاف خطأ في تقرير إلكتروني صدر بالفعل؟", options: ["نتجاهله", "نتحقق منه ونصححه ونوثّق التعديل", "نحذف النظام", "نترك التقرير دون تنبيه"], answerIndex: 1 }
 ];
 
-const GAME_QUESTIONS_PER_ROUND = 20;
+const GAME_QUESTIONS_PER_ROUND = 25;
 const GAME_BEST_SCORE_KEY = "accClubGameBestScore";
+const GAME_PLAYER_NAME_KEY = "accClubGamePlayerName";
 
 const gameFab = document.getElementById("gameFab");
 if (gameFab) {
@@ -620,6 +534,10 @@ if (gameFab) {
     const gameAnswers = document.getElementById("gameAnswers");
     const gameFeedback = document.getElementById("gameFeedback");
     const gameFinalScore = document.getElementById("gameFinalScore");
+    const gamePlayerNameInput = document.getElementById("gamePlayerNameInput");
+    const gameNameError = document.getElementById("gameNameError");
+    const gameEndTitle = document.getElementById("gameEndTitle");
+    const gameGreeting = document.getElementById("gameGreeting");
 
     const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
     const toArabicDigits = (n) => String(n).replace(/[0-9]/g, d => ARABIC_DIGITS[d]);
@@ -647,12 +565,26 @@ if (gameFab) {
         } catch (e) { /* تجاهل لو التخزين ممنوع */ }
     }
 
-    // محفوظة لإعادة تفعيل مسميات النتيجة لاحقًا (غير مستخدمة حاليًا بطلب النادي)
+    function getPlayerName() {
+        try {
+            return localStorage.getItem(GAME_PLAYER_NAME_KEY) || "";
+        } catch (e) {
+            return "";
+        }
+    }
+
+    function setPlayerName(name) {
+        try {
+            localStorage.setItem(GAME_PLAYER_NAME_KEY, name);
+        } catch (e) { /* تجاهل لو التخزين ممنوع */ }
+    }
+
     function scoreTitle(score) {
-        if (score >= 18) return { title: "خبير مالي", icon: "🏆" };
-        if (score >= 14) return { title: "مراجع حسابات", icon: "🥇" };
-        if (score >= 8) return { title: "محاسب", icon: "📊" };
-        return { title: "متدرب", icon: "🌱" };
+        if (score >= 23) return { title: "المدير المالي | CFO", icon: "👑" };
+        if (score >= 19) return { title: "GOAT | الأسطورة", icon: "🐐" };
+        if (score >= 15) return { title: "MVP | النجم", icon: "🌟" };
+        if (score >= 10) return { title: "Clutcher | الحاسم", icon: "🔥" };
+        return { title: "Rookie | المبتدئ", icon: "🌱" };
     }
 
     let gameRoundQuestions = [];
@@ -666,9 +598,15 @@ if (gameFab) {
 
     function openGame() {
         gameOverlay.classList.add("open");
+        const savedName = getPlayerName();
+        if (gamePlayerNameInput) gamePlayerNameInput.value = savedName;
+        if (gameNameError) gameNameError.style.display = "none";
+
         const best = getBestScore();
         if (best > 0) {
-            gameBestLine.textContent = `أفضل نتيجة لك: ${toArabicDigits(best)} / ${toArabicDigits(GAME_QUESTIONS_PER_ROUND)}`;
+            gameBestLine.textContent = savedName
+                ? `أهلاً ${savedName}، أفضل نتيجة لك: ${toArabicDigits(best)} / ${toArabicDigits(GAME_QUESTIONS_PER_ROUND)}`
+                : `أفضل نتيجة لك: ${toArabicDigits(best)} / ${toArabicDigits(GAME_QUESTIONS_PER_ROUND)}`;
             gameBestLine.style.display = "block";
         } else {
             gameBestLine.style.display = "none";
@@ -681,6 +619,15 @@ if (gameFab) {
     }
 
     function startGame() {
+        const name = (gamePlayerNameInput ? gamePlayerNameInput.value : "").trim();
+        if (!name) {
+            if (gameNameError) gameNameError.style.display = "block";
+            if (gamePlayerNameInput) gamePlayerNameInput.focus();
+            return;
+        }
+        if (gameNameError) gameNameError.style.display = "none";
+        setPlayerName(name);
+
         gameRoundQuestions = shuffle(GAME_QUESTIONS).slice(0, GAME_QUESTIONS_PER_ROUND);
         gameIndex = 0;
         gameScore = 0;
@@ -693,37 +640,37 @@ if (gameFab) {
         gameFeedback.className = "game-feedback";
 
         const q = gameRoundQuestions[gameIndex];
-        gameAccount.textContent = q.label;
+        gameAccount.textContent = q.domain;
         gameEvent.textContent = q.question;
         gameQuestionNum.textContent = `${toArabicDigits(gameIndex + 1)} / ${toArabicDigits(gameRoundQuestions.length)}`;
         gameScoreLine.textContent = `النقاط: ${toArabicDigits(gameScore)}`;
 
         gameAnswers.innerHTML = "";
-        GAME_ANSWER_SETS[q.type].forEach(opt => {
+        q.options.forEach((label, idx) => {
             const btn = document.createElement("button");
             btn.type = "button";
             btn.className = "game-answer-btn";
-            btn.textContent = opt.label;
-            btn.dataset.value = opt.value;
-            btn.addEventListener("click", () => handleAnswer(opt.value));
+            btn.textContent = label;
+            btn.dataset.index = idx;
+            btn.addEventListener("click", () => handleAnswer(idx));
             gameAnswers.appendChild(btn);
         });
     }
 
-    function handleAnswer(choice) {
+    function handleAnswer(choiceIndex) {
         const q = gameRoundQuestions[gameIndex];
         const buttons = Array.from(gameAnswers.querySelectorAll(".game-answer-btn"));
         buttons.forEach(b => { b.disabled = true; });
 
-        const correctBtn = buttons.find(b => b.dataset.value === q.answer);
+        const correctBtn = buttons.find(b => Number(b.dataset.index) === q.answerIndex);
         correctBtn.classList.add("correct");
 
-        if (choice === q.answer) {
+        if (choiceIndex === q.answerIndex) {
             gameScore++;
             gameFeedback.textContent = "إجابة صحيحة!";
             gameFeedback.classList.add("correct");
         } else {
-            const wrongBtn = buttons.find(b => b.dataset.value === choice);
+            const wrongBtn = buttons.find(b => Number(b.dataset.index) === choiceIndex);
             if (wrongBtn) wrongBtn.classList.add("wrong");
             gameFeedback.textContent = "إجابة خاطئة";
             gameFeedback.classList.add("wrong");
@@ -740,9 +687,14 @@ if (gameFab) {
     }
 
     function endGame() {
+        const name = getPlayerName();
         const best = getBestScore();
         const isNewBest = gameScore > best;
         if (isNewBest) setBestScore(gameScore);
+
+        const tier = scoreTitle(gameScore);
+        if (gameGreeting) gameGreeting.textContent = name ? `نتيجتك يا ${name}` : "نتيجتك";
+        if (gameEndTitle) gameEndTitle.textContent = `${tier.icon} ${tier.title}`;
 
         gameFinalScore.textContent = toArabicDigits(gameScore);
         gameEndBestLine.textContent = isNewBest
@@ -757,6 +709,9 @@ if (gameFab) {
     gameOverlay.addEventListener("click", (e) => { if (e.target === gameOverlay) closeGame(); });
     gameStartBtn.addEventListener("click", startGame);
     gameRetryBtn.addEventListener("click", startGame);
+    if (gamePlayerNameInput) {
+        gamePlayerNameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") startGame(); });
+    }
 }
 
 /* =========================================

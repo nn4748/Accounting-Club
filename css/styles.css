@@ -792,6 +792,15 @@ a.register-btn--soon{
 .game-copy{color:#3a3a44;font-size:15px;line-height:1.7;margin-bottom:14px;}
 .game-best{color:var(--mauve);font-size:13.5px;font-weight:700;margin-bottom:16px;}
 .game-start-btn{width:100%;justify-content:center;font-size:15.5px;}
+.game-name-input{
+  width:100%;padding:13px 14px;margin-bottom:8px;border-radius:12px;
+  border:2px solid #d8dcef;font-family:inherit;font-size:14.5px;
+  background:var(--paper);color:var(--ink);text-align:center;
+}
+.game-name-input:focus{outline:none;border-color:var(--ink);background:var(--white);}
+.game-name-error{color:#e0455a;font-size:13px;font-weight:700;margin-bottom:12px;}
+.game-greeting{color:var(--ink);font-size:16px;font-weight:700;margin-bottom:4px;}
+.game-end-title{color:var(--mauve);font-size:21px;font-weight:800;margin-bottom:10px;}
 
 .game-progress{
   display:flex;justify-content:space-between;
