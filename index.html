@@ -750,14 +750,16 @@
 
     <div class="game-screen" id="gameStartScreen">
       <h3>جاهز تختبر محاسبيتك؟</h3>
-      <p class="game-copy">أسئلة محاسبية متنوعة من الواقع العملي: مدين أو دائن، تصنيف الحسابات، صح أو خطأ وأكثر. ٢٠ سؤال، خذ وقتك.</p>
+      <p class="game-copy">أسئلة محاسبية متنوعة من خمس مجالات: المحاسبة المالية، المحاسبة الإدارية والتكاليف، المراجعة، الزكاة والضريبة، ونظم المعلومات المحاسبية. ٢٥ سؤال، خذ وقتك.</p>
+      <input type="text" class="game-name-input" id="gamePlayerNameInput" placeholder="اكتب اسمك">
+      <p class="game-name-error" id="gameNameError" style="display:none;">لازم تكتب اسمك قبل ما تبدأ</p>
       <p class="game-best" id="gameBestLine" style="display:none;"></p>
       <button type="button" class="btn game-start-btn" id="gameStartBtn">ابدأ اللعبة</button>
     </div>
 
     <div class="game-screen" id="gamePlayScreen" style="display:none;">
       <div class="game-progress">
-        <span id="gameQuestionNum">١ / ٢٠</span>
+        <span id="gameQuestionNum">١ / ٢٥</span>
         <span id="gameScoreLine">النقاط: ٠</span>
       </div>
       <div class="game-question-card">
@@ -769,8 +771,9 @@
     </div>
 
     <div class="game-screen" id="gameEndScreen" style="display:none;">
-      <h3>نتيجتك</h3>
-      <p class="game-copy"><strong id="gameFinalScore">٠</strong> من ٢٠</p>
+      <p class="game-greeting" id="gameGreeting">نتيجتك</p>
+      <p class="game-end-title" id="gameEndTitle"></p>
+      <p class="game-copy"><strong id="gameFinalScore">٠</strong> من ٢٥</p>
       <p class="game-best" id="gameEndBestLine"></p>
       <button type="button" class="btn game-start-btn" id="gameRetryBtn">حاول مرة ثانية</button>
     </div>
