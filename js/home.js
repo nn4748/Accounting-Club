@@ -225,6 +225,25 @@ async function fetchCiaCisaCount() {
     }
 }
 
+// جلسة "الضريبة المضافة" إلها فورم وشيت ردود مستقلين.
+const VAT_SESSION_LIMIT = 70;
+const VAT_SESSION_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1dHtdWr3WcP6HqXksvijA6-UirRalPYp8vdXla4xdp2I/export?format=csv";
+const isVatSession = (event) => /الضريبة المضافة/.test(event.name || "");
+// إغلاق يدوي فوري لتسجيل جلسة الضريبة المضافة لحين تأكيد الإدارة.
+const VAT_SESSION_CLOSED = true;
+
+async function fetchVatSessionCount() {
+    try {
+        const res = await fetch(VAT_SESSION_RESPONSES_CSV_URL + "&t=" + Date.now());
+        const text = await res.text();
+        const rows = parseCSV(text);
+        return Math.max(0, rows.length - 1);
+    } catch (err) {
+        console.error("تعذر التحقق من عدد المسجلين بجلسة الضريبة المضافة:", err);
+        return 0;
+    }
+}
+
 async function fetchRegistrationCounts() {
     const counts = {};
     try {
@@ -248,14 +267,15 @@ async function fetchRegistrationCounts() {
 
 async function loadEvents(isRetry) {
     try {
-        const [response, counts, financeWorkshopCount, ciaCisaCount] = await Promise.all([
+        const [response, counts, financeWorkshopCount, ciaCisaCount, vatSessionCount] = await Promise.all([
             fetch(API_URL + "?t=" + Date.now()),
             fetchRegistrationCounts(),
             fetchFinanceWorkshopCount(),
-            fetchCiaCisaCount()
+            fetchCiaCisaCount(),
+            fetchVatSessionCount()
         ]);
         const events = await response.json();
-        displayEvents(events, counts, financeWorkshopCount, ciaCisaCount);
+        displayEvents(events, counts, financeWorkshopCount, ciaCisaCount, vatSessionCount);
     } catch (error) {
         console.error("Error:", error);
         if (!isRetry) {
@@ -278,7 +298,7 @@ function toDirectImageUrl(url) {
     return `https://lh3.googleusercontent.com/d/${match[1]}`;
 }
 
-function displayEvents(events, counts, financeWorkshopCount, ciaCisaCount) {
+function displayEvents(events, counts, financeWorkshopCount, ciaCisaCount, vatSessionCount) {
 
     counts = counts || {};
 
@@ -300,7 +320,8 @@ function displayEvents(events, counts, financeWorkshopCount, ciaCisaCount) {
         const isFull = CLOSED_EVENTS.includes((event.name || "").trim())
             || (limit && (counts[(event.name || "").trim()] || 0) >= limit)
             || (isFinanceWorkshop(event) && (FINANCE_WORKSHOP_CLOSED || (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT))
-            || (isCiaCisaWorkshop(event) && (CIA_CISA_CLOSED || (ciaCisaCount || 0) >= CIA_CISA_LIMIT));
+            || (isCiaCisaWorkshop(event) && (CIA_CISA_CLOSED || (ciaCisaCount || 0) >= CIA_CISA_LIMIT))
+            || (isVatSession(event) && (VAT_SESSION_CLOSED || (vatSessionCount || 0) >= VAT_SESSION_LIMIT));
 
         const actionHtml = comingSoon
             ? `<a class="register-btn register-btn--soon" href="${buildRegisterUrl(event)}">التسجيل غير متاح حالياً</a>`
