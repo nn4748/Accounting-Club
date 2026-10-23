@@ -226,11 +226,10 @@ async function fetchCiaCisaCount() {
 }
 
 // جلسة "الضريبة المضافة" إلها فورم وشيت ردود مستقلين.
-const VAT_SESSION_LIMIT = 70;
+const VAT_SESSION_LIMIT = 35;
 const VAT_SESSION_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1dHtdWr3WcP6HqXksvijA6-UirRalPYp8vdXla4xdp2I/export?format=csv";
 const isVatSession = (event) => /الضريبة المضافة/.test(event.name || "");
-// إغلاق يدوي فوري لتسجيل جلسة الضريبة المضافة لحين تأكيد الإدارة.
-const VAT_SESSION_CLOSED = true;
+const VAT_SESSION_CLOSED = false;
 
 async function fetchVatSessionCount() {
     try {
