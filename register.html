@@ -470,6 +470,12 @@
         <a class="action-link add-to-calendar" style="display:none;" target="_blank" rel="noopener">أضف للتقويم</a>
       </div>
 
+      <div class="success-message" id="vatSessionSuccessMessage" style="display:none;">
+        <p>تم التسجيل بنجاح، شكراً لك.</p>
+        <a class="action-link" href="https://maps.app.goo.gl/wqVNLzq4YabvCZWX8?g_st=iw" target="_blank" rel="noopener">موقع الجلسة</a>
+        <a class="action-link add-to-calendar" style="display:none;" target="_blank" rel="noopener">أضف للتقويم</a>
+      </div>
+
       <div class="success-message" id="fullMessage" style="display:none;">
         <div class="icon">🚫</div>
         <p>انتهى التسجيل.</p>
@@ -961,6 +967,8 @@
             document.getElementById("financeWorkshopSuccessMessage").style.display = "block";
           } else if (isCiaCisaWorkshop) {
             document.getElementById("ciaCisaSuccessMessage").style.display = "block";
+          } else if (isVatSession) {
+            document.getElementById("vatSessionSuccessMessage").style.display = "block";
           } else {
             document.getElementById("successMessage").style.display = "block";
           }
