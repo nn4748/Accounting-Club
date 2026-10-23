@@ -622,6 +622,16 @@
     // إغلاق يدوي فوري لتسجيل ورشة CIA & CISA بغض النظر عن عدد المسجلين.
     const CIA_CISA_CLOSED = true;
 
+    // جلسة "الضريبة المضافة" — فورم وشيت ردود مخصصين لها، نفس حقول
+    // التسجيل الفردي العادية (اسم/بريد/جوال/تخصص).
+    const isVatSession = /الضريبة المضافة/.test(eventData.name || "");
+    const VAT_SESSION_REGISTRATION_OPEN = true;
+    // سقف مؤقت لحين تأكيد الإدارة للعدد النهائي.
+    const VAT_SESSION_LIMIT = 70;
+    const VAT_SESSION_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1dHtdWr3WcP6HqXksvijA6-UirRalPYp8vdXla4xdp2I/export?format=csv";
+    // إغلاق يدوي فوري لتسجيل جلسة الضريبة المضافة لحين تأكيد الإدارة.
+    const VAT_SESSION_CLOSED = true;
+
     if (isCiaCisaWorkshop) {
       document.getElementById("speakersSection").style.display = "block";
       document.querySelectorAll(".speaker-btn").forEach(btn => {
@@ -752,6 +762,26 @@
         return;
       }
 
+      if (isVatSession) {
+        if (VAT_SESSION_CLOSED) {
+          registerForm.style.display = "none";
+          document.getElementById("fullMessage").style.display = "block";
+          return;
+        }
+        fetch(VAT_SESSION_RESPONSES_CSV_URL + "&t=" + Date.now())
+          .then(res => res.text())
+          .then(text => {
+            const rows = parseCSV(text);
+            const count = Math.max(0, rows.length - 1);
+            if (count >= VAT_SESSION_LIMIT) {
+              registerForm.style.display = "none";
+              document.getElementById("fullMessage").style.display = "block";
+            }
+          })
+          .catch(err => console.error("تعذر التحقق من عدد المسجلين بجلسة الضريبة المضافة:", err));
+        return;
+      }
+
       const limit = REGISTRATION_LIMITS[eventData.name.trim()];
       if (!limit) return;
 
@@ -826,6 +856,14 @@
       email: "entry.1509891781"
     };
 
+    const VAT_SESSION_GOOGLE_FORM_ID = "1FAIpQLSe3Dn1kzqhWDrDYoW-VvCgb6jSrUFbTAKkyYTOzIJGYHrzTyw";
+    const VAT_SESSION_FORM_ENTRY = {
+      fullName: "entry.2107895037",
+      email: "entry.748580862",
+      phone: "entry.1765359950",
+      major: "entry.1555392493"
+    };
+
     const registerForm = document.getElementById("registerForm");
 
     checkRegistrationCap();
@@ -856,7 +894,13 @@
         return;
       }
 
-      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN) || (isFinanceWorkshop && !FINANCE_WORKSHOP_REGISTRATION_OPEN) || (isCiaCisaWorkshop && !CIA_CISA_REGISTRATION_OPEN)) {
+      if (isVatSession && VAT_SESSION_CLOSED) {
+        registerForm.style.display = "none";
+        document.getElementById("fullMessage").style.display = "block";
+        return;
+      }
+
+      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN) || (isFinanceWorkshop && !FINANCE_WORKSHOP_REGISTRATION_OPEN) || (isCiaCisaWorkshop && !CIA_CISA_REGISTRATION_OPEN) || (isVatSession && !VAT_SESSION_REGISTRATION_OPEN)) {
         registerForm.style.display = "none";
         document.getElementById("notStartedMessage").style.display = "block";
         return;
@@ -888,6 +932,12 @@
         body.set(CIA_CISA_FORM_ENTRY.email, document.getElementById("email").value);
         body.set(CIA_CISA_FORM_ENTRY.phone, document.getElementById("phone").value);
         body.set(CIA_CISA_FORM_ENTRY.major, document.getElementById("major").value);
+      } else if (isVatSession) {
+        formId = VAT_SESSION_GOOGLE_FORM_ID;
+        body.set(VAT_SESSION_FORM_ENTRY.fullName, document.getElementById("name").value);
+        body.set(VAT_SESSION_FORM_ENTRY.email, document.getElementById("email").value);
+        body.set(VAT_SESSION_FORM_ENTRY.phone, document.getElementById("phone").value);
+        body.set(VAT_SESSION_FORM_ENTRY.major, document.getElementById("major").value);
       } else {
         formId = GOOGLE_FORM_ID;
         body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
