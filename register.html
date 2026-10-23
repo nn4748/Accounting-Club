@@ -398,12 +398,10 @@
 
     <div class="speakers-section" id="vatSpeakerSection" style="display:none;">
       <h2>المتحدث</h2>
-      <p class="speakers-hint">لمعرفة معلومات اكثر، يرجى الضغط على الاسم</p>
       <div class="speakers-buttons">
-        <button type="button" class="speaker-btn" data-speaker="ali">أ. علي الناصر</button>
+        <span class="speaker-btn" style="cursor:default;">أ. علي الناصر</span>
       </div>
-      <div class="speaker-info" id="speakerInfo-ali">
-        <p class="speaker-link-hint">(للانتقال إلى حساب المتحدث يرجى الضغط على الزر)</p>
+      <div class="speaker-info show" style="border-top:none;padding-top:0;">
         <a href="https://www.linkedin.com/in/علي-الناصر-ali-al-nasser-1474949b" target="_blank" rel="noopener">حساب لينكد إن</a>
       </div>
     </div>
@@ -652,23 +650,21 @@
 
     if (isCiaCisaWorkshop) {
       document.getElementById("speakersSection").style.display = "block";
-    }
-    if (isVatSession) {
-      document.getElementById("vatSpeakerSection").style.display = "block";
-    }
-    if (isCiaCisaWorkshop || isVatSession) {
-      document.querySelectorAll(".speaker-btn").forEach(btn => {
+      document.querySelectorAll("#speakersSection .speaker-btn").forEach(btn => {
         btn.addEventListener("click", function () {
           const info = document.getElementById("speakerInfo-" + this.dataset.speaker);
           const isOpen = info.classList.contains("show");
-          document.querySelectorAll(".speaker-info").forEach(el => el.classList.remove("show"));
-          document.querySelectorAll(".speaker-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll("#speakersSection .speaker-info").forEach(el => el.classList.remove("show"));
+          document.querySelectorAll("#speakersSection .speaker-btn").forEach(b => b.classList.remove("active"));
           if (!isOpen) {
             info.classList.add("show");
             this.classList.add("active");
           }
         });
       });
+    }
+    if (isVatSession) {
+      document.getElementById("vatSpeakerSection").style.display = "block";
     }
 
     // فعاليات "قريبًا" يقدر الزائر يفتح نموذجها ويعبيه، لكن الإرسال
