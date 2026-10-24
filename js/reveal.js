@@ -1,38 +1,53 @@
-// تأثير ظهور تدريجي خفيف عند التمرير، لعناصر البطاقات الرئيسية
-// بكل صفحة. يحترم prefers-reduced-motion تمامًا ولا يغيّر أي
-// محتوى أو تخطيط — بس يضيف انتقال opacity/transform بسيط.
+// ظهور ثلاثي الأبعاد عند التمرير لبطاقات الموقع (فعاليات، زيارات،
+// فورم التسجيل...). يستخدم Web Animations API عشان ما يتعارض
+// أبدًا مع أي transition مخصص موجود أصلًا على نفس العنصر (مثل
+// hover الأصلي لبطاقات الفعاليات) — الحركتين تشتغلان بشكل مستقل
+// تمامًا. يحترم prefers-reduced-motion بالكامل.
 (function () {
   "use strict";
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (!("IntersectionObserver" in window)) return;
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (REDUCED || !("IntersectionObserver" in window) || !("animate" in document.createElement("div"))) return;
 
-  // نقتصر على البطاقات اللي ما عندها أصلًا انتقال hover خاص بها،
-  // عشان ما نتعارض مع transition المعرّف لها (مثل event-card,
-  // mini-card, option-card, visit-card) ونفقدها حركتها الأصلية.
   var SELECTOR = [
+    ".event-card",
+    ".mini-card",
     ".past-card",
+    ".visit-card",
+    ".option-card",
     ".register-card",
-    ".card"
+    ".card",
+    ".stat-pill",
+    ".goal-item"
   ].join(",");
+
+  var seen = new WeakSet();
+  var batchIndex = 0;
 
   var io = new IntersectionObserver(
     function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          io.unobserve(entry.target);
-        }
+        if (!entry.isIntersecting) return;
+        io.unobserve(entry.target);
+        var delay = Math.min(batchIndex % 6, 5) * 70;
+        batchIndex++;
+        entry.target.classList.remove("reveal-pending");
+        entry.target.animate(
+          [
+            { opacity: 0, transform: "perspective(1000px) translateY(34px) rotateX(10deg) scale(.94)" },
+            { opacity: 1, transform: "perspective(1000px) translateY(0) rotateX(0deg) scale(1)" }
+          ],
+          { duration: 650, delay: delay, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" }
+        );
       });
     },
     { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
   );
 
   function tag(el) {
-    // ما نكرر الأثر على عنصر داخل [data-reveal] أصلًا (نظام الصفحة
-    // الرئيسية الحالي) تفاديًا لتكرار الحركة على نفس العنصر.
-    if (el.hasAttribute("data-reveal-auto") || el.closest("[data-reveal]")) return;
-    el.setAttribute("data-reveal-auto", "");
+    if (seen.has(el) || el.closest("[data-reveal]")) return;
+    seen.add(el);
+    el.classList.add("reveal-pending");
     io.observe(el);
   }
 
@@ -42,8 +57,6 @@
 
   scan();
 
-  // البطاقات اللي تتولّد ديناميكيًا بعد تحميل الصفحة (الفعاليات
-  // مثلًا تجيب من API) — نراقب إضافتها ونطبّق نفس الأثر عليها.
   var mo = new MutationObserver(function (mutations) {
     mutations.forEach(function (m) {
       m.addedNodes.forEach(function (node) {
