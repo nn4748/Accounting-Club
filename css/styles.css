@@ -709,6 +709,21 @@ a.register-btn--soon{
     .hero h1 .word{animation:none !important;opacity:1 !important;transform:none !important;}
     [data-reveal]{transition:none;opacity:1;transform:none;}
   }
+
+  /* ============ لمسات تفاعلية دقيقة إضافية ============ */
+  .mini-card{transition:box-shadow .3s var(--ease-premium,cubic-bezier(.22,1,.36,1)), transform .3s var(--ease-premium,cubic-bezier(.22,1,.36,1));}
+  .mini-card:hover{transform:translateY(-4px);box-shadow:0 18px 38px -16px rgba(0,8,120,.3);}
+  .goal-item{transition:background .3s var(--ease-premium,cubic-bezier(.22,1,.36,1)), transform .3s var(--ease-premium,cubic-bezier(.22,1,.36,1));}
+  .goal-item:hover{transform:translateY(-2px);}
+  .btn:active,.social-pill:active,.contact-form button:active,.nav-mark:active,.menu-close:active{transform:scale(.97);}
+  .btn:focus-visible,.social-pill:focus-visible,.nav-links a:focus-visible,
+  .side-menu-links a:focus-visible,.nav-mark:focus-visible,.menu-close:focus-visible,
+  .contact-form button:focus-visible,.contact-form input:focus-visible,
+  .contact-form select:focus-visible,.contact-form textarea:focus-visible,
+  .game-start-btn:focus-visible,.game-answer-btn:focus-visible,
+  .register-btn:focus-visible{
+    outline:2px solid var(--sky);outline-offset:3px;
+  }
   /* ===== منع اسم الشركة من النزول ===== */
 .company-name {
   font-size: 12px;              /* تصغير الخط */

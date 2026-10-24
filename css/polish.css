@@ -1,0 +1,71 @@
+/* =========================================================
+   طبقة تحسينات بصرية عامة (micro-interactions / scroll reveal)
+   تضاف فوق تنسيقات كل صفحة بدون أي تعديل على الألوان أو
+   التخطيط أو المحتوى — فقط انتقالات وتفاعلات أنعم وأدق.
+   ========================================================= */
+
+:root{
+  --ease-premium: cubic-bezier(.22,1,.36,1);
+  --dur-fast: .18s;
+  --dur: .3s;
+  --dur-slow: .6s;
+}
+
+/* انتقال موحّد وسلس لكل العناصر التفاعلية الشائعة بالموقع،
+   يغطي فقط transform/box-shadow/background/color/border-color
+   (أبدًا "all") عشان ما يأثر على أي خاصية تخطيطية. */
+a, button, .btn, .btn-start, .btn-ghost, .register-btn, .back-button,
+.speaker-btn, .nav-mark, .menu-close, .game-close, .bot-close,
+.game-answer-btn, .bot-send-btn, input, select, textarea {
+  transition-timing-function: var(--ease-premium);
+}
+
+/* حلقة تركيز واضحة عند التنقل بلوحة المفاتيح، بدون ما تغيّر
+   شكل العنصر وقت الضغط بالماوس */
+a:focus-visible, button:focus-visible, .btn:focus-visible,
+.btn-start:focus-visible, .btn-ghost:focus-visible,
+.register-btn:focus-visible, .back-button:focus-visible,
+.speaker-btn:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--sky, #6ccff6);
+  outline-offset: 3px;
+}
+
+/* لمسة ضغط خفيفة على الأزرار (feedback لحظي عند النقر) */
+button:active, .btn:active, .btn-start:active, .btn-ghost:active,
+.register-btn:active, .back-button:active, .speaker-btn:active,
+.game-answer-btn:active, .bot-send-btn:active {
+  transform: scale(.97);
+}
+
+/* ظل خفيف وارتفاع بسيط للبطاقات عند المرور عليها، فوق أي
+   تأثير hover موجود أصلًا (لون/حدود) بدون المساس فيه */
+.mini-card:hover, .past-card:hover, .visit-card:hover,
+.event-card-page:hover, .card:hover, .register-card:hover {
+  box-shadow: 0 16px 34px -18px rgba(0,8,120,.35);
+}
+
+/* =========================================================
+   Scroll reveal — نفس نمط [data-reveal] المستخدم بالصفحة
+   الرئيسية، معمم هنا لباقي الصفحات عبر js/reveal.js
+   ========================================================= */
+[data-reveal-auto]{
+  opacity:0;
+  transform:translateY(22px);
+  transition:opacity var(--dur-slow) var(--ease-premium),
+             transform var(--dur-slow) var(--ease-premium);
+}
+[data-reveal-auto].is-visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  [data-reveal-auto]{opacity:1 !important;transform:none !important;}
+}
