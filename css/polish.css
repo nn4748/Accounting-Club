@@ -38,26 +38,54 @@ button:active, .btn:active, .btn-start:active, .btn-ghost:active,
   transform: scale(.97);
 }
 
-/* ظل خفيف وارتفاع بسيط للبطاقات عند المرور عليها، فوق أي
-   تأثير hover موجود أصلًا (لون/حدود) بدون المساس فيه */
-.mini-card:hover, .past-card:hover, .visit-card:hover,
-.event-card-page:hover, .card:hover, .register-card:hover {
+/* ظل خفيف وارتفاع بسيط للبطاقات اللي ما عندها تأثير hover خاص
+   فيها أصلًا (past-card / register-card / card) */
+.past-card:hover, .card:hover, .register-card:hover {
   box-shadow: 0 16px 34px -18px rgba(0,8,120,.35);
 }
 
 /* =========================================================
-   Scroll reveal — نفس نمط [data-reveal] المستخدم بالصفحة
-   الرئيسية، معمم هنا لباقي الصفحات عبر js/reveal.js
+   Scroll reveal (js/reveal.js) — إخفاء مبدئي بسيط بـ class
+   بدل opacity مباشر، عشان أي حركة دخول فعلية تُبنى بـ
+   Web Animations API من غير ما تتعارض مع transition الأصلي
+   لنفس العنصر (hover البطاقات مثلًا يبقى زي ما هو تمامًا)
    ========================================================= */
-[data-reveal-auto]{
-  opacity:0;
-  transform:translateY(22px);
-  transition:opacity var(--dur-slow) var(--ease-premium),
-             transform var(--dur-slow) var(--ease-premium);
+.reveal-pending{opacity:0;}
+
+/* =========================================================
+   تأثير 3D تفاعلي (js/tilt3d.js) — يميل البطاقة بخفة مع حركة
+   الماوس، مع إضاءة لامعة تتبع المؤشر. يعمل بس على أجهزة فيها
+   ماوس حقيقي (hover:hover) ومو مفعّل reduced-motion.
+   ========================================================= */
+.tilt-ready{
+  transform-style: preserve-3d;
+  will-change: transform;
 }
-[data-reveal-auto].is-visible{
-  opacity:1;
-  transform:translateY(0);
+.tilt-ready::before{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  background:radial-gradient(500px circle at var(--tilt-x,50%) var(--tilt-y,50%),
+    rgba(255,255,255,.22), transparent 55%);
+  opacity:0;
+  transition:opacity .35s var(--ease-premium);
+  pointer-events:none;
+}
+.tilt-ready:hover::before{opacity:1;}
+
+/* لمعة تمر فوق الأزرار الأساسية عند المرور عليها — طبقة إضاءة
+   بيضاء خفيفة فقط، بدون أي لون جديد بالهوية البصرية */
+.btn, .register-btn, .btn-start{position:relative;overflow:hidden;}
+.btn::after, .register-btn::after, .btn-start::after{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,.4) 50%, transparent 70%);
+  transform:translateX(-130%);
+  transition:transform .85s var(--ease-premium);
+  pointer-events:none;
+}
+.btn:hover::after, .register-btn:hover::after, .btn-start:hover::after{
+  transform:translateX(130%);
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -67,5 +95,12 @@ button:active, .btn:active, .btn-start:active, .btn-ghost:active,
     transition-duration:.001ms !important;
     scroll-behavior:auto !important;
   }
-  [data-reveal-auto]{opacity:1 !important;transform:none !important;}
+  .reveal-pending{opacity:1 !important;}
+  .tilt-ready{transform:none !important;}
+  .btn::after, .register-btn::after, .btn-start::after{display:none;}
+}
+
+/* الأجهزة اللي ما فيها ماوس حقيقي (لمس) ما تحتاج تأثير الميلان */
+@media (hover: none), (pointer: coarse){
+  .tilt-ready::before{display:none;}
 }
