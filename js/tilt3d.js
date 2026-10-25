@@ -65,12 +65,51 @@
 
   scan();
 
+  // ===== أزرار "مغناطيسية" — تنجذب بخفة نحو المؤشر =====
+  var MAGNET_SELECTOR = ".btn, .register-btn, .btn-start";
+  var MAGNET_RANGE = 26; // أقصى انزياح بالبكسل
+  var magnetSeen = new WeakSet();
+
+  function bindMagnet(el) {
+    if (magnetSeen.has(el)) return;
+    magnetSeen.add(el);
+    var frame = null;
+
+    el.addEventListener("mousemove", function (e) {
+      var rect = el.getBoundingClientRect();
+      var dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+      var dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(function () {
+        el.style.transition = "transform .12s linear";
+        el.style.transform =
+          "translate(" + (dx * MAGNET_RANGE * 0.3).toFixed(1) + "px," +
+          (dy * MAGNET_RANGE * 0.3).toFixed(1) + "px)";
+      });
+    });
+    el.addEventListener("mouseleave", function () {
+      if (frame) cancelAnimationFrame(frame);
+      el.style.transition = "transform .45s cubic-bezier(.22,1,.36,1)";
+      el.style.transform = "";
+    });
+  }
+
+  function scanMagnet(root) {
+    (root || document).querySelectorAll(MAGNET_SELECTOR).forEach(bindMagnet);
+  }
+
+  scanMagnet();
+
   var mo = new MutationObserver(function (mutations) {
     mutations.forEach(function (m) {
       m.addedNodes.forEach(function (node) {
         if (node.nodeType !== 1) return;
         if (node.matches && node.matches(SELECTOR)) bind(node);
-        if (node.querySelectorAll) scan(node);
+        if (node.matches && node.matches(MAGNET_SELECTOR)) bindMagnet(node);
+        if (node.querySelectorAll) {
+          scan(node);
+          scanMagnet(node);
+        }
       });
     });
   });
