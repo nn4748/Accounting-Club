@@ -142,3 +142,38 @@ button:active, .btn:active, .btn-start:active, .btn-ghost:active,
 @media (prefers-reduced-motion: reduce){
   ::view-transition-old(root), ::view-transition-new(root){animation:none;}
 }
+
+/* =========================================================
+   مؤشر مخصص (js/cursor.js) — نقطة + حلقة تتبع المؤشر
+   ========================================================= */
+.custom-cursor-active, .custom-cursor-active *{cursor:none !important;}
+.custom-cursor-active input, .custom-cursor-active textarea,
+.custom-cursor-active select, .custom-cursor-active [contenteditable]{
+  cursor:text !important;
+}
+#cc-dot, #cc-ring{
+  position:fixed; top:0; left:0;
+  pointer-events:none; z-index:10000;
+  border-radius:50%;
+  opacity:0;
+}
+#cc-dot{
+  width:8px; height:8px;
+  background:var(--sky,#6ccff6);
+  transition:opacity .2s ease;
+}
+#cc-ring{
+  width:34px; height:34px;
+  border:1.5px solid rgba(108,207,246,.55);
+  transition:width .25s var(--ease-premium), height .25s var(--ease-premium),
+             border-color .25s var(--ease-premium), opacity .25s ease;
+}
+#cc-ring.cc-hover{
+  width:54px; height:54px;
+  border-color:var(--sky,#6ccff6);
+  background:rgba(108,207,246,.08);
+}
+
+@media (hover: none), (pointer: coarse){
+  #cc-dot, #cc-ring{display:none;}
+}
