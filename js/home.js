@@ -725,6 +725,13 @@ if (gameFab) {
     }
 
     gameFab.addEventListener("click", openGame);
+
+    if (new URLSearchParams(location.search).get("game") === "1") {
+        openGame();
+        const cleanUrl = location.pathname + location.hash;
+        history.replaceState(null, "", cleanUrl);
+    }
+
     gameClose.addEventListener("click", closeGame);
     gameOverlay.addEventListener("click", (e) => { if (e.target === gameOverlay) closeGame(); });
     gameStartBtn.addEventListener("click", startGame);

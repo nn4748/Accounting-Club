@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#000878">
+  <title>إرسال إشعار | نادي المحاسبة</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: "Almarai", sans-serif;
+      background: #0a0e6e;
+      padding: 30px 15px 50px;
+      color: #fff;
+    }
+
+    .wrap { width: 100%; max-width: 480px; margin: 0 auto; }
+
+    h1 { text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 20px; }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px 22px;
+      box-shadow: 0 2px 16px rgba(13, 26, 94, 0.25);
+      color: #1a1a2e;
+    }
+
+    label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #000878;
+      margin-bottom: 6px;
+      margin-top: 14px;
+    }
+    label:first-of-type { margin-top: 0; }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px 13px;
+      border-radius: 10px;
+      border: 1px solid #d8dcef;
+      font-family: "Almarai", sans-serif;
+      font-size: 14.5px;
+      background: #f8f9fd;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    input:focus, textarea:focus { outline: none; border-color: #000878; background: #fff; }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      background: #000878;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: "Almarai", sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.25s ease;
+    }
+    button:hover { background: #0a1470; }
+    button:disabled { opacity: .6; cursor: default; }
+
+    .result {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      display: none;
+      line-height: 1.7;
+    }
+    .result.ok { display: block; background: #eafaf0; color: #1a8f4c; }
+    .result.err { display: block; background: #fdeceb; color: #d43b3b; }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrap">
+    <h1>إرسال إشعار لأعضاء النادي</h1>
+
+    <div class="card">
+      <label for="pwInput">كلمة المرور</label>
+      <input type="password" id="pwInput" placeholder="كلمة مرور الأدمن">
+
+      <label for="titleInput">العنوان</label>
+      <input type="text" id="titleInput" value="نادي المحاسبة">
+
+      <label for="bodyInput">النص</label>
+      <textarea id="bodyInput">ما جربت لعبتنا الجديدة! جا دورك تدخل تجرّبها واختبر محاسبيتك🚀</textarea>
+
+      <label for="urlInput">الرابط عند الضغط على الإشعار</label>
+      <input type="text" id="urlInput" value="/index.html?game=1">
+
+      <button type="button" id="sendBtn">إرسال للجميع</button>
+
+      <div class="result" id="resultBox"></div>
+    </div>
+  </div>
+
+  <script>
+    const sendBtn = document.getElementById("sendBtn");
+    const resultBox = document.getElementById("resultBox");
+
+    sendBtn.addEventListener("click", async () => {
+      const password = document.getElementById("pwInput").value;
+      const title = document.getElementById("titleInput").value.trim();
+      const body = document.getElementById("bodyInput").value.trim();
+      const url = document.getElementById("urlInput").value.trim();
+
+      if (!password) {
+        resultBox.className = "result err";
+        resultBox.textContent = "اكتب كلمة المرور.";
+        return;
+      }
+      if (!title || !body) {
+        resultBox.className = "result err";
+        resultBox.textContent = "العنوان والنص مطلوبان.";
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = "جارِ الإرسال...";
+      resultBox.className = "result";
+      resultBox.style.display = "none";
+
+      try {
+        const res = await fetch("/.netlify/functions/send-notification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password, title, body, url }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          resultBox.className = "result err";
+          resultBox.textContent = data.error || "صار خطأ غير متوقع.";
+        } else {
+          resultBox.className = "result ok";
+          resultBox.textContent =
+            `تم الإرسال ✅ — وصل لـ ${data.sent} مشترك` +
+            (data.removed ? `، وحُذف ${data.removed} اشتراك منتهي` : "") +
+            (data.failed ? `، وفشل الإرسال لـ ${data.failed}` : "") +
+            ".";
+        }
+      } catch (err) {
+        resultBox.className = "result err";
+        resultBox.textContent = "تعذر الاتصال بالخادم، تأكد من اتصالك بالإنترنت.";
+      }
+
+      sendBtn.disabled = false;
+      sendBtn.textContent = "إرسال للجميع";
+    });
+  </script>
+
+</body>
+</html>

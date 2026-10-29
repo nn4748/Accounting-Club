@@ -32,3 +32,43 @@ self.addEventListener("fetch", (event) => {
       .catch(() => caches.match(event.request))
   );
 });
+
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (err) {
+    data = { title: "نادي المحاسبة", body: event.data ? event.data.text() : "" };
+  }
+
+  const title = data.title || "نادي المحاسبة";
+  const options = {
+    body: data.body || "",
+    icon: "/assets/icons/icon-192.png",
+    badge: "/assets/icons/icon-192.png",
+    dir: "rtl",
+    lang: "ar",
+    data: { url: data.url || "/index.html" },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) || "/index.html";
+
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientsList) => {
+      const absoluteUrl = new URL(targetUrl, self.location.origin).href;
+      for (const client of clientsList) {
+        if (client.url === absoluteUrl && "focus" in client) {
+          return client.focus();
+        }
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
