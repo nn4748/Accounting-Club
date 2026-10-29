@@ -1,0 +1,10 @@
+{
+  "name": "accounting-club-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "موقع نادي المحاسبة - دوال Netlify الخاصة بإشعارات الدفع",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.7",
+    "web-push": "^3.6.7"
+  }
+}

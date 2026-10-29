@@ -177,3 +177,49 @@ button:active, .btn:active, .btn-start:active, .btn-ghost:active,
 @media (hover: none), (pointer: coarse){
   #cc-dot, #cc-ring{display:none;}
 }
+
+/* =========================================================
+   إشعارات الدفع (js/push.js)
+   ========================================================= */
+.notif-fab{
+  position:fixed;
+  bottom:24px; right:24px; z-index:70;
+  width:56px; height:56px;
+  border-radius:50%;
+  background:var(--ink,#000878);
+  border:none;
+  box-shadow:0 10px 26px -6px rgba(0,8,120,.6);
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:transform .25s ease, background .25s ease;
+}
+.notif-fab:hover{transform:scale(1.08);}
+.notif-fab-icon{font-size:24px; line-height:1;}
+.notif-fab.notif-fab-active{background:#1a8f4c;}
+.notif-fab.notif-fab-hidden{display:none;}
+
+.notif-banner{
+  position:fixed;
+  bottom:90px; right:16px; left:16px; z-index:71;
+  max-width:360px;
+  margin-right:auto; margin-left:auto;
+  background:#fff;
+  color:var(--ink,#000878);
+  border-radius:14px;
+  padding:16px 18px;
+  box-shadow:0 14px 34px -8px rgba(0,8,120,.35);
+  font-size:14px; line-height:1.8;
+}
+.notif-banner-text{margin:0; padding-left:20px;}
+.notif-banner-close{
+  position:absolute; top:8px; left:10px;
+  background:none; border:none; cursor:pointer;
+  font-size:15px; color:#8a8fa8; line-height:1;
+  padding:4px;
+}
+
+@media (max-width:480px){
+  .notif-fab{width:50px; height:50px; bottom:18px; right:18px;}
+  .notif-fab-icon{font-size:21px;}
+  .notif-banner{bottom:78px;}
+}
