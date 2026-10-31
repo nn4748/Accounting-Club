@@ -186,7 +186,7 @@ button:active, .btn:active, .btn-start:active, .btn-ghost:active,
   bottom:24px; left:24px; z-index:70;
   width:66px; height:66px;
   border-radius:50%;
-  background:var(--sky,#6ccff6);
+  background:var(--ink,#000878);
   color:#fff;
   border:none;
   box-shadow:0 10px 26px -6px rgba(0,8,120,.5);

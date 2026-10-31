@@ -30,8 +30,10 @@
   if (!canSubscribe && !iosNeedsHomeScreen) return;
 
   const BELL_SVG =
-    '<svg class="notif-fab-icon" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">' +
-    '<path d="M12 2a6 6 0 0 0-6 6v3.09c0 .55-.2 1.08-.57 1.5L4 14.5a1 1 0 0 0 .76 1.64h14.48a1 1 0 0 0 .76-1.64l-1.43-1.9a2 2 0 0 1-.57-1.5V8a6 6 0 0 0-6-6Zm0 20a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Z"/>' +
+    '<svg class="notif-fab-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>' +
+    '<path d="M13.73 21a2 2 0 0 1-3.46 0"/>' +
     '</svg>';
 
   const wrap = document.createElement("div");
