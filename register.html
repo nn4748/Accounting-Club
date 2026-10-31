@@ -384,21 +384,12 @@
     </div>
 
     <div class="speakers-section" id="speakersSection" style="display:none;">
-      <h2>المتحدثات</h2>
-      <p class="speakers-hint">لمعرفة معلومات اكثر، يرجى الضغط على الاسم</p>
+      <h2>المتحدث</h2>
       <div class="speakers-buttons">
-        <button type="button" class="speaker-btn" data-speaker="malak">أ. ملاك بن هديان</button>
-        <button type="button" class="speaker-btn" data-speaker="sarah">أ. ساره الدريس</button>
+        <span class="speaker-btn" style="cursor:default;">أ. عبدالملك العويد</span>
       </div>
-      <div class="speaker-info" id="speakerInfo-malak">
-        <p>أ. ملاك بن هديان، متخصصة في مراجعة تقنية المعلومات بخبرة تتجاوز 7 سنوات في المراجعة الداخلية. مدير إدارة مراجعة تقنية المعلومات في المركز الوطني لنظم الموارد الحكومية، وسبق لها العمل في Solutions by stc وstc. حاصلة على شهادتي CISA وCIA.</p>
-        <p class="speaker-link-hint">(للانتقال إلى حساب المتحدث يرجى الضغط على الزر)</p>
-        <a href="https://www.linkedin.com/in/malak-bin-hadyan-ba8558168" target="_blank" rel="noopener">حساب لينكد إن</a>
-      </div>
-      <div class="speaker-info" id="speakerInfo-sarah">
-        <p>أ. ساره الدريس، متخصصة في مراجعة تقنية المعلومات بخبرة تتجاوز 4 سنوات في المراجعة الداخلية. خبيرة في مراجعة تقنية المعلومات في المركز الوطني لنظم الموارد الحكومية التابع لوزارة المالية، وسبق لها العمل في stc. حاصلة على شهادة CISA.</p>
-        <p class="speaker-link-hint">(للانتقال إلى حساب المتحدث يرجى الضغط على الزر)</p>
-        <a href="https://www.linkedin.com/in/sarah-aldrees-cisa-752480208" target="_blank" rel="noopener">حساب لينكد إن</a>
+      <div class="speaker-info show" style="border-top:none;padding-top:0;">
+        <a href="https://www.linkedin.com/in/abdulmalek-alowayyid" target="_blank" rel="noopener">حساب لينكد إن</a>
       </div>
     </div>
 
@@ -481,9 +472,8 @@
       </div>
 
       <div class="success-message" id="ciaCisaSuccessMessage" style="display:none;">
-        <p>تم التسجيل بنجاح، شكراً لك.<br>يرجى الانضمام للمجموعة.</p>
-        <a class="action-link" href="https://maps.app.goo.gl/i46DY5YK4ReZ77Ew8?g_st=ic" target="_blank" rel="noopener">موقع الورشة</a>
-        <a class="action-link" href="https://chat.whatsapp.com/DQV9m0goV92HTWWYp3JHIr?mode=gi_t" target="_blank" rel="noopener">الانضمام لمجموعة الواتساب</a>
+        <p>تم التسجيل بنجاح، شكراً لك.</p>
+        <a class="action-link" href="https://maps.app.goo.gl/3HngX3s9VUJRa6cH8?g_st=ic" target="_blank" rel="noopener">موقع الورشة</a>
         <a class="action-link add-to-calendar" style="display:none;" target="_blank" rel="noopener">أضف للتقويم</a>
       </div>
 
@@ -639,11 +629,11 @@
     // ورشة "CIA & CISA" — فورم وشيت ردود مخصصين لها، نفس حقول
     // التسجيل الفردي العادية (اسم/تخصص/جوال/بريد).
     const isCiaCisaWorkshop = /CISA/i.test(eventData.name || "");
-    const CIA_CISA_REGISTRATION_OPEN = true;
+    const CIA_CISA_REGISTRATION_OPEN = false;
     const CIA_CISA_LIMIT = 70;
-    const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1VxTpjfM0cEHb2A5q3T6CmZwc_SnlQFS_mSzVWSwEq8o/export?format=csv";
+    const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKVHEdPo9e-z4kHTtfKSl1ZzrMc6fj-z3ree07aySAY/export?format=csv";
     // إغلاق يدوي فوري لتسجيل ورشة CIA & CISA بغض النظر عن عدد المسجلين.
-    const CIA_CISA_CLOSED = true;
+    const CIA_CISA_CLOSED = false;
 
     // جلسة "الضريبة المضافة" — فورم وشيت ردود مخصصين لها، نفس حقول
     // التسجيل الفردي العادية (اسم/بريد/جوال/تخصص).
@@ -655,18 +645,6 @@
 
     if (isCiaCisaWorkshop) {
       document.getElementById("speakersSection").style.display = "block";
-      document.querySelectorAll("#speakersSection .speaker-btn").forEach(btn => {
-        btn.addEventListener("click", function () {
-          const info = document.getElementById("speakerInfo-" + this.dataset.speaker);
-          const isOpen = info.classList.contains("show");
-          document.querySelectorAll("#speakersSection .speaker-info").forEach(el => el.classList.remove("show"));
-          document.querySelectorAll("#speakersSection .speaker-btn").forEach(b => b.classList.remove("active"));
-          if (!isOpen) {
-            info.classList.add("show");
-            this.classList.add("active");
-          }
-        });
-      });
     }
     if (isVatSession) {
       document.getElementById("vatSpeakerSection").style.display = "block";
@@ -872,12 +850,12 @@
       phone: "entry.620026520"
     };
 
-    const CIA_CISA_GOOGLE_FORM_ID = "1FAIpQLSe6zflK40UNvcljBM7NXzDIO1MAjwx2B11cllGetx8DJGxEzg";
+    const CIA_CISA_GOOGLE_FORM_ID = "1FAIpQLSfkEMC-_kOYsV5txbnIoKGxa7IMz1kf840sT6EYP9YZVF8KHw";
     const CIA_CISA_FORM_ENTRY = {
-      fullName: "entry.724115232",
-      major: "entry.756746240",
-      phone: "entry.663282156",
-      email: "entry.1509891781"
+      fullName: "entry.1235863455",
+      email: "entry.3533838",
+      phone: "entry.1998997079",
+      major: "entry.74989631"
     };
 
     const VAT_SESSION_GOOGLE_FORM_ID = "1FAIpQLSe3Dn1kzqhWDrDYoW-VvCgb6jSrUFbTAKkyYTOzIJGYHrzTyw";

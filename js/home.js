@@ -208,10 +208,10 @@ async function fetchFinanceWorkshopCount() {
 // ورشة "CIA & CISA" إلها فورم وشيت ردود مستقلين، نطابق بالاسم
 // بنمط "CISA" عشان تشتغل حتى بتغيّر صياغة الاسم بالشيت.
 const CIA_CISA_LIMIT = 70;
-const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1VxTpjfM0cEHb2A5q3T6CmZwc_SnlQFS_mSzVWSwEq8o/export?format=csv";
+const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKVHEdPo9e-z4kHTtfKSl1ZzrMc6fj-z3ree07aySAY/export?format=csv";
 const isCiaCisaWorkshop = (event) => /CISA/i.test(event.name || "");
 // إغلاق يدوي فوري لتسجيل ورشة CIA & CISA بغض النظر عن عدد المسجلين.
-const CIA_CISA_CLOSED = true;
+const CIA_CISA_CLOSED = false;
 
 async function fetchCiaCisaCount() {
     try {
