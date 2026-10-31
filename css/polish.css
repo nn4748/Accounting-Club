@@ -193,9 +193,14 @@ button:active, .btn:active, .btn-start:active, .btn-ghost:active,
   cursor:pointer;
   display:flex; align-items:center; justify-content:center;
   transition:transform .25s ease, background .25s ease, bottom .25s ease;
+  animation:notifPulse 2.4s ease-in-out infinite;
 }
 .notif-fab:hover{transform:scale(1.08);}
 .notif-fab-icon{width:28px; height:28px; display:block;}
+@keyframes notifPulse{
+  0%,100%{box-shadow:0 8px 22px -6px rgba(0,8,120,.55);}
+  50%{box-shadow:0 8px 26px -4px rgba(108,207,246,.65);}
+}
 .notif-fab.notif-fab-active{position:relative;}
 .notif-fab.notif-fab-active::after{
   content:""; position:absolute; top:4px; inset-inline-end:4px;
