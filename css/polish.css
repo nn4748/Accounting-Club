@@ -183,24 +183,33 @@ button:active, .btn:active, .btn-start:active, .btn-ghost:active,
    ========================================================= */
 .notif-fab{
   position:fixed;
-  bottom:24px; right:24px; z-index:70;
-  width:56px; height:56px;
+  bottom:24px; left:24px; z-index:70;
+  width:66px; height:66px;
   border-radius:50%;
-  background:var(--ink,#000878);
+  background:var(--sky,#6ccff6);
+  color:#fff;
   border:none;
-  box-shadow:0 10px 26px -6px rgba(0,8,120,.6);
+  box-shadow:0 10px 26px -6px rgba(0,8,120,.5);
   cursor:pointer;
   display:flex; align-items:center; justify-content:center;
-  transition:transform .25s ease, background .25s ease;
+  transition:transform .25s ease, background .25s ease, bottom .25s ease;
 }
 .notif-fab:hover{transform:scale(1.08);}
-.notif-fab-icon{font-size:24px; line-height:1;}
-.notif-fab.notif-fab-active{background:#1a8f4c;}
+.notif-fab-icon{width:28px; height:28px; display:block;}
+.notif-fab.notif-fab-active{position:relative;}
+.notif-fab.notif-fab-active::after{
+  content:""; position:absolute; top:4px; inset-inline-end:4px;
+  width:14px; height:14px; border-radius:50%;
+  background:#1a8f4c; border:2px solid #fff;
+}
 .notif-fab.notif-fab-hidden{display:none;}
+
+/* تكديس فوق زر اللعبة (index.html فقط، لما يكون موجود بنفس الصفحة) */
+.notif-fab.notif-fab-stacked{bottom:102px;}
 
 .notif-banner{
   position:fixed;
-  bottom:90px; right:16px; left:16px; z-index:71;
+  right:16px; left:16px; z-index:71;
   max-width:360px;
   margin-right:auto; margin-left:auto;
   background:#fff;
@@ -219,7 +228,7 @@ button:active, .btn:active, .btn-start:active, .btn-ghost:active,
 }
 
 @media (max-width:480px){
-  .notif-fab{width:50px; height:50px; bottom:18px; right:18px;}
-  .notif-fab-icon{font-size:21px;}
-  .notif-banner{bottom:78px;}
+  .notif-fab{width:58px; height:58px; bottom:18px; left:18px;}
+  .notif-fab.notif-fab-stacked{bottom:86px;}
+  .notif-fab-icon{width:24px; height:24px;}
 }
