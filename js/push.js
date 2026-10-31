@@ -29,11 +29,16 @@
 
   if (!canSubscribe && !iosNeedsHomeScreen) return;
 
+  const BELL_SVG =
+    '<svg class="notif-fab-icon" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">' +
+    '<path d="M12 2a6 6 0 0 0-6 6v3.09c0 .55-.2 1.08-.57 1.5L4 14.5a1 1 0 0 0 .76 1.64h14.48a1 1 0 0 0 .76-1.64l-1.43-1.9a2 2 0 0 1-.57-1.5V8a6 6 0 0 0-6-6Zm0 20a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Z"/>' +
+    '</svg>';
+
   const wrap = document.createElement("div");
   wrap.id = "notifWidget";
   wrap.innerHTML =
     '<button type="button" id="notifFab" class="notif-fab" aria-label="فعّل إشعارات نادي المحاسبة">' +
-      '<span class="notif-fab-icon">🔔</span>' +
+      BELL_SVG +
     '</button>' +
     '<div id="notifBanner" class="notif-banner" style="display:none;">' +
       '<button type="button" class="notif-banner-close" id="notifBannerClose" aria-label="إغلاق">✕</button>' +
@@ -42,12 +47,22 @@
   document.body.appendChild(wrap);
 
   const fab = document.getElementById("notifFab");
-  const fabIcon = fab.querySelector(".notif-fab-icon");
   const banner = document.getElementById("notifBanner");
   const bannerText = document.getElementById("notifBannerText");
   const bannerClose = document.getElementById("notifBannerClose");
 
+  if (document.getElementById("gameFab")) {
+    fab.classList.add("notif-fab-stacked");
+  }
+
+  function positionBanner() {
+    const rect = fab.getBoundingClientRect();
+    const fromBottom = Math.round(window.innerHeight - rect.top + 10);
+    banner.style.bottom = fromBottom + "px";
+  }
+
   function showBanner(html) {
+    positionBanner();
     bannerText.innerHTML = html;
     banner.style.display = "block";
   }
@@ -58,7 +73,6 @@
 
   async function markActive() {
     fab.classList.add("notif-fab-active");
-    fabIcon.textContent = "✅";
     fab.setAttribute("aria-label", "الإشعارات مفعّلة");
   }
 
