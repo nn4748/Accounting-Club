@@ -629,7 +629,8 @@
 
     // ورشة "SOCPA & CMA" — فورم وشيت ردود مخصصين لها، نفس حقول
     // التسجيل الفردي العادية (اسم/تخصص/جوال/بريد).
-    const isSocpaCmaWorkshop = /SOCPA/i.test(eventData.name || "");
+    const isSocpaCmaWorkshop = /SOCPA/i.test(eventData.name || "")
+      || /قريب/.test(eventData.name || "") || /قريب/.test(eventData.description || "");
     const SOCPA_CMA_REGISTRATION_OPEN = false;
     const SOCPA_CMA_LIMIT = 70;
     const SOCPA_CMA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKVHEdPo9e-z4kHTtfKSl1ZzrMc6fj-z3ree07aySAY/export?format=csv";
