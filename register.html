@@ -389,7 +389,7 @@
         <span class="speaker-btn" style="cursor:default;">أ. عبدالملك العويد</span>
       </div>
       <div class="speaker-info show" style="border-top:none;padding-top:0;">
-        <p>الأستاذ عبدالملك العويد، حاصل على شهادة الزمالة السعودية للمراجعين والمحاسبين (SOCPA)، ويشغل منصب مراجع أول (Senior Auditor) في شركة KPMG السعودية، متخصص في مجال المراجعة الخارجية والتدقيق، ويمتلك خبرة مهنية تتجاوز 3 سنوات في المجال.</p>
+        <p>الأستاذ عبدالملك العويد، حاصل على شهادة الزمالة السعودية للمراجعين والمحاسبين (SOCPA)، متخصص في مجال المراجعة الخارجية والتدقيق.</p>
         <a href="https://www.linkedin.com/in/abdulmalek-alowayyid" target="_blank" rel="noopener">حساب لينكد إن</a>
       </div>
     </div>
@@ -631,7 +631,7 @@
     // التسجيل الفردي العادية (اسم/تخصص/جوال/بريد).
     const isSocpaCmaWorkshop = /SOCPA/i.test(eventData.name || "")
       || /قريب/.test(eventData.name || "") || /قريب/.test(eventData.description || "");
-    const SOCPA_CMA_REGISTRATION_OPEN = false;
+    const SOCPA_CMA_REGISTRATION_OPEN = true;
     const SOCPA_CMA_LIMIT = 70;
     const SOCPA_CMA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKVHEdPo9e-z4kHTtfKSl1ZzrMc6fj-z3ree07aySAY/export?format=csv";
     // إغلاق يدوي فوري لتسجيل ورشة SOCPA & CMA بغض النظر عن عدد المسجلين.
