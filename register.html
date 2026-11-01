@@ -163,7 +163,7 @@
     }
 
     /* =========================================
-       SPEAKERS (ورشة CIA & CISA)
+       SPEAKERS (ورشة SOCPA & CMA)
     ========================================= */
 
     .speakers-section {
@@ -471,7 +471,7 @@
         <a class="action-link add-to-calendar" style="display:none;" target="_blank" rel="noopener">أضف للتقويم</a>
       </div>
 
-      <div class="success-message" id="ciaCisaSuccessMessage" style="display:none;">
+      <div class="success-message" id="socpaCmaSuccessMessage" style="display:none;">
         <p>تم التسجيل بنجاح، شكراً لك.</p>
         <a class="action-link" href="https://maps.app.goo.gl/3HngX3s9VUJRa6cH8?g_st=ic" target="_blank" rel="noopener">موقع الورشة</a>
         <a class="action-link add-to-calendar" style="display:none;" target="_blank" rel="noopener">أضف للتقويم</a>
@@ -626,14 +626,14 @@
     // إغلاق يدوي فوري لتسجيل ورشة دقة المحاسبة بغض النظر عن عدد المسجلين.
     const FINANCE_WORKSHOP_CLOSED = true;
 
-    // ورشة "CIA & CISA" — فورم وشيت ردود مخصصين لها، نفس حقول
+    // ورشة "SOCPA & CMA" — فورم وشيت ردود مخصصين لها، نفس حقول
     // التسجيل الفردي العادية (اسم/تخصص/جوال/بريد).
-    const isCiaCisaWorkshop = /CISA/i.test(eventData.name || "");
-    const CIA_CISA_REGISTRATION_OPEN = false;
-    const CIA_CISA_LIMIT = 70;
-    const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKVHEdPo9e-z4kHTtfKSl1ZzrMc6fj-z3ree07aySAY/export?format=csv";
-    // إغلاق يدوي فوري لتسجيل ورشة CIA & CISA بغض النظر عن عدد المسجلين.
-    const CIA_CISA_CLOSED = false;
+    const isSocpaCmaWorkshop = /SOCPA/i.test(eventData.name || "");
+    const SOCPA_CMA_REGISTRATION_OPEN = false;
+    const SOCPA_CMA_LIMIT = 70;
+    const SOCPA_CMA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKVHEdPo9e-z4kHTtfKSl1ZzrMc6fj-z3ree07aySAY/export?format=csv";
+    // إغلاق يدوي فوري لتسجيل ورشة SOCPA & CMA بغض النظر عن عدد المسجلين.
+    const SOCPA_CMA_CLOSED = false;
 
     // جلسة "الضريبة المضافة" — فورم وشيت ردود مخصصين لها، نفس حقول
     // التسجيل الفردي العادية (اسم/بريد/جوال/تخصص).
@@ -643,7 +643,7 @@
     const VAT_SESSION_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1dHtdWr3WcP6HqXksvijA6-UirRalPYp8vdXla4xdp2I/export?format=csv";
     const VAT_SESSION_CLOSED = false;
 
-    if (isCiaCisaWorkshop) {
+    if (isSocpaCmaWorkshop) {
       document.getElementById("speakersSection").style.display = "block";
     }
     if (isVatSession) {
@@ -744,23 +744,23 @@
         return;
       }
 
-      if (isCiaCisaWorkshop) {
-        if (CIA_CISA_CLOSED) {
+      if (isSocpaCmaWorkshop) {
+        if (SOCPA_CMA_CLOSED) {
           registerForm.style.display = "none";
           document.getElementById("fullMessage").style.display = "block";
           return;
         }
-        fetch(CIA_CISA_RESPONSES_CSV_URL + "&t=" + Date.now())
+        fetch(SOCPA_CMA_RESPONSES_CSV_URL + "&t=" + Date.now())
           .then(res => res.text())
           .then(text => {
             const rows = parseCSV(text);
             const count = Math.max(0, rows.length - 1);
-            if (count >= CIA_CISA_LIMIT) {
+            if (count >= SOCPA_CMA_LIMIT) {
               registerForm.style.display = "none";
               document.getElementById("fullMessage").style.display = "block";
             }
           })
-          .catch(err => console.error("تعذر التحقق من عدد المسجلين بورشة CIA & CISA:", err));
+          .catch(err => console.error("تعذر التحقق من عدد المسجلين بورشة SOCPA & CMA:", err));
         return;
       }
 
@@ -850,8 +850,8 @@
       phone: "entry.620026520"
     };
 
-    const CIA_CISA_GOOGLE_FORM_ID = "1FAIpQLSfkEMC-_kOYsV5txbnIoKGxa7IMz1kf840sT6EYP9YZVF8KHw";
-    const CIA_CISA_FORM_ENTRY = {
+    const SOCPA_CMA_GOOGLE_FORM_ID = "1FAIpQLSfkEMC-_kOYsV5txbnIoKGxa7IMz1kf840sT6EYP9YZVF8KHw";
+    const SOCPA_CMA_FORM_ENTRY = {
       fullName: "entry.1235863455",
       email: "entry.3533838",
       phone: "entry.1998997079",
@@ -890,7 +890,7 @@
         return;
       }
 
-      if (isCiaCisaWorkshop && CIA_CISA_CLOSED) {
+      if (isSocpaCmaWorkshop && SOCPA_CMA_CLOSED) {
         registerForm.style.display = "none";
         document.getElementById("fullMessage").style.display = "block";
         return;
@@ -902,7 +902,7 @@
         return;
       }
 
-      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN) || (isFinanceWorkshop && !FINANCE_WORKSHOP_REGISTRATION_OPEN) || (isCiaCisaWorkshop && !CIA_CISA_REGISTRATION_OPEN) || (isVatSession && !VAT_SESSION_REGISTRATION_OPEN)) {
+      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN) || (isFinanceWorkshop && !FINANCE_WORKSHOP_REGISTRATION_OPEN) || (isSocpaCmaWorkshop && !SOCPA_CMA_REGISTRATION_OPEN) || (isVatSession && !VAT_SESSION_REGISTRATION_OPEN)) {
         registerForm.style.display = "none";
         document.getElementById("notStartedMessage").style.display = "block";
         return;
@@ -928,12 +928,12 @@
         body.set(FINANCE_WORKSHOP_FORM_ENTRY.email, document.getElementById("email").value);
         body.set(FINANCE_WORKSHOP_FORM_ENTRY.phone, document.getElementById("phone").value);
         body.set(FINANCE_WORKSHOP_FORM_ENTRY.major, document.getElementById("major").value);
-      } else if (isCiaCisaWorkshop) {
-        formId = CIA_CISA_GOOGLE_FORM_ID;
-        body.set(CIA_CISA_FORM_ENTRY.fullName, document.getElementById("name").value);
-        body.set(CIA_CISA_FORM_ENTRY.email, document.getElementById("email").value);
-        body.set(CIA_CISA_FORM_ENTRY.phone, document.getElementById("phone").value);
-        body.set(CIA_CISA_FORM_ENTRY.major, document.getElementById("major").value);
+      } else if (isSocpaCmaWorkshop) {
+        formId = SOCPA_CMA_GOOGLE_FORM_ID;
+        body.set(SOCPA_CMA_FORM_ENTRY.fullName, document.getElementById("name").value);
+        body.set(SOCPA_CMA_FORM_ENTRY.email, document.getElementById("email").value);
+        body.set(SOCPA_CMA_FORM_ENTRY.phone, document.getElementById("phone").value);
+        body.set(SOCPA_CMA_FORM_ENTRY.major, document.getElementById("major").value);
       } else if (isVatSession) {
         formId = VAT_SESSION_GOOGLE_FORM_ID;
         body.set(VAT_SESSION_FORM_ENTRY.fullName, document.getElementById("name").value);
@@ -961,8 +961,8 @@
             document.getElementById("teamSuccessMessage").style.display = "block";
           } else if (isFinanceWorkshop) {
             document.getElementById("financeWorkshopSuccessMessage").style.display = "block";
-          } else if (isCiaCisaWorkshop) {
-            document.getElementById("ciaCisaSuccessMessage").style.display = "block";
+          } else if (isSocpaCmaWorkshop) {
+            document.getElementById("socpaCmaSuccessMessage").style.display = "block";
           } else if (isVatSession) {
             document.getElementById("vatSessionSuccessMessage").style.display = "block";
           } else {

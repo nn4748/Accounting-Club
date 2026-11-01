@@ -205,22 +205,22 @@ async function fetchFinanceWorkshopCount() {
     }
 }
 
-// ورشة "CIA & CISA" إلها فورم وشيت ردود مستقلين، نطابق بالاسم
+// ورشة "SOCPA & CMA" إلها فورم وشيت ردود مستقلين، نطابق بالاسم
 // بنمط "CISA" عشان تشتغل حتى بتغيّر صياغة الاسم بالشيت.
-const CIA_CISA_LIMIT = 70;
-const CIA_CISA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKVHEdPo9e-z4kHTtfKSl1ZzrMc6fj-z3ree07aySAY/export?format=csv";
-const isCiaCisaWorkshop = (event) => /CISA/i.test(event.name || "");
-// إغلاق يدوي فوري لتسجيل ورشة CIA & CISA بغض النظر عن عدد المسجلين.
-const CIA_CISA_CLOSED = false;
+const SOCPA_CMA_LIMIT = 70;
+const SOCPA_CMA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKVHEdPo9e-z4kHTtfKSl1ZzrMc6fj-z3ree07aySAY/export?format=csv";
+const isSocpaCmaWorkshop = (event) => /SOCPA/i.test(event.name || "");
+// إغلاق يدوي فوري لتسجيل ورشة SOCPA & CMA بغض النظر عن عدد المسجلين.
+const SOCPA_CMA_CLOSED = false;
 
-async function fetchCiaCisaCount() {
+async function fetchSocpaCmaCount() {
     try {
-        const res = await fetch(CIA_CISA_RESPONSES_CSV_URL + "&t=" + Date.now());
+        const res = await fetch(SOCPA_CMA_RESPONSES_CSV_URL + "&t=" + Date.now());
         const text = await res.text();
         const rows = parseCSV(text);
         return Math.max(0, rows.length - 1);
     } catch (err) {
-        console.error("تعذر التحقق من عدد المسجلين بورشة CIA & CISA:", err);
+        console.error("تعذر التحقق من عدد المسجلين بورشة SOCPA & CMA:", err);
         return 0;
     }
 }
@@ -266,15 +266,15 @@ async function fetchRegistrationCounts() {
 
 async function loadEvents(isRetry) {
     try {
-        const [response, counts, financeWorkshopCount, ciaCisaCount, vatSessionCount] = await Promise.all([
+        const [response, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount] = await Promise.all([
             fetch(API_URL + "?t=" + Date.now()),
             fetchRegistrationCounts(),
             fetchFinanceWorkshopCount(),
-            fetchCiaCisaCount(),
+            fetchSocpaCmaCount(),
             fetchVatSessionCount()
         ]);
         const events = await response.json();
-        displayEvents(events, counts, financeWorkshopCount, ciaCisaCount, vatSessionCount);
+        displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount);
     } catch (error) {
         console.error("Error:", error);
         if (!isRetry) {
@@ -297,7 +297,7 @@ function toDirectImageUrl(url) {
     return `https://lh3.googleusercontent.com/d/${match[1]}`;
 }
 
-function displayEvents(events, counts, financeWorkshopCount, ciaCisaCount, vatSessionCount) {
+function displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount) {
 
     counts = counts || {};
 
@@ -319,7 +319,7 @@ function displayEvents(events, counts, financeWorkshopCount, ciaCisaCount, vatSe
         const isFull = CLOSED_EVENTS.includes((event.name || "").trim())
             || (limit && (counts[(event.name || "").trim()] || 0) >= limit)
             || (isFinanceWorkshop(event) && (FINANCE_WORKSHOP_CLOSED || (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT))
-            || (isCiaCisaWorkshop(event) && (CIA_CISA_CLOSED || (ciaCisaCount || 0) >= CIA_CISA_LIMIT))
+            || (isSocpaCmaWorkshop(event) && (SOCPA_CMA_CLOSED || (socpaCmaCount || 0) >= SOCPA_CMA_LIMIT))
             || (isVatSession(event) && (VAT_SESSION_CLOSED || (vatSessionCount || 0) >= VAT_SESSION_LIMIT));
 
         const actionHtml = comingSoon
