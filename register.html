@@ -493,6 +493,10 @@
       <div class="success-message" id="notStartedMessage" style="display:none;">
         <p>عذرًا لم يبدأ التسجيل حتى الآن!</p>
       </div>
+
+      <div class="success-message" id="postponedMessage" style="display:none;">
+        <p>الورشة مؤجلة، والتسجيل مقفل حاليًا.</p>
+      </div>
     </div>
 
   </div>
@@ -632,11 +636,15 @@
     // التسجيل الفردي العادية (اسم/تخصص/جوال/بريد).
     const isSocpaCmaWorkshop = /SOCPA/i.test(eventData.name || "")
       || /قريب/.test(eventData.name || "") || /قريب/.test(eventData.description || "");
-    const SOCPA_CMA_REGISTRATION_OPEN = true;
+    const SOCPA_CMA_REGISTRATION_OPEN = false;
     const SOCPA_CMA_LIMIT = 70;
     const SOCPA_CMA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKVHEdPo9e-z4kHTtfKSl1ZzrMc6fj-z3ree07aySAY/export?format=csv";
     // إغلاق يدوي فوري لتسجيل ورشة SOCPA & CMA بغض النظر عن عدد المسجلين.
     const SOCPA_CMA_CLOSED = false;
+    // تأجيل الورشة: يخفي النموذج ويكتب "مؤجلة". نطابق باسم SOCPA فقط
+    // عشان ما ينطبق على أي فعالية جاية اسمها "قريبًا".
+    const SOCPA_CMA_POSTPONED = true;
+    const isSocpaCmaPostponed = SOCPA_CMA_POSTPONED && /SOCPA/i.test(eventData.name || "");
 
     // جلسة "الضريبة المضافة" — فورم وشيت ردود مخصصين لها، نفس حقول
     // التسجيل الفردي العادية (اسم/بريد/جوال/تخصص).
@@ -748,6 +756,11 @@
       }
 
       if (isSocpaCmaWorkshop) {
+        if (isSocpaCmaPostponed) {
+          registerForm.style.display = "none";
+          document.getElementById("postponedMessage").style.display = "block";
+          return;
+        }
         if (SOCPA_CMA_CLOSED) {
           registerForm.style.display = "none";
           document.getElementById("fullMessage").style.display = "block";
@@ -890,6 +903,12 @@
       if (isFinanceWorkshop && FINANCE_WORKSHOP_CLOSED) {
         registerForm.style.display = "none";
         document.getElementById("fullMessage").style.display = "block";
+        return;
+      }
+
+      if (isSocpaCmaPostponed) {
+        registerForm.style.display = "none";
+        document.getElementById("postponedMessage").style.display = "block";
         return;
       }
 

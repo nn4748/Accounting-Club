@@ -212,6 +212,8 @@ const SOCPA_CMA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKV
 const isSocpaCmaWorkshop = (event) => /SOCPA/i.test(event.name || "");
 // إغلاق يدوي فوري لتسجيل ورشة SOCPA & CMA بغض النظر عن عدد المسجلين.
 const SOCPA_CMA_CLOSED = false;
+// تأجيل الورشة: يقفل التسجيل ويكتب "مؤجلة" مكان زر التسجيل.
+const SOCPA_CMA_POSTPONED = true;
 
 async function fetchSocpaCmaCount() {
     try {
@@ -322,7 +324,10 @@ function displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatS
             || (isSocpaCmaWorkshop(event) && (SOCPA_CMA_CLOSED || (socpaCmaCount || 0) >= SOCPA_CMA_LIMIT))
             || (isVatSession(event) && (VAT_SESSION_CLOSED || (vatSessionCount || 0) >= VAT_SESSION_LIMIT));
 
-        const actionHtml = comingSoon
+        const postponed = isSocpaCmaWorkshop(event) && SOCPA_CMA_POSTPONED;
+        const actionHtml = postponed
+            ? `<span class="register-btn register-btn--soon">مؤجلة</span>`
+            : comingSoon
             ? `<a class="register-btn register-btn--soon" href="${buildRegisterUrl(event)}">التسجيل غير متاح حالياً</a>`
             : isFull
             ? `<span class="register-btn register-btn--soon">انتهى التسجيل</span>`
