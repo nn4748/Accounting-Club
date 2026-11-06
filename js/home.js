@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ================= UPCOMING EVENTS (calendar) =================
-// تُحدَّث من شيت "فعالياتنا القادمة": اسم الفعالية | التاريخ | المكان.
+// تُحدَّث من شيت "فعالياتنا القادمة": اسم الفعالية | التاريخ | المكان | الوقت.
 // الفعاليات اللي مر تاريخها تختفي تلقائيًا، والقسم كله ينخفي لو ما فيه شي.
 
 const UPCOMING_CSV_URL = "https://docs.google.com/spreadsheets/d/1OSnNAbCPm22qr7WP_ksJopj4TV1JqH3qmIYyK5DQexs/export?format=csv&gid=0";
@@ -227,6 +227,12 @@ function buildUpcomingCard(item) {
         loc.textContent = "📍 " + item.location;
         body.appendChild(loc);
     }
+    if (item.time) {
+        const time = document.createElement("p");
+        time.className = "cal-loc";
+        time.textContent = "🕐 " + item.time;
+        body.appendChild(time);
+    }
 
     card.append(cal, body);
     return card;
@@ -243,7 +249,7 @@ async function loadUpcoming() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const items = rows.slice(1)
-            .map(r => ({ name: (r[0] || "").trim(), date: parseUpcomingDate(r[1]), location: (r[2] || "").trim() }))
+            .map(r => ({ name: (r[0] || "").trim(), date: parseUpcomingDate(r[1]), location: (r[2] || "").trim(), time: (r[3] || "").trim() }))
             .filter(item => item.name && item.date && item.date >= today)
             .sort((a, b) => a.date - b.date);
         if (!items.length) return;
