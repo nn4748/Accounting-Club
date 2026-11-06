@@ -174,7 +174,85 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwnD4jxqeTzbi4n5_OOJl3B
 
 document.addEventListener("DOMContentLoaded", () => {
     loadEvents();
+    loadUpcoming();
 });
+
+// ================= UPCOMING EVENTS (calendar) =================
+// تُحدَّث من شيت "فعالياتنا القادمة": اسم الفعالية | التاريخ | المكان.
+// الفعاليات اللي مر تاريخها تختفي تلقائيًا، والقسم كله ينخفي لو ما فيه شي.
+
+const UPCOMING_CSV_URL = "https://docs.google.com/spreadsheets/d/1OSnNAbCPm22qr7WP_ksJopj4TV1JqH3qmIYyK5DQexs/export?format=csv&gid=0";
+const AR_MONTHS = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+const AR_WEEKDAYS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+
+// يقبل 2026/11/10 و 2026-11-10 و 10/11/2026، وبالأرقام العربية بعد.
+function parseUpcomingDate(raw) {
+    const text = String(raw || "").trim()
+        .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+        .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+    const parts = text.split(/[\/\-.]/).map(p => parseInt(p, 10));
+    if (parts.length !== 3 || parts.some(isNaN)) return null;
+    const [y, m, d] = String(parts[0]).length === 4 ? parts : [parts[2], parts[1], parts[0]];
+    const date = new Date(y, m - 1, d);
+    if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return null;
+    return date;
+}
+
+function buildUpcomingCard(item) {
+    const card = document.createElement("div");
+    card.className = "upcoming-card";
+
+    const cal = document.createElement("div");
+    cal.className = "cal-date";
+    const month = document.createElement("span");
+    month.className = "cal-month";
+    month.textContent = AR_MONTHS[item.date.getMonth()];
+    const day = document.createElement("span");
+    day.className = "cal-day";
+    day.textContent = item.date.getDate();
+    const weekday = document.createElement("span");
+    weekday.className = "cal-weekday";
+    weekday.textContent = AR_WEEKDAYS[item.date.getDay()];
+    cal.append(month, day, weekday);
+
+    const body = document.createElement("div");
+    body.className = "cal-body";
+    const name = document.createElement("h3");
+    name.className = "cal-name";
+    name.textContent = item.name;
+    body.appendChild(name);
+    if (item.location) {
+        const loc = document.createElement("p");
+        loc.className = "cal-loc";
+        loc.textContent = "📍 " + item.location;
+        body.appendChild(loc);
+    }
+
+    card.append(cal, body);
+    return card;
+}
+
+async function loadUpcoming() {
+    const section = document.getElementById("upcoming");
+    const list = document.getElementById("upcomingList");
+    if (!section || !list) return;
+    try {
+        const res = await fetch(UPCOMING_CSV_URL + "&t=" + Date.now());
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const rows = parseCSV(await res.text());
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const items = rows.slice(1)
+            .map(r => ({ name: (r[0] || "").trim(), date: parseUpcomingDate(r[1]), location: (r[2] || "").trim() }))
+            .filter(item => item.name && item.date && item.date >= today)
+            .sort((a, b) => a.date - b.date);
+        if (!items.length) return;
+        list.replaceChildren(...items.map(buildUpcomingCard));
+        section.style.display = "";
+    } catch (err) {
+        console.error("تعذر تحميل الفعاليات القادمة:", err);
+    }
+}
 
 // حد أقصى لعدد المسجلين لبعض الفعاليات (نفس القيم المستخدمة بصفحة
 // register.html) — لما يوصل العدد للحد، زر "سجل الآن" يتحول لـ"انتهى التسجيل".
