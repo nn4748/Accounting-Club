@@ -245,6 +245,26 @@ async function fetchVatSessionCount() {
     }
 }
 
+// دورة "التميّز المهني في المحاسبة" إلها فورم وشيت ردود مستقلين.
+// الليمت null = بدون حد لين يتحدد.
+const EXCELLENCE_LIMIT = null;
+const EXCELLENCE_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1g8hHm2P426uB0afTDRrWHCIeULf6enGL7KuKEylfpM8/export?format=csv";
+const isExcellenceWorkshop = (event) => /التميّ?ز المهني/.test(event.name || "");
+const EXCELLENCE_CLOSED = false;
+
+async function fetchExcellenceCount() {
+    if (!EXCELLENCE_LIMIT) return 0;
+    try {
+        const res = await fetch(EXCELLENCE_RESPONSES_CSV_URL + "&t=" + Date.now());
+        const text = await res.text();
+        const rows = parseCSV(text);
+        return Math.max(0, rows.length - 1);
+    } catch (err) {
+        console.error("تعذر التحقق من عدد المسجلين بدورة التميز المهني:", err);
+        return 0;
+    }
+}
+
 async function fetchRegistrationCounts() {
     const counts = {};
     try {
@@ -268,15 +288,16 @@ async function fetchRegistrationCounts() {
 
 async function loadEvents(isRetry) {
     try {
-        const [response, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount] = await Promise.all([
+        const [response, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount, excellenceCount] = await Promise.all([
             fetch(API_URL + "?t=" + Date.now()),
             fetchRegistrationCounts(),
             fetchFinanceWorkshopCount(),
             fetchSocpaCmaCount(),
-            fetchVatSessionCount()
+            fetchVatSessionCount(),
+            fetchExcellenceCount()
         ]);
         const events = await response.json();
-        displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount);
+        displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount, excellenceCount);
     } catch (error) {
         console.error("Error:", error);
         if (!isRetry) {
@@ -299,7 +320,7 @@ function toDirectImageUrl(url) {
     return `https://lh3.googleusercontent.com/d/${match[1]}`;
 }
 
-function displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount) {
+function displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount, excellenceCount) {
 
     counts = counts || {};
 
@@ -322,7 +343,8 @@ function displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatS
             || (limit && (counts[(event.name || "").trim()] || 0) >= limit)
             || (isFinanceWorkshop(event) && (FINANCE_WORKSHOP_CLOSED || (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT))
             || (isSocpaCmaWorkshop(event) && (SOCPA_CMA_CLOSED || (socpaCmaCount || 0) >= SOCPA_CMA_LIMIT))
-            || (isVatSession(event) && (VAT_SESSION_CLOSED || (vatSessionCount || 0) >= VAT_SESSION_LIMIT));
+            || (isVatSession(event) && (VAT_SESSION_CLOSED || (vatSessionCount || 0) >= VAT_SESSION_LIMIT))
+            || (isExcellenceWorkshop(event) && (EXCELLENCE_CLOSED || (EXCELLENCE_LIMIT && (excellenceCount || 0) >= EXCELLENCE_LIMIT)));
 
         const postponed = isSocpaCmaWorkshop(event) && SOCPA_CMA_POSTPONED;
         const actionHtml = postponed

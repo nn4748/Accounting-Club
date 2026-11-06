@@ -847,6 +847,13 @@
     // تأجيل الورشة: يقفل التسجيل ويكتب "مؤجلة" مكان زر التسجيل.
     const SOCPA_CMA_POSTPONED = true;
 
+    // دورة "التميّز المهني في المحاسبة" إلها فورم وشيت ردود مستقلين.
+    // الليمت null = بدون حد لين يتحدد.
+    const EXCELLENCE_LIMIT = null;
+    const EXCELLENCE_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1g8hHm2P426uB0afTDRrWHCIeULf6enGL7KuKEylfpM8/export?format=csv";
+    const isExcellenceWorkshop = (event) => /التميّ?ز المهني/.test(event.name || "");
+    const EXCELLENCE_CLOSED = false;
+
     function parseCSV(text) {
       const rows = [];
       let row = [];
@@ -912,6 +919,19 @@
       }
     }
 
+    async function fetchExcellenceCount() {
+      if (!EXCELLENCE_LIMIT) return 0;
+      try {
+        const res = await fetch(EXCELLENCE_RESPONSES_CSV_URL + "&t=" + Date.now());
+        const text = await res.text();
+        const rows = parseCSV(text);
+        return Math.max(0, rows.length - 1);
+      } catch (err) {
+        console.error("تعذر التحقق من عدد المسجلين بدورة التميز المهني:", err);
+        return 0;
+      }
+    }
+
     /* =========================================
        CREATE CARD
     ========================================= */
@@ -925,7 +945,7 @@
       return `https://lh3.googleusercontent.com/d/${match[1]}`;
     }
 
-    function createEventCard(event, index, counts, financeWorkshopCount, socpaCmaCount) {
+    function createEventCard(event, index, counts, financeWorkshopCount, socpaCmaCount, excellenceCount) {
       const card = document.createElement("article");
       card.className = "event-card-page";
 
@@ -944,7 +964,8 @@
       const isFull = CLOSED_EVENTS.includes((event.name || "").trim())
         || (limit && ((counts || {})[(event.name || "").trim()] || 0) >= limit)
         || (isFinanceWorkshop(event) && (FINANCE_WORKSHOP_CLOSED || (financeWorkshopCount || 0) >= FINANCE_WORKSHOP_LIMIT))
-        || (isSocpaCmaWorkshop(event) && (SOCPA_CMA_CLOSED || (socpaCmaCount || 0) >= SOCPA_CMA_LIMIT));
+        || (isSocpaCmaWorkshop(event) && (SOCPA_CMA_CLOSED || (socpaCmaCount || 0) >= SOCPA_CMA_LIMIT))
+        || (isExcellenceWorkshop(event) && (EXCELLENCE_CLOSED || (EXCELLENCE_LIMIT && (excellenceCount || 0) >= EXCELLENCE_LIMIT)));
       const registerParams = new URLSearchParams({
         id: event.id || event.event_id || "",
         name: event.name || "",
@@ -987,11 +1008,12 @@
 
     async function renderEventsPage() {
       const container = document.getElementById("eventsContainerPage");
-      const [events, counts, financeWorkshopCount, socpaCmaCount] = await Promise.all([
+      const [events, counts, financeWorkshopCount, socpaCmaCount, excellenceCount] = await Promise.all([
         loadEventsPage(),
         fetchRegistrationCounts(),
         fetchFinanceWorkshopCount(),
-        fetchSocpaCmaCount()
+        fetchSocpaCmaCount(),
+        fetchExcellenceCount()
       ]);
 
       container.innerHTML = "";
@@ -1000,7 +1022,7 @@
         return;
       }
       events.forEach((event, index) => {
-        container.appendChild(createEventCard(event, index, counts, financeWorkshopCount, socpaCmaCount));
+        container.appendChild(createEventCard(event, index, counts, financeWorkshopCount, socpaCmaCount, excellenceCount));
       });
     }
 

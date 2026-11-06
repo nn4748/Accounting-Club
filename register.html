@@ -394,6 +394,17 @@
       </div>
     </div>
 
+    <div class="speakers-section" id="excellenceSpeakerSection" style="display:none;">
+      <h2>المتحدث</h2>
+      <div class="speakers-buttons">
+        <span class="speaker-btn" style="cursor:default;">د. أنور الحميدي</span>
+      </div>
+      <div class="speaker-info show" style="border-top:none;padding-top:0;">
+        <p>د. أنور الحميدي، زميل الهيئة السعودية للمراجعين والمحاسبين (SOCPA) وحاصل على شهادة المراجع الداخلي المعتمد (CIA)، مستشار ومدرّب مالي متخصص في مالية المؤسسات الخيرية والوقفية، وله إسهامات في تأهيل المحاسبين عبر برامج تدريبية متخصصة، منها دبلوم المحاسب المحترف في القطاع غير الربحي.</p>
+      </div>
+      <p class="speakers-hint" style="margin-top:14px;font-weight:700;">التسجيل متاح لشطر الطلاب فقط.</p>
+    </div>
+
     <div class="speakers-section" id="vatSpeakerSection" style="display:none;">
       <h2>المتحدث</h2>
       <div class="speakers-buttons">
@@ -476,6 +487,11 @@
         <p>تم التسجيل بنجاح، شكراً لك.</p>
         <a class="action-link" href="https://maps.app.goo.gl/3HngX3s9VUJRa6cH8?g_st=ic" target="_blank" rel="noopener">موقع الورشة</a>
         <a class="action-link" href="https://chat.whatsapp.com/BIXppApeWp7G94jtpOt2Gd?s=cl&p=i&mlu=4&ilr=4&iam=2" target="_blank" rel="noopener">الانضمام لمجموعة الواتساب</a>
+        <a class="action-link add-to-calendar" style="display:none;" target="_blank" rel="noopener">أضف للتقويم</a>
+      </div>
+
+      <div class="success-message" id="excellenceSuccessMessage" style="display:none;">
+        <p>تم التسجيل بنجاح، شكراً لك.</p>
         <a class="action-link add-to-calendar" style="display:none;" target="_blank" rel="noopener">أضف للتقويم</a>
       </div>
 
@@ -634,17 +650,15 @@
 
     // ورشة "SOCPA & CMA" — فورم وشيت ردود مخصصين لها، نفس حقول
     // التسجيل الفردي العادية (اسم/تخصص/جوال/بريد).
-    const isSocpaCmaWorkshop = /SOCPA/i.test(eventData.name || "")
-      || /قريب/.test(eventData.name || "") || /قريب/.test(eventData.description || "");
+    const isSocpaCmaWorkshop = /SOCPA/i.test(eventData.name || "");
     const SOCPA_CMA_REGISTRATION_OPEN = false;
     const SOCPA_CMA_LIMIT = 70;
     const SOCPA_CMA_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1SKVHEdPo9e-z4kHTtfKSl1ZzrMc6fj-z3ree07aySAY/export?format=csv";
     // إغلاق يدوي فوري لتسجيل ورشة SOCPA & CMA بغض النظر عن عدد المسجلين.
     const SOCPA_CMA_CLOSED = false;
-    // تأجيل الورشة: يخفي النموذج ويكتب "مؤجلة". نطابق باسم SOCPA فقط
-    // عشان ما ينطبق على أي فعالية جاية اسمها "قريبًا".
+    // تأجيل الورشة: يخفي النموذج ويكتب "مؤجلة".
     const SOCPA_CMA_POSTPONED = true;
-    const isSocpaCmaPostponed = SOCPA_CMA_POSTPONED && /SOCPA/i.test(eventData.name || "");
+    const isSocpaCmaPostponed = SOCPA_CMA_POSTPONED && isSocpaCmaWorkshop;
 
     // جلسة "الضريبة المضافة" — فورم وشيت ردود مخصصين لها، نفس حقول
     // التسجيل الفردي العادية (اسم/بريد/جوال/تخصص).
@@ -654,8 +668,19 @@
     const VAT_SESSION_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1dHtdWr3WcP6HqXksvijA6-UirRalPYp8vdXla4xdp2I/export?format=csv";
     const VAT_SESSION_CLOSED = false;
 
+    // دورة "التميّز المهني في المحاسبة" (د. أنور الحميدي) — فورم وشيت ردود
+    // مخصصين لها. الليمت null = بدون حد لين يتحدد.
+    const isExcellenceWorkshop = /التميّ?ز المهني/.test(eventData.name || "");
+    const EXCELLENCE_REGISTRATION_OPEN = false;
+    const EXCELLENCE_LIMIT = null;
+    const EXCELLENCE_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1g8hHm2P426uB0afTDRrWHCIeULf6enGL7KuKEylfpM8/export?format=csv";
+    const EXCELLENCE_CLOSED = false;
+
     if (isSocpaCmaWorkshop) {
       document.getElementById("speakersSection").style.display = "block";
+    }
+    if (isExcellenceWorkshop) {
+      document.getElementById("excellenceSpeakerSection").style.display = "block";
     }
     if (isVatSession) {
       document.getElementById("vatSpeakerSection").style.display = "block";
@@ -780,6 +805,27 @@
         return;
       }
 
+      if (isExcellenceWorkshop) {
+        if (EXCELLENCE_CLOSED) {
+          registerForm.style.display = "none";
+          document.getElementById("fullMessage").style.display = "block";
+          return;
+        }
+        if (!EXCELLENCE_LIMIT) return;
+        fetch(EXCELLENCE_RESPONSES_CSV_URL + "&t=" + Date.now())
+          .then(res => res.text())
+          .then(text => {
+            const rows = parseCSV(text);
+            const count = Math.max(0, rows.length - 1);
+            if (count >= EXCELLENCE_LIMIT) {
+              registerForm.style.display = "none";
+              document.getElementById("fullMessage").style.display = "block";
+            }
+          })
+          .catch(err => console.error("تعذر التحقق من عدد المسجلين بدورة التميز المهني:", err));
+        return;
+      }
+
       if (isVatSession) {
         if (VAT_SESSION_CLOSED) {
           registerForm.style.display = "none";
@@ -874,6 +920,14 @@
       major: "entry.74989631"
     };
 
+    const EXCELLENCE_GOOGLE_FORM_ID = "1FAIpQLSeonjp9sZsoVD2lP1couFb4NBIGENjg1FyPDCvIOxesmpCG6w";
+    const EXCELLENCE_FORM_ENTRY = {
+      fullName: "entry.12384916",
+      phone: "entry.1499794696",
+      email: "entry.1685600609",
+      major: "entry.1939414756"
+    };
+
     const VAT_SESSION_GOOGLE_FORM_ID = "1FAIpQLSe3Dn1kzqhWDrDYoW-VvCgb6jSrUFbTAKkyYTOzIJGYHrzTyw";
     const VAT_SESSION_FORM_ENTRY = {
       fullName: "entry.2107895037",
@@ -918,13 +972,19 @@
         return;
       }
 
+      if (isExcellenceWorkshop && EXCELLENCE_CLOSED) {
+        registerForm.style.display = "none";
+        document.getElementById("fullMessage").style.display = "block";
+        return;
+      }
+
       if (isVatSession && VAT_SESSION_CLOSED) {
         registerForm.style.display = "none";
         document.getElementById("fullMessage").style.display = "block";
         return;
       }
 
-      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN) || (isFinanceWorkshop && !FINANCE_WORKSHOP_REGISTRATION_OPEN) || (isSocpaCmaWorkshop && !SOCPA_CMA_REGISTRATION_OPEN) || (isVatSession && !VAT_SESSION_REGISTRATION_OPEN)) {
+      if (isComingSoon || (isTeamEvent && !TEAM_EVENT_REGISTRATION_OPEN) || (isFinanceWorkshop && !FINANCE_WORKSHOP_REGISTRATION_OPEN) || (isSocpaCmaWorkshop && !SOCPA_CMA_REGISTRATION_OPEN) || (isVatSession && !VAT_SESSION_REGISTRATION_OPEN) || (isExcellenceWorkshop && !EXCELLENCE_REGISTRATION_OPEN)) {
         registerForm.style.display = "none";
         document.getElementById("notStartedMessage").style.display = "block";
         return;
@@ -956,6 +1016,12 @@
         body.set(SOCPA_CMA_FORM_ENTRY.email, document.getElementById("email").value);
         body.set(SOCPA_CMA_FORM_ENTRY.phone, document.getElementById("phone").value);
         body.set(SOCPA_CMA_FORM_ENTRY.major, document.getElementById("major").value);
+      } else if (isExcellenceWorkshop) {
+        formId = EXCELLENCE_GOOGLE_FORM_ID;
+        body.set(EXCELLENCE_FORM_ENTRY.fullName, document.getElementById("name").value);
+        body.set(EXCELLENCE_FORM_ENTRY.email, document.getElementById("email").value);
+        body.set(EXCELLENCE_FORM_ENTRY.phone, document.getElementById("phone").value);
+        body.set(EXCELLENCE_FORM_ENTRY.major, document.getElementById("major").value);
       } else if (isVatSession) {
         formId = VAT_SESSION_GOOGLE_FORM_ID;
         body.set(VAT_SESSION_FORM_ENTRY.fullName, document.getElementById("name").value);
@@ -985,6 +1051,8 @@
             document.getElementById("financeWorkshopSuccessMessage").style.display = "block";
           } else if (isSocpaCmaWorkshop) {
             document.getElementById("socpaCmaSuccessMessage").style.display = "block";
+          } else if (isExcellenceWorkshop) {
+            document.getElementById("excellenceSuccessMessage").style.display = "block";
           } else if (isVatSession) {
             document.getElementById("vatSessionSuccessMessage").style.display = "block";
           } else {
