@@ -420,9 +420,50 @@
     justify-content:center;
 }
 .events-hero > .tagline,
-.events-hero > .events-inner{
+.events-hero > .events-inner,
+.events-hero > .upcoming-inner{
     position:relative;
     z-index:2;
+}
+
+/* فعالياتنا القادمة: بطاقات على شكل ورقة تقويم */
+.upcoming-section{min-height:0;padding-bottom:50px;}
+.upcoming-list{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:20px;
+    max-width:var(--maxw,1180px);margin:10px auto 0;
+}
+.upcoming-card{
+    display:flex;align-items:stretch;
+    width:340px;max-width:100%;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:18px;overflow:hidden;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    box-shadow:0 14px 34px -14px rgba(0,0,0,.45);
+    transition:transform .3s ease, box-shadow .3s ease;
+}
+.upcoming-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px -14px rgba(0,0,0,.55);}
+.cal-date{
+    flex:0 0 92px;display:flex;flex-direction:column;align-items:center;
+    background:var(--white);color:var(--ink);text-align:center;
+}
+.cal-month{
+    width:100%;padding:6px 0;
+    background:var(--ink);color:var(--white);
+    font-size:13px;font-weight:700;
+}
+.cal-day{font-size:34px;font-weight:800;line-height:1;margin-top:10px;}
+.cal-weekday{font-size:12px;font-weight:700;color:var(--ink-soft);margin:6px 0 10px;}
+.cal-body{
+    flex:1;display:flex;flex-direction:column;justify-content:center;
+    gap:8px;padding:14px 16px;color:var(--white);text-align:right;
+}
+.upcoming-card .cal-name{font-size:16px;font-weight:800;line-height:1.5;margin:0;color:var(--white);text-shadow:0 1px 8px rgba(0,0,0,.35);}
+.cal-loc{font-size:13px;line-height:1.6;margin:0;color:rgba(255,255,255,.85);}
+@media(max-width:480px){
+    .upcoming-card{width:100%;}
+    .cal-date{flex-basis:80px;}
+    .cal-day{font-size:30px;}
 }
 
 .events-container{
