@@ -297,7 +297,7 @@ const isSocpaCmaWorkshop = (event) => /SOCPA/i.test(event.name || "");
 // إغلاق يدوي فوري لتسجيل ورشة SOCPA & CMA بغض النظر عن عدد المسجلين.
 const SOCPA_CMA_CLOSED = false;
 // تأجيل الورشة: يقفل التسجيل ويكتب "مؤجلة" مكان زر التسجيل.
-const SOCPA_CMA_POSTPONED = true;
+const SOCPA_CMA_POSTPONED = false;
 
 async function fetchSocpaCmaCount() {
     try {
