@@ -5,3 +5,28 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/quiz"
+  to = "/quiz.html"
+  status = 200
+
+[[redirects]]
+  from = "/quiz/*"
+  to = "/quiz.html"
+  status = 200
+
+[[redirects]]
+  from = "/live-display"
+  to = "/live-display.html"
+  status = 200
+
+[[redirects]]
+  from = "/live-display/*"
+  to = "/live-display.html"
+  status = 200
+
+[[headers]]
+  for = "/live-display*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

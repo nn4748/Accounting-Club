@@ -1,0 +1,57 @@
+rules_version = '2';
+
+// Quiz "مستويات أثرنا":
+// - Anyone can CREATE exactly one valid submission per session (no update/overwrite).
+// - Nobody can read submissions except signed-in admins listed in /admins/{uid}.
+// - /admins is managed from the Firebase console only.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isValidSubmission(submissionId) {
+      let d = request.resource.data;
+      let fields = ['participantName', 'recommendedField', 'fieldScores', 'answers', 'submittedAt', 'sessionId'];
+      return d.keys().hasOnly(fields)
+        && d.keys().hasAll(fields)
+        && d.participantName is string
+        && d.participantName.size() >= 2
+        && d.participantName.size() <= 40
+        && d.recommendedField in [
+          'المحاسبة المالية',
+          'المحاسبة الإدارية',
+          'المراجعة والتدقيق',
+          'المحاسبة الضريبية',
+          'المحاسبة الجنائية',
+          'التحليل المالي'
+        ]
+        && d.fieldScores is map
+        && d.fieldScores.size() == 6
+        && d.answers is list
+        && d.answers.size() >= 8
+        && d.answers.size() <= 12
+        && d.submittedAt == request.time
+        && d.sessionId is string
+        && d.sessionId == submissionId
+        && d.sessionId.size() >= 16
+        && d.sessionId.size() <= 64;
+    }
+
+    match /quiz_submissions/{submissionId} {
+      // Creating an existing id is evaluated as an update and denied,
+      // so a session can never be submitted twice.
+      allow create: if isValidSubmission(submissionId);
+      allow read: if isAdmin();
+      allow delete: if isAdmin();
+      allow update: if false;
+    }
+
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+  }
+}
