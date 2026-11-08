@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="النادي">
+  <meta name="theme-color" content="#000878">
+  <title>اكتشف مجالك المحاسبي | نادي المحاسبة</title>
+  <meta name="description" content="اختبار قصير يكشف لك مجال المحاسبة الأنسب لاهتماماتك وقدراتك.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://accclubimamu.com/quiz">
+  <meta property="og:title" content="اكتشف مجالك المحاسبي | نادي المحاسبة">
+  <meta property="og:description" content="اختبار قصير يكشف لك مجال المحاسبة الأنسب لاهتماماتك وقدراتك.">
+  <meta property="og:image" content="https://accclubimamu.com/assets/club.webp">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/polish.css">
+  <link rel="stylesheet" href="/css/quiz.css">
+</head>
+
+<body class="quiz-page">
+
+  <div class="quiz-bg" aria-hidden="true">
+    <span style="background-image:url('/assets/visit-03.jpg')"></span>
+  </div>
+
+  <div class="top-bar">
+    <img class="club-logo" src="/assets/club.webp" alt="شعار نادي المحاسبة">
+    <a href="/index.html" class="back-button" aria-label="العودة للرئيسية">←</a>
+  </div>
+
+  <main class="quiz-wrap" id="quizApp" aria-live="polite">
+
+    <!-- الخطوة ١: الترحيب -->
+    <section class="quiz-card quiz-screen is-active" id="screenWelcome">
+      <span class="quiz-eyebrow">اختبار المسار المهني</span>
+      <h1 class="quiz-title">اكتشف مجالك المحاسبي</h1>
+      <p class="quiz-lead">
+        المحاسبة ليست طريقًا واحدًا. أجب عن ١١ سؤالًا قصيرًا عن اهتماماتك وطريقة تفكيرك،
+        ونكشف لك أي مجال من مجالات المحاسبة يناسبك أكثر.
+      </p>
+      <ul class="quiz-facts">
+        <li>١١ سؤالًا</li>
+        <li>أقل من ٣ دقائق</li>
+        <li>نتيجة فورية</li>
+      </ul>
+      <form id="welcomeForm" novalidate>
+        <label class="quiz-label" for="participantName">اسمك</label>
+        <input type="text" id="participantName" class="quiz-input" maxlength="40" autocomplete="given-name" placeholder="اكتب اسمك هنا">
+        <p class="quiz-error" id="nameError" role="alert" hidden></p>
+        <button type="submit" class="quiz-btn quiz-btn--primary">ابدأ الاختبار</button>
+      </form>
+    </section>
+
+    <!-- الخطوة ٢: الأسئلة -->
+    <section class="quiz-card quiz-screen" id="screenQuestion" hidden>
+      <div class="quiz-progress">
+        <div class="quiz-progress-head">
+          <span id="questionCounter">السؤال ١ من ١١</span>
+          <span class="quiz-trait" id="questionTrait"></span>
+        </div>
+        <div class="quiz-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="progressTrack">
+          <div class="quiz-progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+      <div class="quiz-question" id="questionBody">
+        <h2 class="quiz-question-text" id="questionText"></h2>
+        <div class="quiz-choices" id="choices" role="radiogroup"></div>
+      </div>
+      <p class="quiz-error" id="choiceError" role="alert" hidden>اختر إجابة واحدة للمتابعة.</p>
+      <div class="quiz-nav">
+        <button type="button" class="quiz-btn quiz-btn--ghost" id="prevBtn">السابق</button>
+        <button type="button" class="quiz-btn quiz-btn--primary" id="nextBtn">التالي</button>
+      </div>
+    </section>
+
+    <!-- تحليل -->
+    <section class="quiz-card quiz-screen quiz-analyzing" id="screenAnalyzing" hidden>
+      <div class="quiz-spinner" aria-hidden="true"></div>
+      <p>جارٍ تحليل إجاباتك...</p>
+    </section>
+
+    <!-- الخطوة ٣: النتيجة -->
+    <section class="quiz-card quiz-screen quiz-result" id="screenResult" hidden>
+      <div class="result-badge" id="resultBadge" aria-hidden="true"></div>
+      <h1 class="result-headline" id="resultHeadline"></h1>
+      <p class="result-reason" id="resultReason"></p>
+      <div class="result-about">
+        <h2>عن هذا المجال</h2>
+        <p id="resultDescription"></p>
+      </div>
+      <p class="result-close" id="resultClose" hidden></p>
+      <div class="result-bars" id="resultBars"></div>
+      <p class="result-save" id="saveStatus" role="status"></p>
+      <button type="button" class="quiz-btn quiz-btn--ghost" id="retrySaveBtn" hidden>إعادة المحاولة</button>
+      <div class="quiz-nav">
+        <a href="/index.html" class="quiz-btn quiz-btn--ghost">العودة للرئيسية</a>
+        <button type="button" class="quiz-btn quiz-btn--primary" id="restartBtn">اختبار جديد</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module" src="/js/quiz/quiz-app.js"></script>
+  <script src="/js/cursor.js"></script>
+  <script src="/js/ux.js"></script>
+  <script src="/js/pwa.js"></script>
+</body>
+</html>

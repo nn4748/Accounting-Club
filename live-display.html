@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#050a5c">
+  <title>شاشة المستويات | نادي المحاسبة</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/quiz.css">
+</head>
+
+<body class="live-page">
+
+  <header class="live-header">
+    <div class="live-brand">
+      <img src="/assets/club.webp" alt="شعار نادي المحاسبة">
+      <div>
+        <h1>شاشة المستويات</h1>
+        <p>اختبار المسار المهني المحاسبي · نادي المحاسبة</p>
+      </div>
+    </div>
+    <div class="live-status" id="liveStatus" hidden>
+      <span class="live-pill live-pill--live"><span class="live-dot"></span>LIVE</span>
+      <span class="live-pill live-pill--warn" id="connectionPill"><span class="live-dot"></span><span id="connectionText">جارٍ الاتصال</span></span>
+      <button type="button" class="live-btn" id="todayToggle" aria-pressed="true">اليوم فقط</button>
+      <button type="button" class="live-btn" id="signOutBtn">تسجيل الخروج</button>
+    </div>
+  </header>
+
+  <!-- تسجيل دخول الإدارة -->
+  <section class="live-login" id="loginView" hidden>
+    <div class="quiz-card">
+      <h2>دخول الإدارة</h2>
+      <p>هذه الشاشة مخصصة لإدارة الفعالية. سجّل الدخول بحساب مصرّح له.</p>
+      <form id="loginForm" novalidate>
+        <label class="quiz-label" for="adminEmail">البريد الإلكتروني</label>
+        <input class="quiz-input" type="email" id="adminEmail" autocomplete="username" dir="ltr" required>
+        <label class="quiz-label" for="adminPassword">كلمة المرور</label>
+        <input class="quiz-input" type="password" id="adminPassword" autocomplete="current-password" dir="ltr" required>
+        <p class="quiz-error" id="loginError" role="alert" hidden></p>
+        <button type="submit" class="quiz-btn quiz-btn--primary" id="loginBtn">دخول</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- حالة عامة: تحميل / خطأ / غير مصرح -->
+  <section class="live-state" id="stateView">
+    <div class="quiz-spinner" aria-hidden="true"></div>
+    <p id="stateText">جارٍ التحميل...</p>
+  </section>
+
+  <!-- اللوحة -->
+  <main class="live-grid" id="dashboardView" hidden>
+    <aside class="live-panel" aria-label="الإحصائيات">
+      <div class="live-total">
+        <span class="live-total-num" id="totalCount">0</span>
+        <span class="live-total-label">إجمالي المشاركين</span>
+      </div>
+      <div class="live-top">
+        <span>المجال الأكثر اختيارًا</span>
+        <strong id="topField">لا يوجد بعد</strong>
+      </div>
+      <div class="live-dist" id="distribution"></div>
+    </aside>
+
+    <section class="live-panel" aria-label="المشاركون">
+      <div class="live-feed-head">
+        <h2>آخر المشاركين</h2>
+      </div>
+      <div class="live-state" id="feedEmpty" hidden>
+        بانتظار أول مشارك...
+        <small>ستظهر النتائج هنا تلقائيًا فور انتهاء أي مشارك من الاختبار.</small>
+      </div>
+      <div class="live-feed" id="feed" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script type="module" src="/js/quiz/live-dashboard.js"></script>
+</body>
+</html>

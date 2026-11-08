@@ -415,10 +415,6 @@ function displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatS
     container.innerHTML = "";
 
     const EVENTS_HOME_LIMIT = 2;
-    const moreLink = document.getElementById("eventsMore");
-    if (moreLink) {
-        moreLink.style.display = events.length > EVENTS_HOME_LIMIT ? "block" : "none";
-    }
     events.slice(0, EVENTS_HOME_LIMIT).forEach(event => {
 
         const comingSoon = /قريب/.test(event.name) || /قريب/.test(event.description);
