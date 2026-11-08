@@ -97,7 +97,6 @@ body.quiz-page{
   display:flex;justify-content:space-between;align-items:center;gap:10px;
   font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:10px;
 }
-.quiz-trait{color:var(--muted);font-weight:400;font-size:12.5px;text-align:left;}
 .quiz-progress-track{height:8px;border-radius:999px;background:#e8ebf7;overflow:hidden;}
 .quiz-progress-bar{
   height:100%;width:0;border-radius:inherit;
@@ -231,7 +230,7 @@ body.live-page{
 }
 .live-top span{display:block;font-size:14px;color:rgba(255,255,255,.75);margin-bottom:4px;}
 .live-top strong{font-size:clamp(20px,2vw,26px);font-weight:800;}
-.live-dist{display:flex;flex-direction:column;gap:14px;}
+.live-dist{display:flex;flex-direction:column;gap:8px;}
 .live-dist-row{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;}
 .live-dist-name{font-size:clamp(15px,1.4vw,18px);font-weight:700;}
 .live-dist-count{font-size:clamp(15px,1.4vw,18px);font-weight:800;font-variant-numeric:tabular-nums;}
@@ -255,6 +254,7 @@ body.live-page{
 .p-name{font-size:clamp(20px,1.8vw,26px);font-weight:800;color:var(--ink);margin-bottom:10px;word-break:break-word;}
 .p-label{font-size:13px;color:var(--muted);}
 .p-field{font-size:clamp(17px,1.5vw,21px);font-weight:800;color:#1a1d3a;margin:2px 0 10px;}
+.p-sub{font-size:14px;font-weight:700;color:#3b3f66;margin:2px 0 10px;line-height:1.5;}
 .p-time{font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;}
 
 .live-state{text-align:center;padding:70px 20px;color:rgba(255,255,255,.8);font-size:clamp(17px,1.6vw,22px);font-weight:700;}
