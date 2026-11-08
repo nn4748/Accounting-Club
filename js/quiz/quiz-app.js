@@ -1,4 +1,4 @@
-import { FIELDS, QUESTIONS } from "./quiz-data.js";
+import { PERSONALITIES, QUESTIONS } from "./quiz-data.js";
 import { computeResult } from "./scoring.js";
 import { submitQuizResult } from "./quiz-service.js";
 
@@ -87,7 +87,6 @@ function renderQuestion() {
   const total = QUESTIONS.length;
 
   $("questionCounter").textContent = `السؤال ${toArabicDigits(index + 1)} من ${toArabicDigits(total)}`;
-  $("questionTrait").textContent = q.trait;
   const percent = Math.round((index / total) * 100);
   $("progressBar").style.width = percent + "%";
   $("progressTrack").setAttribute("aria-valuenow", percent);
@@ -162,43 +161,45 @@ function finishQuiz() {
 
 function renderResult() {
   const { field, closeSecond, ranked, scores } = state.result;
-  const info = FIELDS[field];
+  const info = PERSONALITIES[field];
   screens.result.style.setProperty("--result-color", info.color);
 
   const headline = $("resultHeadline");
   const strong = document.createElement("strong");
   strong.textContent = info.label;
-  headline.replaceChildren(`${state.name}، المجال الأنسب لك هو `, strong, "!");
+  headline.replaceChildren(`${state.name}، شخصيتك المحاسبية هي `, strong, "!");
 
-  $("resultReason").textContent = info.reason;
-  $("resultDescription").textContent = info.description;
+  $("resultReason").textContent = info.meaning;
+  $("resultDescription").textContent = info.field;
 
   const close = $("resultClose");
   if (closeSecond) {
     const b = document.createElement("b");
-    b.textContent = FIELDS[closeSecond].label;
-    close.replaceChildren("ومجال ", b, " قريب منك أيضًا.");
+    b.textContent = PERSONALITIES[closeSecond].label;
+    close.replaceChildren("وشخصية ", b, " قريبة منك أيضًا.");
     close.hidden = false;
   } else {
     close.hidden = true;
   }
 
   const bars = $("resultBars");
-  bars.replaceChildren(...ranked.slice(0, 3).map((key) => {
+  const total = QUESTIONS.length;
+  bars.replaceChildren(...ranked.slice(0, 3).filter((key) => scores[key] > 0).map((key) => {
     const row = document.createElement("div");
     row.className = "result-bar-row";
     const label = document.createElement("span");
-    label.textContent = FIELDS[key].label;
+    label.textContent = PERSONALITIES[key].label;
     const track = document.createElement("div");
     track.className = "result-bar-track";
     const fill = document.createElement("div");
     fill.className = "result-bar-fill";
-    fill.style.background = FIELDS[key].color;
+    fill.style.background = PERSONALITIES[key].color;
     track.appendChild(fill);
     const value = document.createElement("b");
-    value.textContent = toArabicDigits(scores[key]) + "٪";
+    const pct = Math.round((scores[key] / total) * 100);
+    value.textContent = toArabicDigits(pct) + "٪";
     row.append(label, track, value);
-    requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = scores[key] + "%"; }));
+    requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = pct + "%"; }));
     return row;
   }));
 
@@ -230,8 +231,9 @@ async function saveResult() {
     await submitQuizResult({
       sessionId: state.sessionId,
       participantName: state.name,
-      recommendedField: FIELDS[state.result.field].label,
-      fieldScores: state.result.scores,
+      personality: PERSONALITIES[state.result.field].label,
+      recommendedField: PERSONALITIES[state.result.field].field,
+      scores: state.result.scores,
       answers: state.answers,
     });
     state.saved = true;

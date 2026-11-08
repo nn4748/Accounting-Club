@@ -1,4 +1,4 @@
-import { FIELDS, FIELD_KEYS } from "./quiz-data.js";
+import { PERSONALITIES as FIELDS, KEYS as FIELD_KEYS } from "./quiz-data.js";
 import { signInAdmin, signOutAdmin, subscribeToSubmissions, watchAdminSession } from "./quiz-service.js";
 
 const $ = (id) => document.getElementById(id);
@@ -49,7 +49,7 @@ function setConnection(kind, text) {
 function renderStats(submissions) {
   const counts = Object.fromEntries(FIELD_KEYS.map((k) => [k, 0]));
   submissions.forEach((s) => {
-    const key = LABEL_TO_KEY[s.recommendedField];
+    const key = LABEL_TO_KEY[s.personality];
     if (key) counts[key] += 1;
   });
 
@@ -98,18 +98,25 @@ function formatTime(date) {
 function buildParticipantCard(s, isNew) {
   const card = document.createElement("article");
   card.className = "p-card" + (isNew ? " is-new" : "");
-  const key = LABEL_TO_KEY[s.recommendedField];
+  const key = LABEL_TO_KEY[s.personality];
   if (key) card.style.setProperty("--field-color", FIELDS[key].color);
 
   const name = document.createElement("div");
   name.className = "p-name";
   name.textContent = s.participantName;
 
+  const typeLabel = document.createElement("div");
+  typeLabel.className = "p-label";
+  typeLabel.textContent = "شخصيتك المحاسبية:";
+  const type = document.createElement("div");
+  type.className = "p-field";
+  type.textContent = s.personality;
+
   const fieldLabel = document.createElement("div");
   fieldLabel.className = "p-label";
   fieldLabel.textContent = "المجال المناسب لك:";
   const field = document.createElement("div");
-  field.className = "p-field";
+  field.className = "p-sub";
   field.textContent = s.recommendedField;
 
   const timeLabel = document.createElement("div");
@@ -120,7 +127,7 @@ function buildParticipantCard(s, isNew) {
   time.dir = "ltr";
   time.textContent = formatTime(s.submittedAt);
 
-  card.append(name, fieldLabel, field, timeLabel, time);
+  card.append(name, typeLabel, type, fieldLabel, field, timeLabel, time);
   return card;
 }
 

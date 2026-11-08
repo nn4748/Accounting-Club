@@ -4,12 +4,13 @@ const COLLECTION = "quiz_submissions";
 
 // The document id is the session id, and firestore.rules forbid updates,
 // so the same quiz session can never be saved twice.
-export async function submitQuizResult({ sessionId, participantName, recommendedField, fieldScores, answers }) {
+export async function submitQuizResult({ sessionId, participantName, personality, recommendedField, scores, answers }) {
   const { db, fs } = await getFirebase();
   await fs.setDoc(fs.doc(db, COLLECTION, sessionId), {
     participantName,
+    personality,
     recommendedField,
-    fieldScores,
+    scores,
     answers,
     sessionId,
     submittedAt: fs.serverTimestamp(),
@@ -33,6 +34,7 @@ export async function subscribeToSubmissions({ since, onChange, onError }) {
         return {
           id: d.id,
           participantName: data.participantName,
+          personality: data.personality,
           recommendedField: data.recommendedField,
           submittedAt: data.submittedAt ? data.submittedAt.toDate() : null,
         };
