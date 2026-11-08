@@ -224,8 +224,8 @@ async function saveResult() {
   saving = true;
   $("retrySaveBtn").hidden = true;
   updateSaveStatus("جارٍ حفظ نتيجتك...");
-  const firstAttempt = !state.attempted;
-  state.attempted = true;
+  // attempted = محاولة سابقة يمكن إنها وصلت للخادم (انقطاع اتصال مثلًا).
+  const mayAlreadyBeSaved = state.attempted;
   persist();
   try {
     await submitQuizResult({
@@ -240,13 +240,17 @@ async function saveResult() {
   } catch (err) {
     // Rules reject a second write to the same session, so on a retry a
     // permission error means the first attempt already went through.
-    if (!firstAttempt && err && err.code === "permission-denied") {
+    const denied = err && err.code === "permission-denied";
+    const notConfigured = err && err.name === "FirebaseNotConfiguredError";
+    if (mayAlreadyBeSaved && denied) {
       state.saved = true;
     } else {
       console.error("تعذر حفظ النتيجة:", err);
-      const notConfigured = err && err.name === "FirebaseNotConfiguredError";
+      state.attempted = !denied && !notConfigured;
       updateSaveStatus(
-        notConfigured ? "تعذّر حفظ النتيجة: الحفظ غير مفعّل حاليًا." : "تعذّر حفظ النتيجة، تأكد من اتصالك بالإنترنت.",
+        notConfigured ? "تعذّر حفظ النتيجة: الحفظ غير مفعّل حاليًا."
+          : denied ? "تعذّر حفظ النتيجة، حاول مرة ثانية بعد قليل."
+          : "تعذّر حفظ النتيجة، تأكد من اتصالك بالإنترنت.",
         "is-error"
       );
       $("retrySaveBtn").hidden = false;
