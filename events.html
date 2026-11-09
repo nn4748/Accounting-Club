@@ -853,6 +853,7 @@
     const EXCELLENCE_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1g8hHm2P426uB0afTDRrWHCIeULf6enGL7KuKEylfpM8/export?format=csv";
     const isExcellenceWorkshop = (event) => /التميّ?ز المهني/.test(event.name || "");
     const EXCELLENCE_CLOSED = false;
+    const EXCELLENCE_POSTPONED = true;
 
     function parseCSV(text) {
       const rows = [];
@@ -974,7 +975,7 @@
         description: event.description || "",
         image: toDirectImageUrl(event.image) || ""
       });
-      const postponed = isSocpaCmaWorkshop(event) && SOCPA_CMA_POSTPONED;
+      const postponed = (isSocpaCmaWorkshop(event) && SOCPA_CMA_POSTPONED) || (isExcellenceWorkshop(event) && EXCELLENCE_POSTPONED);
       const actionHtml = postponed
         ? `<span class="event-action-page event-action-page--soon">مؤجلة</span>`
         : soon

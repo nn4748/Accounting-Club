@@ -675,6 +675,8 @@
     const EXCELLENCE_LIMIT = null;
     const EXCELLENCE_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1g8hHm2P426uB0afTDRrWHCIeULf6enGL7KuKEylfpM8/export?format=csv";
     const EXCELLENCE_CLOSED = false;
+    const EXCELLENCE_POSTPONED = true;
+    const isExcellencePostponed = EXCELLENCE_POSTPONED && isExcellenceWorkshop;
 
     if (isSocpaCmaWorkshop) {
       document.getElementById("speakersSection").style.display = "block";
@@ -806,6 +808,12 @@
       }
 
       if (isExcellenceWorkshop) {
+        if (isExcellencePostponed) {
+          registerForm.style.display = "none";
+          document.querySelector("#postponedMessage p").textContent = "الدورة مؤجلة، والتسجيل مقفل حاليًا.";
+          document.getElementById("postponedMessage").style.display = "block";
+          return;
+        }
         if (EXCELLENCE_CLOSED) {
           registerForm.style.display = "none";
           document.getElementById("fullMessage").style.display = "block";
@@ -969,6 +977,13 @@
       if (isSocpaCmaWorkshop && SOCPA_CMA_CLOSED) {
         registerForm.style.display = "none";
         document.getElementById("fullMessage").style.display = "block";
+        return;
+      }
+
+      if (isExcellencePostponed) {
+        registerForm.style.display = "none";
+        document.querySelector("#postponedMessage p").textContent = "الدورة مؤجلة، والتسجيل مقفل حاليًا.";
+        document.getElementById("postponedMessage").style.display = "block";
         return;
       }
 
