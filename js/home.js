@@ -335,6 +335,7 @@ const EXCELLENCE_LIMIT = null;
 const EXCELLENCE_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1g8hHm2P426uB0afTDRrWHCIeULf6enGL7KuKEylfpM8/export?format=csv";
 const isExcellenceWorkshop = (event) => /التميّ?ز المهني/.test(event.name || "");
 const EXCELLENCE_CLOSED = false;
+const EXCELLENCE_POSTPONED = true;
 
 async function fetchExcellenceCount() {
     if (!EXCELLENCE_LIMIT) return 0;
@@ -426,7 +427,7 @@ function displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatS
             || (isVatSession(event) && (VAT_SESSION_CLOSED || (vatSessionCount || 0) >= VAT_SESSION_LIMIT))
             || (isExcellenceWorkshop(event) && (EXCELLENCE_CLOSED || (EXCELLENCE_LIMIT && (excellenceCount || 0) >= EXCELLENCE_LIMIT)));
 
-        const postponed = isSocpaCmaWorkshop(event) && SOCPA_CMA_POSTPONED;
+        const postponed = (isSocpaCmaWorkshop(event) && SOCPA_CMA_POSTPONED) || (isExcellenceWorkshop(event) && EXCELLENCE_POSTPONED);
         const actionHtml = postponed
             ? `<span class="register-btn register-btn--soon">مؤجلة</span>`
             : comingSoon
