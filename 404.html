@@ -53,6 +53,17 @@
     font-size:16px;
   }
 </style>
+  <script>
+    // روابط تنسخ من واتساب أحيانًا ومعها نقطة أو حرف مخفي أو كلام عربي ملصوق (مثل /quiz. أو /quizتفضلوا)،
+    // فنرجّعها للصفحة الصحيحة بدل ما تطلع 404.
+    (function () {
+      var path = decodeURIComponent(location.pathname).toLowerCase();
+      var routes = [["/live-display", "/live-display"], ["/quiz", "/quiz"], ["/qiuz", "/quiz"], ["/quizz", "/quiz"]];
+      for (var i = 0; i < routes.length; i++) {
+        if (path.indexOf(routes[i][0]) === 0) { location.replace(routes[i][1]); return; }
+      }
+    })();
+  </script>
 </head>
 
 <body>
