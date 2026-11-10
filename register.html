@@ -676,6 +676,8 @@
     const EXCELLENCE_RESPONSES_CSV_URL = "https://docs.google.com/spreadsheets/d/1g8hHm2P426uB0afTDRrWHCIeULf6enGL7KuKEylfpM8/export?format=csv";
     const EXCELLENCE_CLOSED = false;
     const EXCELLENCE_POSTPONED = true;
+    // ما وراء الأرقام: نموذج وشيت ردود مخصصين. التسجيل يُقفل بكلمة "قريبًا" في اسم الفعالية.
+    const isBeyondNumbers = /ما وراء الأرقام/.test(eventData.name || "");
     const isExcellencePostponed = EXCELLENCE_POSTPONED && isExcellenceWorkshop;
 
     if (isSocpaCmaWorkshop) {
@@ -936,6 +938,14 @@
       major: "entry.1939414756"
     };
 
+    const BEYOND_NUMBERS_GOOGLE_FORM_ID = "1FAIpQLSf4SwYpb0hrbQkg40XBGVzuxXY1ygK0PJOsqKCGvwrBd1koaw";
+    const BEYOND_NUMBERS_FORM_ENTRY = {
+      fullName: "entry.1937592118",
+      phone: "entry.1087063696",
+      email: "entry.154952495",
+      major: "entry.1946697379"
+    };
+
     const VAT_SESSION_GOOGLE_FORM_ID = "1FAIpQLSe3Dn1kzqhWDrDYoW-VvCgb6jSrUFbTAKkyYTOzIJGYHrzTyw";
     const VAT_SESSION_FORM_ENTRY = {
       fullName: "entry.2107895037",
@@ -1043,6 +1053,12 @@
         body.set(VAT_SESSION_FORM_ENTRY.email, document.getElementById("email").value);
         body.set(VAT_SESSION_FORM_ENTRY.phone, document.getElementById("phone").value);
         body.set(VAT_SESSION_FORM_ENTRY.major, document.getElementById("major").value);
+      } else if (isBeyondNumbers) {
+        formId = BEYOND_NUMBERS_GOOGLE_FORM_ID;
+        body.set(BEYOND_NUMBERS_FORM_ENTRY.fullName, document.getElementById("name").value);
+        body.set(BEYOND_NUMBERS_FORM_ENTRY.email, document.getElementById("email").value);
+        body.set(BEYOND_NUMBERS_FORM_ENTRY.phone, document.getElementById("phone").value);
+        body.set(BEYOND_NUMBERS_FORM_ENTRY.major, document.getElementById("major").value);
       } else {
         formId = GOOGLE_FORM_ID;
         body.set(FORM_ENTRY.fullName, document.getElementById("name").value);
