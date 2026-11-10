@@ -15,30 +15,23 @@ service cloud.firestore {
     function isValidSubmission(submissionId) {
       let d = request.resource.data;
       let fields = ['participantName', 'personality', 'recommendedField', 'scores', 'answers', 'submittedAt', 'sessionId'];
-      let pairs = {
-        'المخطط الأول': 'التخطيط والتحليل المالي، المحاسبة الإدارية',
-        'النزيه': 'الحوكمة والامتثال',
-        'حارس التفاصيل': 'المراجعة الداخلية والخارجية',
-        'قارئ الأرقام': 'التحليل المالي، تقييم الأعمال',
-        'كاشف الخفايا': 'المحاسبة الجنائية',
-        'حلّال الأزمات': 'المحاسبة المالية، محاسبة التكاليف',
-        'مايسترو الأنظمة': 'نظم المعلومات المحاسبية، أنظمة ERP',
-        'خبير اللوائح': 'محاسبة الزكاة والضرائب',
-        'قنّاص الفرص': 'محاسبة الاستثمار والصناديق، تقييم الأعمال',
-        'صاحب الكلمة': 'المحاسبة القانونية، المراجعة الخارجية'
-      };
       return d.keys().hasOnly(fields)
         && d.keys().hasAll(fields)
         && d.participantName is string
         && d.participantName.size() >= 2
         && d.participantName.size() <= 40
         && d.personality is string
-        && d.personality in pairs
-        && d.recommendedField == pairs[d.personality]
+        && d.personality.size() >= 2
+        && d.personality.size() <= 40
+        && d.recommendedField is string
+        && d.recommendedField.size() >= 2
+        && d.recommendedField.size() <= 120
         && d.scores is map
-        && d.scores.size() == 10
+        && d.scores.size() >= 5
+        && d.scores.size() <= 40
         && d.answers is list
-        && d.answers.size() == 10
+        && d.answers.size() >= 8
+        && d.answers.size() <= 30
         && d.submittedAt == request.time
         && d.sessionId is string
         && d.sessionId == submissionId
