@@ -2,7 +2,7 @@ import { PERSONALITIES, QUESTIONS } from "./quiz-data.js";
 import { computeResult } from "./scoring.js";
 import { submitQuizResult } from "./quiz-service.js";
 
-const STORAGE_KEY = "atharnaQuiz";
+const STORAGE_KEY = "atharnaQuiz.v3";
 const AR_DIGITS = "٠١٢٣٤٥٦٧٨٩";
 const toArabicDigits = (n) => String(n).replace(/[0-9]/g, (d) => AR_DIGITS[d]);
 
@@ -183,7 +183,7 @@ function renderResult() {
   }
 
   const bars = $("resultBars");
-  const total = QUESTIONS.length;
+  const percents = state.result.percents || {};
   bars.replaceChildren(...ranked.slice(0, 3).filter((key) => scores[key] > 0).map((key) => {
     const row = document.createElement("div");
     row.className = "result-bar-row";
@@ -196,7 +196,7 @@ function renderResult() {
     fill.style.background = PERSONALITIES[key].color;
     track.appendChild(fill);
     const value = document.createElement("b");
-    const pct = Math.round((scores[key] / total) * 100);
+    const pct = percents[key] || 0;
     value.textContent = toArabicDigits(pct) + "٪";
     row.append(label, track, value);
     requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = pct + "%"; }));

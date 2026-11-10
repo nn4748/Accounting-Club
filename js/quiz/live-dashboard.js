@@ -67,7 +67,8 @@ function renderStats(submissions) {
   const leaders = FIELD_KEYS.filter((k) => max > 0 && counts[k] === max).map((k) => FIELDS[k].label);
   $("topField").textContent = leaders.length ? leaders.join(" و") : "لا يوجد بعد";
 
-  $("distribution").replaceChildren(...FIELD_KEYS.map((key) => {
+  const shown = FIELD_KEYS.filter((k) => counts[k] > 0).sort((a, b) => counts[b] - counts[a]);
+  $("distribution").replaceChildren(...shown.map((key) => {
     const row = document.createElement("div");
     row.className = "live-dist-row";
     const name = document.createElement("span");
