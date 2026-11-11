@@ -16,7 +16,7 @@ exports.handler = async (event) => {
   if (event.httpMethod !== "POST") return { statusCode: 405, body: "" };
   connectLambda(event);
   let body = {};
-  try { body = JSON.parse(event.body || "{}"); } catch (e) { return { statusCode: 400, body: "" }; }
+  try { body = JSON.parse((event.isBase64Encoded ? Buffer.from(event.body || "", "base64").toString("utf8") : event.body) || "{}"); } catch (e) { return { statusCode: 400, body: "" }; }
   const name = String(body.e || "");
   if (!EVENTS.has(name)) return { statusCode: 204, body: "" };
   const visitor = /^[a-z0-9]{8,40}$/i.test(String(body.v || "")) ? body.v : null;
@@ -28,5 +28,5 @@ exports.handler = async (event) => {
   // زائر فريد باليوم: نفس المفتاح يتكرر لنفس الجهاز فينحسب مرة وحدة.
   if (visitor && name.startsWith("view:")) writes.push(store.set(`${day}/u/${visitor}`, "1"));
   await Promise.all(writes);
-  return { statusCode: 204, body: "" };
+  return { statusCode: 202, body: "" };
 };
