@@ -1,6 +1,7 @@
 import { PERSONALITIES, QUESTIONS } from "./quiz-data.js";
 import { computeResult } from "./scoring.js";
 import { submitQuizResult } from "./quiz-service.js";
+import { shareResultCard } from "./share-card.js";
 
 const STORAGE_KEY = "atharnaQuiz.v3";
 const AR_DIGITS = "٠١٢٣٤٥٦٧٨٩";
@@ -70,6 +71,7 @@ $("welcomeForm").addEventListener("submit", (e) => {
   if (error) { nameInput.focus(); return; }
   state = { ...newState(), name, step: "question" };
   persist();
+  if (window.track) window.track("quiz_start");
   renderQuestion();
   show("question");
 });
@@ -151,6 +153,7 @@ function finishQuiz() {
   state.result = computeResult(state.answers);
   state.step = "result";
   persist();
+  if (window.track) window.track("quiz_done");
   show("analyzing");
   setTimeout(() => {
     renderResult();
@@ -263,6 +266,24 @@ async function saveResult() {
 }
 
 $("retrySaveBtn").addEventListener("click", saveResult);
+
+$("shareCardBtn").addEventListener("click", async () => {
+  if (!state.result) return;
+  const btn = $("shareCardBtn");
+  const info = PERSONALITIES[state.result.field];
+  btn.disabled = true;
+  btn.textContent = "جارٍ تجهيز البطاقة...";
+  try {
+    const outcome = await shareResultCard({ name: state.name, personality: info.label, meaning: info.meaning, field: info.field, color: info.color });
+    btn.textContent = outcome === "downloaded" ? "تم حفظ البطاقة ✓" : "شارك بطاقتك 📸";
+    if (outcome !== "cancelled" && window.track) window.track("card_share");
+  } catch (err) {
+    console.error("تعذر تجهيز البطاقة:", err);
+    btn.textContent = "شارك بطاقتك 📸";
+  } finally {
+    btn.disabled = false;
+  }
+});
 
 $("restartBtn").addEventListener("click", () => {
   const name = state.name;

@@ -517,6 +517,7 @@
 
   </div>
 
+  <script src="js/event-sheet.js"></script>
   <script>
 
     // يبني رابط إضافة الفعالية لتقويم قوقل كحدث ليوم كامل. يدعم صيغتي
@@ -958,13 +959,73 @@
 
     checkRegistrationCap();
 
-    registerForm.addEventListener("submit", function (e) {
+    /* =========================================
+       التحكم من شيت الفعاليات (أعمدة status / limit / form / responses)
+       لو عمود status معبّى للفعالية، يتقدّم على الإعدادات اللي فوق.
+    ========================================= */
+    const SHEET_EVENTS_API_URL = "https://script.google.com/macros/s/AKfycbwnD4jxqeTzbi4n5_OOJl3BUhwNeAdDN2f2HF80MWTiRRjZilvt8tu9-8UBYY74P_2W/exec";
+    let sheetEvent = null;
+    let sheetForm = null;
+
+    function showOnlyMessage(id, text) {
+      registerForm.style.display = "none";
+      ["fullMessage", "postponedMessage", "notStartedMessage"].forEach(m => {
+        const el = document.getElementById(m);
+        if (el) el.style.display = m === id ? "block" : "none";
+      });
+      if (text) document.querySelector("#" + id + " p").textContent = text;
+    }
+
+    // ترجع true لو الشيت يمنع التسجيل.
+    function applySheetState(onSubmit) {
+      const state = sheetEvent && sheetEvent._sheetStatus;
+      if (state === "postponed") { showOnlyMessage("postponedMessage", "الفعالية مؤجلة، والتسجيل مقفل حاليًا."); return true; }
+      if (state === "closed") { showOnlyMessage("fullMessage"); return true; }
+      if (state === "soon" && onSubmit) { showOnlyMessage("notStartedMessage"); return true; }
+      if (state === "open" && !onSubmit) {
+        registerForm.style.display = "";
+        ["fullMessage", "postponedMessage", "notStartedMessage"].forEach(m => {
+          const el = document.getElementById(m);
+          if (el) el.style.display = "none";
+        });
+      }
+      return false;
+    }
+
+    const sheetReady = (async () => {
+      if (!window.EventSheet || !eventData.name) return;
+      try {
+        const res = await fetch(SHEET_EVENTS_API_URL + "?t=" + Date.now());
+        const list = await res.json();
+        const norm = (s) => String(s || "").replace(/\s+/g, " ").trim();
+        sheetEvent = (Array.isArray(list) ? list : []).find(ev => norm(ev.name) === norm(eventData.name)) || null;
+        if (!sheetEvent) return;
+        await EventSheet.annotate([sheetEvent]);
+        const fid = EventSheet.formId(sheetEvent.form);
+        if (fid) {
+          const info = await (await fetch("/.netlify/functions/form-fields?id=" + encodeURIComponent(fid))).json();
+          if (info && info.ok) sheetForm = { formId: fid, entries: info.entries };
+          else console.error("نموذج الفعالية غير جاهز (يطلب تسجيل دخول أو حقوله ناقصة):", info);
+        }
+        applySheetState(false);
+      } catch (err) {
+        console.error("تعذر قراءة إعدادات الفعالية من الشيت:", err);
+      }
+    })();
+
+    registerForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       if (!document.getElementById("agree").checked) {
         alert("يجب الموافقة على التعهد قبل التسجيل.");
         return;
       }
+
+      await sheetReady;
+      if (applySheetState(true)) return;
+      const sheetOpen = !!(sheetEvent && sheetEvent._sheetStatus === "open");
+
+      if (!sheetOpen) {
 
       if (isTeamEvent && TEAM_EVENT_CLOSED) {
         registerForm.style.display = "none";
@@ -1014,6 +1075,7 @@
         document.getElementById("notStartedMessage").style.display = "block";
         return;
       }
+      }
 
       const submitBtn = registerForm.querySelector("button[type=submit]");
       submitBtn.disabled = true;
@@ -1022,7 +1084,13 @@
       const body = new URLSearchParams();
       let formId;
 
-      if (isTeamEvent) {
+      if (sheetForm) {
+        formId = sheetForm.formId;
+        body.set(sheetForm.entries.fullName, document.getElementById("name").value);
+        body.set(sheetForm.entries.email, document.getElementById("email").value);
+        body.set(sheetForm.entries.phone, document.getElementById("phone").value);
+        body.set(sheetForm.entries.major, document.getElementById("major").value);
+      } else if (isTeamEvent) {
         formId = TEAM_GOOGLE_FORM_ID;
         for (let i = 1; i <= 6; i++) {
           body.set(TEAM_FORM_ENTRY["member" + i + "Name"], document.getElementById("member" + i + "Name").value);
@@ -1075,6 +1143,7 @@
         body: body.toString()
       })
         .then(() => {
+          if (window.track) window.track("register_done");
           registerForm.style.display = "none";
           if (isTeamEvent) {
             document.getElementById("teamSuccessMessage").style.display = "block";
@@ -1108,5 +1177,6 @@
   <script src="js/push.js"></script>
   <script src="js/pwa.js"></script>
 
+  <script src="/js/track.js" defer></script>
 </body>
 </html>

@@ -87,6 +87,7 @@ body.quiz-page{
 .quiz-btn--primary{background:var(--ink);color:var(--white);}
 .quiz-btn--primary:hover{background:var(--ink-soft);}
 .quiz-btn--ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);}
+.quiz-btn--share{width:100%;margin:4px 0 6px;background:linear-gradient(90deg,var(--result-color,#6ccff6),#82aaff);color:#000878;font-weight:800;}
 .quiz-btn--ghost:hover{border-color:var(--ink);}
 .quiz-btn[disabled]{opacity:.45;cursor:not-allowed;}
 #welcomeForm .quiz-btn{width:100%;margin-top:6px;}

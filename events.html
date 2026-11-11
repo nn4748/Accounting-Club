@@ -788,6 +788,7 @@
     </div>
   </section>
 
+  <script src="js/event-sheet.js"></script>
   <script>
 
     /* =========================================
@@ -814,8 +815,13 @@
       try {
         const response = await fetch(EVENTS_API_URL);
         if (!response.ok) throw new Error("Failed to load events");
-        const events = await response.json();
-        return Array.isArray(events) ? events : [];
+        let events = await response.json();
+        events = Array.isArray(events) ? events : [];
+        if (window.EventSheet) {
+          events = events.filter(e => !EventSheet.isPast(e));
+          await EventSheet.annotate(events);
+        }
+        return events;
       } catch (error) {
         console.error("تعذر تحميل بيانات الفعاليات:", error);
         return [];
@@ -941,6 +947,7 @@
     // فنحولها هنا لصيغة عرض مباشر بالاعتماد على معرّف الملف.
     function toDirectImageUrl(url) {
       if (!url) return url;
+      if (window.EventSheet) return EventSheet.driveImage(url, 1000);
       const match = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([\w-]+)/);
       if (!match) return url;
       return `https://lh3.googleusercontent.com/d/${match[1]}`;
@@ -976,11 +983,12 @@
         image: toDirectImageUrl(event.image) || ""
       });
       const postponed = (isSocpaCmaWorkshop(event) && SOCPA_CMA_POSTPONED) || (isExcellenceWorkshop(event) && EXCELLENCE_POSTPONED);
-      const actionHtml = postponed
+      const state = event._sheetStatus || (postponed ? "postponed" : soon ? "soon" : isFull ? "closed" : "open");
+      const actionHtml = state === "postponed"
         ? `<span class="event-action-page event-action-page--soon">مؤجلة</span>`
-        : soon
+        : state === "soon"
         ? `<a class="event-action-page event-action-page--soon" href="register.html?${registerParams.toString()}">التسجيل غير متاح حالياً</a>`
-        : isFull
+        : state === "closed"
         ? `<span class="event-action-page event-action-page--soon">انتهى التسجيل</span>`
         : `<a class="event-action-page" href="register.html?${registerParams.toString()}">سجل الآن</a>`;
 
@@ -1036,5 +1044,6 @@
     <script src="js/ux.js"></script>
     <script src="js/push.js"></script>
     <script src="js/pwa.js"></script>
+  <script src="/js/track.js" defer></script>
 </body>
 </html>
