@@ -381,7 +381,11 @@ async function loadEvents(isRetry) {
             fetchVatSessionCount(),
             fetchExcellenceCount()
         ]);
-        const events = await response.json();
+        let events = await response.json();
+        if (window.EventSheet && Array.isArray(events)) {
+            events = events.filter(e => !EventSheet.isPast(e));
+            await EventSheet.annotate(events);
+        }
         displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount, excellenceCount);
     } catch (error) {
         console.error("Error:", error);
@@ -400,6 +404,7 @@ async function loadEvents(isRetry) {
 // فنحولها هنا لصيغة عرض مباشر بالاعتماد على معرّف الملف.
 function toDirectImageUrl(url) {
     if (!url) return url;
+    if (window.EventSheet) return EventSheet.driveImage(url, 900);
     const match = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([\w-]+)/);
     if (!match) return url;
     return `https://lh3.googleusercontent.com/d/${match[1]}`;
@@ -432,11 +437,13 @@ function displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatS
             || (isExcellenceWorkshop(event) && (EXCELLENCE_CLOSED || (EXCELLENCE_LIMIT && (excellenceCount || 0) >= EXCELLENCE_LIMIT)));
 
         const postponed = (isSocpaCmaWorkshop(event) && SOCPA_CMA_POSTPONED) || (isExcellenceWorkshop(event) && EXCELLENCE_POSTPONED);
-        const actionHtml = postponed
+        // عمود status بالشيت (لو معبّى) يتقدّم على الإعدادات اللي بالكود.
+        const state = event._sheetStatus || (postponed ? "postponed" : comingSoon ? "soon" : isFull ? "closed" : "open");
+        const actionHtml = state === "postponed"
             ? `<span class="register-btn register-btn--soon">مؤجلة</span>`
-            : comingSoon
+            : state === "soon"
             ? `<a class="register-btn register-btn--soon" href="${buildRegisterUrl(event)}">التسجيل غير متاح حالياً</a>`
-            : isFull
+            : state === "closed"
             ? `<span class="register-btn register-btn--soon">انتهى التسجيل</span>`
             : `<a class="register-btn" href="${buildRegisterUrl(event)}">سجل الآن</a>`;
 
