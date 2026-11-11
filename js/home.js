@@ -14,6 +14,7 @@
       sideMenu.classList.add('open');
       menuOverlay.classList.add('open');
       sideMenu.setAttribute('aria-hidden', 'false');
+      sideMenu.removeAttribute('inert');
       menuToggle.setAttribute('aria-expanded', 'true');
       document.body.classList.add('menu-open');
     };
@@ -21,6 +22,7 @@
       sideMenu.classList.remove('open');
       menuOverlay.classList.remove('open');
       sideMenu.setAttribute('aria-hidden', 'true');
+      sideMenu.setAttribute('inert', '');
       menuToggle.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('menu-open');
     };
