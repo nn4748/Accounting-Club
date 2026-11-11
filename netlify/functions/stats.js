@@ -9,7 +9,7 @@ exports.handler = async (event) => {
   connectLambda(event);
   if (event.httpMethod !== "POST") return { statusCode: 405, body: "" };
   let body = {};
-  try { body = JSON.parse(event.body || "{}"); } catch (e) { return { statusCode: 400, body: "" }; }
+  try { body = JSON.parse((event.isBase64Encoded ? Buffer.from(event.body || "", "base64").toString("utf8") : event.body) || "{}"); } catch (e) { return { statusCode: 400, body: "" }; }
   if (!process.env.ADMIN_PUSH_PASSWORD || body.password !== process.env.ADMIN_PUSH_PASSWORD) {
     return { statusCode: 401, body: JSON.stringify({ error: "كلمة المرور غير صحيحة" }) };
   }
