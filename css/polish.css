@@ -237,3 +237,25 @@ button:active, .btn:active, .btn-start:active, .btn-ghost:active,
   .notif-fab.notif-fab-stacked{bottom:86px;}
   .notif-fab-icon{width:24px; height:24px;}
 }
+
+/* =========================================================
+   انتقال ناعم بين صفحات الموقع (مثل التطبيقات) بدل الوميض الأبيض.
+   المتصفحات اللي ما تدعمه تتجاهله بدون أي أثر.
+   ========================================================= */
+@view-transition { navigation: auto; }
+
+::view-transition-old(root) {
+  animation: vt-page-out .2s cubic-bezier(.4,0,1,1) both;
+}
+::view-transition-new(root) {
+  animation: vt-page-in .38s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes vt-page-out {
+  to { opacity: 0; transform: translateY(-6px) scale(.995); }
+}
+@keyframes vt-page-in {
+  from { opacity: 0; transform: translateY(12px) scale(1.005); }
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
