@@ -132,5 +132,19 @@
     return `https://lh3.googleusercontent.com/d/${m[1]}=w${width || 900}`;
   }
 
-  window.EventSheet = { status, limit, formId, sheetId, parseDate, isPast, count, annotate, parseCSV, driveImage };
+  // نسخة محفوظة من آخر بيانات، عشان الصفحة تعرضها فورًا وهي تجيب الجديد.
+  const cache = {
+    get(key, maxAgeMs) {
+      try {
+        const raw = JSON.parse(localStorage.getItem("cache:" + key));
+        if (!raw || Date.now() - raw.t > (maxAgeMs || 7 * 864e5)) return null;
+        return raw.d;
+      } catch (e) { return null; }
+    },
+    set(key, data) {
+      try { localStorage.setItem("cache:" + key, JSON.stringify({ t: Date.now(), d: data })); } catch (e) { /* ممتلئ أو غير متاح */ }
+    },
+  };
+
+  window.EventSheet = { status, limit, formId, sheetId, parseDate, isPast, count, annotate, parseCSV, driveImage, cache };
 })();

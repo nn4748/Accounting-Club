@@ -3,6 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="preconnect" href="https://script.google.com">
+  <link rel="preconnect" href="https://script.googleusercontent.com">
+  <link rel="preconnect" href="https://lh3.googleusercontent.com">
+  <link rel="preconnect" href="https://docs.google.com">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
@@ -818,6 +822,7 @@
         let events = await response.json();
         events = Array.isArray(events) ? events : [];
         if (window.EventSheet) {
+          EventSheet.cache.set("events", events);
           events = events.filter(e => !EventSheet.isPast(e));
           await EventSheet.annotate(events);
         }
@@ -1019,6 +1024,16 @@
 
     async function renderEventsPage() {
       const container = document.getElementById("eventsContainerPage");
+      // عرض فوري من آخر زيارة لين توصل البيانات المحدثة.
+      const cached = window.EventSheet && EventSheet.cache.get("events");
+      if (Array.isArray(cached) && cached.length) {
+        const quick = cached.filter(e => !EventSheet.isPast(e));
+        quick.forEach(e => { e._sheetStatus = EventSheet.status(e); });
+        if (quick.length) {
+          container.innerHTML = "";
+          quick.forEach((event, index) => container.appendChild(createEventCard(event, index, {}, 0, 0, 0)));
+        }
+      }
       const [events, counts, financeWorkshopCount, socpaCmaCount, excellenceCount] = await Promise.all([
         loadEventsPage(),
         fetchRegistrationCounts(),
