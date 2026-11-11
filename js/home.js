@@ -374,6 +374,15 @@ async function fetchRegistrationCounts() {
 }
 
 async function loadEvents(isRetry) {
+    // عرض فوري من آخر زيارة (لو موجودة) لين توصل البيانات المحدثة.
+    if (!isRetry && window.EventSheet) {
+        const cached = EventSheet.cache.get("events");
+        if (Array.isArray(cached) && cached.length) {
+            const quick = cached.filter(e => !EventSheet.isPast(e));
+            quick.forEach(e => { e._sheetStatus = EventSheet.status(e); });
+            try { displayEvents(quick, {}, 0, 0, 0, 0); } catch (e) { /* نكمل للتحميل العادي */ }
+        }
+    }
     try {
         const [response, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount, excellenceCount] = await Promise.all([
             fetch(API_URL + "?t=" + Date.now()),
@@ -385,6 +394,7 @@ async function loadEvents(isRetry) {
         ]);
         let events = await response.json();
         if (window.EventSheet && Array.isArray(events)) {
+            EventSheet.cache.set("events", events);
             events = events.filter(e => !EventSheet.isPast(e));
             await EventSheet.annotate(events);
         }

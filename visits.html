@@ -3,6 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="preconnect" href="https://script.google.com">
+  <link rel="preconnect" href="https://script.googleusercontent.com">
+  <link rel="preconnect" href="https://lh3.googleusercontent.com">
+  <link rel="preconnect" href="https://docs.google.com">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
@@ -769,7 +773,7 @@
 
       if (match) {
 
-        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
+        return `https://lh3.googleusercontent.com/d/${match[1]}=w800`;
 
       }
 
@@ -1018,27 +1022,22 @@
        LOAD VISITS
     ========================================= */
 
-    async function loadVisits() {
-
+    function readCachedVisitsCSV() {
       try {
+        const raw = JSON.parse(localStorage.getItem("cache:visits-csv"));
+        return raw && Date.now() - raw.t < 30 * 864e5 ? raw.d : null;
+      } catch (e) { return null; }
+    }
 
-        const response =
-          await fetch(
-            VISITS_SHEET_CSV_URL
-          );
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            "Failed to load sheet"
-          );
-
+    async function loadVisits(cachedCsv) {
+      try {
+        let csv = cachedCsv;
+        if (!csv) {
+          const response = await fetch(VISITS_SHEET_CSV_URL);
+          if (!response.ok) throw new Error("Failed to load sheet");
+          csv = await response.text();
+          try { localStorage.setItem("cache:visits-csv", JSON.stringify({ t: Date.now(), d: csv })); } catch (e) { /* غير متاح */ }
         }
-
-
-        const csv =
-          await response.text();
 
 
         const rows =
@@ -1267,12 +1266,20 @@
         );
 
 
-      const visits =
-        await loadVisits();
+      // عرض فوري من آخر زيارة للصفحة لين توصل البيانات المحدثة.
+      const cachedCsv = readCachedVisitsCSV();
+      if (cachedCsv) {
+        const quick = await loadVisits(cachedCsv);
+        if (quick.length) {
+          container.innerHTML = "";
+          quick.forEach((visit, index) => container.appendChild(createVisitCard(visit, index)));
+        }
+      }
 
+      const visits = await loadVisits();
+      if (visits.length === 0 && cachedCsv) return;
 
-      container.innerHTML =
-        "";
+      container.innerHTML = "";
       if (
         visits.length === 0
       ) {
