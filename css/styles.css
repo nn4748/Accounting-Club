@@ -290,7 +290,7 @@
     font-size:clamp(16px,1.7vw,20px);font-weight:400;line-height:1.8;
     color:rgba(255,255,255,.95);
   }
-  .about-photo img{width:100%;border-radius:20px;}
+  .about-photo img{width:100%;height:auto;border-radius:20px;}
 
   /* ============ VISION (dark band) ============ */
   .vision{
@@ -305,7 +305,7 @@
   .vision blockquote{
     font-size:clamp(16px,1.7vw,20px);font-weight:400;line-height:1.8;color:rgba(255,255,255,.95);
   }
-  .vision-photo img{width:100%;border-radius:20px;}
+  .vision-photo img{width:100%;height:auto;border-radius:20px;}
 
   @media(max-width:760px){
     .about-grid,.vision-grid{grid-template-columns:1fr;gap:26px;}
