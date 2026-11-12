@@ -23,7 +23,8 @@ export async function subscribeToSubmissions({ since, onChange, onError }) {
   const { db, fs } = await getFirebase();
   const constraints = [];
   if (since) constraints.push(fs.where("submittedAt", ">=", fs.Timestamp.fromDate(since)));
-  constraints.push(fs.orderBy("submittedAt", "desc"), fs.limit(500));
+  // بدون حد: الإحصائيات لازم تحسب كل المشاركين (الشاشة تعرض آخر البطاقات بس).
+  constraints.push(fs.orderBy("submittedAt", "desc"), fs.limit(20000));
   const q = fs.query(fs.collection(db, COLLECTION), ...constraints);
   return fs.onSnapshot(
     q,

@@ -10,6 +10,7 @@ let todayOnly = true;
 let firstSnapshot = true;
 let lastTotal = 0;
 let retryTimer = null;
+const FEED_LIMIT = 60;
 
 function showView(name) {
   Object.entries(views).forEach(([key, el]) => { el.hidden = key !== name; });
@@ -134,7 +135,8 @@ function buildParticipantCard(s, isNew) {
 
 function renderFeed(submissions, addedIds) {
   const added = new Set(firstSnapshot ? [] : addedIds);
-  $("feed").replaceChildren(...submissions.map((s) => buildParticipantCard(s, added.has(s.id))));
+  // نعرض آخر ٦٠ مشارك فقط عشان الشاشة تظل سريعة، والإحصائيات تحسب الكل.
+  $("feed").replaceChildren(...submissions.slice(0, FEED_LIMIT).map((s) => buildParticipantCard(s, added.has(s.id))));
   $("feedEmpty").hidden = submissions.length > 0;
 }
 
