@@ -199,66 +199,55 @@
       margin-bottom: 8px;
     }
 
-    .bn-grid {
+    .bn-speakers {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 14px 12px;
-      margin-top: 6px;
+      gap: 14px;
+      margin-top: 12px;
     }
-    @media (min-width: 640px) {
-      .bn-grid { grid-template-columns: repeat(4, 1fr); }
-    }
-    .bn-card {
+    .bn-speaker {
+      text-align: center;
+      background: #f4f6fd;
+      border-radius: 16px;
+      padding: 14px 10px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 6px;
-      background: none;
-      border: 0;
-      padding: 0;
-      cursor: pointer;
-      font-family: "Almarai", sans-serif;
-      text-align: center;
     }
-    .bn-frame {
-      position: relative;
-      display: block;
-      width: 100%;
-      aspect-ratio: 4 / 5;
-      padding: 6px;
-      border-radius: 26px 26px 26px 8px;
-      background: linear-gradient(150deg, #6ccff6, #000878);
-      box-shadow: 0 8px 20px rgba(0, 8, 120, 0.22);
-      transition: transform .25s ease, box-shadow .25s ease;
-    }
-    .bn-frame img {
-      width: 100%;
-      height: 100%;
+    .bn-speaker img {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
       object-fit: cover;
-      border-radius: 21px 21px 21px 5px;
-      display: block;
-    }
-    .bn-card:hover .bn-frame,
-    .bn-card.active .bn-frame {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 26px rgba(0, 8, 120, 0.32);
-    }
-    .bn-card.active .bn-frame {
-      background: linear-gradient(150deg, #000878, #6ccff6);
+      border: 3px solid #fff;
+      box-shadow: 0 4px 14px rgba(0, 8, 120, 0.18);
     }
     .bn-name {
       color: #000878;
       font-weight: 800;
-      font-size: 14px;
+      font-size: 14.5px;
       margin-top: 4px;
     }
     .bn-role {
       color: #4a4e78;
-      font-size: 12px;
-      line-height: 1.5;
+      font-size: 12.5px;
+      line-height: 1.6;
+      flex: 1;
     }
-    .bn-info {
-      text-align: center;
+    .bn-speaker a {
+      display: inline-block;
+      padding: 7px 14px;
+      background: #000878;
+      color: #fff;
+      border-radius: 9px;
+      font-weight: 700;
+      font-size: 12.5px;
+      text-decoration: none;
+      margin-top: 4px;
+    }
+    @media (min-width: 720px) {
+      .bn-speakers { grid-template-columns: repeat(4, 1fr); }
     }
 
     .speakers-buttons {
@@ -462,44 +451,31 @@
 
     <div class="speakers-section" id="beyondNumbersSpeakers" style="display:none;">
       <h2>المتحدثون</h2>
-      <p class="speakers-hint">اضغط على صورة المتحدث للتعرف عليه</p>
-      <div class="bn-grid">
-        <button type="button" class="bn-card" data-bn-speaker="lamya" aria-label="أ. لمياء الرشيد">
-          <span class="bn-frame"><img src="assets/speakers/lamya-alrasheed.webp" alt="أ. لمياء الرشيد" width="400" height="500" loading="lazy"></span>
-          <span class="bn-name">أ. لمياء الرشيد</span>
-          <span class="bn-role">شريك المراجعة في KPMG</span>
-        </button>
-        <button type="button" class="bn-card" data-bn-speaker="rashed" aria-label="أ. راشد العواجي">
-          <span class="bn-frame"><img src="assets/speakers/rashed-alawaji.webp" alt="أ. راشد العواجي" width="400" height="500" loading="lazy"></span>
-          <span class="bn-name">أ. راشد العواجي</span>
-          <span class="bn-role">الرئيس التنفيذي لشركة رياندا</span>
-        </button>
-        <button type="button" class="bn-card" data-bn-speaker="jasem" aria-label="أ. جاسم الهارون">
-          <span class="bn-frame"><img src="assets/speakers/jasem-alharoon.webp" alt="أ. جاسم الهارون" width="400" height="500" loading="lazy"></span>
-          <span class="bn-name">أ. جاسم الهارون</span>
-          <span class="bn-role">مؤسس ورئيس تنفيذي لنظام سكب</span>
-        </button>
-        <button type="button" class="bn-card" data-bn-speaker="abdulrahman" aria-label="أ. عبدالرحمن الخراشي">
-          <span class="bn-frame"><img src="assets/speakers/abdulrahman-alkharashi.webp" alt="أ. عبدالرحمن الخراشي" width="400" height="500" loading="lazy"></span>
-          <span class="bn-name">أ. عبدالرحمن الخراشي</span>
-          <span class="bn-role">مستشار في ديلويت</span>
-        </button>
-      </div>
-      <div class="speaker-info bn-info" id="bnSpeaker-lamya">
-        <p>الأستاذة لمياء الرشيد، زميل الهيئة السعودية للمراجعين والمحاسبين، وشريك المراجعة في KPMG.</p>
-        <a href="https://www.linkedin.com/in/lamya-s-alrasheed-cpa-socpa-7a312b56" target="_blank" rel="noopener">الملف الشخصي</a>
-      </div>
-      <div class="speaker-info bn-info" id="bnSpeaker-rashed">
-        <p>الأستاذ راشد العواجي، الرئيس التنفيذي لشركة رياندا للاستشارات المهنية.</p>
-        <a href="https://www.linkedin.com/in/rashedawaji" target="_blank" rel="noopener">الملف الشخصي</a>
-      </div>
-      <div class="speaker-info bn-info" id="bnSpeaker-jasem">
-        <p>الأستاذ جاسم الهارون، مؤسس ورئيس تنفيذي لنظام «سكب» لأتمتة العمليات المالية والمحاسبية.</p>
-        <a href="https://www.linkedin.com/in/jalharoon" target="_blank" rel="noopener">الملف الشخصي</a>
-      </div>
-      <div class="speaker-info bn-info" id="bnSpeaker-abdulrahman">
-        <p>الأستاذ عبدالرحمن الخراشي، مستشار في ديلويت (Deloitte).</p>
-        <a href="https://www.linkedin.com/in/abdulrahmanalkharashi" target="_blank" rel="noopener">الملف الشخصي</a>
+      <div class="bn-speakers">
+        <div class="bn-speaker">
+          <img src="assets/speakers/rashed-alawaji-sq.webp" alt="الأستاذ راشد العواجي" width="360" height="360" loading="lazy">
+          <div class="bn-name">أ. راشد العواجي</div>
+          <div class="bn-role">الرئيس التنفيذي لشركة رياندا للاستشارات المهنية</div>
+          <a href="https://www.linkedin.com/in/rashedawaji" target="_blank" rel="noopener">لينكد إن</a>
+        </div>
+        <div class="bn-speaker">
+          <img src="assets/speakers/jasem-alharoon-sq.webp" alt="الأستاذ جاسم الهارون" width="360" height="360" loading="lazy">
+          <div class="bn-name">أ. جاسم الهارون</div>
+          <div class="bn-role">مؤسس ورئيس تنفيذي لنظام سكب لأتمتة العمليات المالية والمحاسبية</div>
+          <a href="https://www.linkedin.com/in/jalharoon" target="_blank" rel="noopener">لينكد إن</a>
+        </div>
+        <div class="bn-speaker">
+          <img src="assets/speakers/lamya-alrasheed-sq.webp" alt="الأستاذة لمياء الرشيد" width="360" height="360" loading="lazy">
+          <div class="bn-name">أ. لمياء الرشيد</div>
+          <div class="bn-role">شريك المراجعة في KPMG</div>
+          <a href="https://www.linkedin.com/in/lamya-s-alrasheed-cpa-socpa-7a312b56" target="_blank" rel="noopener">لينكد إن</a>
+        </div>
+        <div class="bn-speaker">
+          <img src="assets/speakers/abdulrahman-alkharashi-sq.webp" alt="الأستاذ عبدالرحمن الخراشي" width="360" height="360" loading="lazy">
+          <div class="bn-name">أ. عبدالرحمن الخراشي</div>
+          <div class="bn-role">استشاري في ديلويت</div>
+          <a href="https://www.linkedin.com/in/abdulrahmanalkharashi" target="_blank" rel="noopener">لينكد إن</a>
+        </div>
       </div>
     </div>
 
@@ -797,20 +773,7 @@
       document.getElementById("excellenceSpeakerSection").style.display = "block";
     }
     if (/ما وراء الأرقام/.test(eventData.name || "")) {
-      const section = document.getElementById("beyondNumbersSpeakers");
-      section.style.display = "block";
-      section.querySelectorAll("[data-bn-speaker]").forEach(btn => {
-        btn.addEventListener("click", function () {
-          const info = document.getElementById("bnSpeaker-" + this.dataset.bnSpeaker);
-          const isOpen = info.classList.contains("show");
-          section.querySelectorAll(".speaker-info").forEach(el => el.classList.remove("show"));
-          section.querySelectorAll(".bn-card").forEach(b => b.classList.remove("active"));
-          if (!isOpen) {
-            info.classList.add("show");
-            this.classList.add("active");
-          }
-        });
-      });
+      document.getElementById("beyondNumbersSpeakers").style.display = "block";
     }
     if (isVatSession) {
       document.getElementById("vatSpeakerSection").style.display = "block";
