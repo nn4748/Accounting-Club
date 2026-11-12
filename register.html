@@ -996,6 +996,26 @@
       return false;
     }
 
+    // أزرار "موقع الفعالية" و"مجموعة الواتساب" من عمودي map و whatsapp بالشيت.
+    function addSheetLinks() {
+      if (!sheetEvent) return;
+      const box = ["successMessage", "teamSuccessMessage", "financeWorkshopSuccessMessage", "socpaCmaSuccessMessage", "excellenceSuccessMessage", "vatSessionSuccessMessage"]
+        .map(id => document.getElementById(id))
+        .find(el => el && getComputedStyle(el).display !== "none");
+      if (!box || box.querySelector(".sheet-link")) return;
+      const before = box.querySelector(".add-to-calendar");
+      [[sheetEvent.map, "موقع الفعالية"], [sheetEvent.whatsapp, "الانضمام لمجموعة الواتساب"]].forEach(([url, label]) => {
+        if (!/^https?:\/\//.test(String(url || "").trim())) return;
+        const a = document.createElement("a");
+        a.className = "action-link sheet-link";
+        a.href = String(url).trim();
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = label;
+        box.insertBefore(a, before || null);
+      });
+    }
+
     const sheetReady = (async () => {
       if (!window.EventSheet || !eventData.name) return;
       try {
@@ -1174,6 +1194,7 @@
             document.getElementById("successMessage").style.display = "block";
           }
           showCalendarLinks(eventData);
+          addSheetLinks();
         })
         .catch(error => {
           console.error(error);
