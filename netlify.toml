@@ -26,6 +26,16 @@
   to = "/live-display.html"
   status = 200
 
+[[redirects]]
+  from = "/confirm"
+  to = "/confirm.html"
+  status = 200
+
+[[headers]]
+  for = "/confirm*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 [[headers]]
   for = "/live-display*"
   [headers.values]

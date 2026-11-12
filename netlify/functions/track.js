@@ -5,7 +5,8 @@ const { getStore, connectLambda } = require("@netlify/blobs");
 const EVENTS = new Set([
   "view:home", "view:events", "view:register", "view:quiz", "view:visits",
   "view:volunteer", "view:company", "view:other",
-  "quiz_start", "quiz_done", "card_share", "register_done",
+  "view:confirm", "quiz_start", "quiz_done", "card_share", "register_done",
+  "confirm_done", "partner_done",
 ]);
 
 function riyadhDay(d = new Date()) {
