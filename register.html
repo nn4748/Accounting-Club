@@ -199,55 +199,24 @@
       margin-bottom: 8px;
     }
 
-    .bn-speakers {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      margin-top: 12px;
+    .bn-buttons {
+      flex-wrap: wrap;
     }
-    .bn-speaker {
+    .bn-buttons .speaker-btn {
+      flex: 1 1 calc(50% - 10px);
+    }
+    .bn-info {
       text-align: center;
-      background: #f4f6fd;
-      border-radius: 16px;
-      padding: 14px 10px 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
     }
-    .bn-speaker img {
-      width: 96px;
-      height: 96px;
+    .bn-photo {
+      width: 110px;
+      height: 110px;
       border-radius: 50%;
       object-fit: cover;
+      display: block;
+      margin: 0 auto 12px;
       border: 3px solid #fff;
       box-shadow: 0 4px 14px rgba(0, 8, 120, 0.18);
-    }
-    .bn-name {
-      color: #000878;
-      font-weight: 800;
-      font-size: 14.5px;
-      margin-top: 4px;
-    }
-    .bn-role {
-      color: #4a4e78;
-      font-size: 12.5px;
-      line-height: 1.6;
-      flex: 1;
-    }
-    .bn-speaker a {
-      display: inline-block;
-      padding: 7px 14px;
-      background: #000878;
-      color: #fff;
-      border-radius: 9px;
-      font-weight: 700;
-      font-size: 12.5px;
-      text-decoration: none;
-      margin-top: 4px;
-    }
-    @media (min-width: 720px) {
-      .bn-speakers { grid-template-columns: repeat(4, 1fr); }
     }
 
     .speakers-buttons {
@@ -451,31 +420,32 @@
 
     <div class="speakers-section" id="beyondNumbersSpeakers" style="display:none;">
       <h2>المتحدثون</h2>
-      <div class="bn-speakers">
-        <div class="bn-speaker">
-          <img src="assets/speakers/rashed-alawaji.webp" alt="الأستاذ راشد العواجي" width="360" height="360" loading="lazy">
-          <div class="bn-name">أ. راشد العواجي</div>
-          <div class="bn-role">الرئيس التنفيذي لشركة رياندا للاستشارات المهنية</div>
-          <a href="https://www.linkedin.com/in/rashedawaji" target="_blank" rel="noopener">لينكد إن</a>
-        </div>
-        <div class="bn-speaker">
-          <img src="assets/speakers/jasem-alharoon.webp" alt="الأستاذ جاسم الهارون" width="360" height="360" loading="lazy">
-          <div class="bn-name">أ. جاسم الهارون</div>
-          <div class="bn-role">مؤسس ورئيس تنفيذي لنظام سكب لأتمتة العمليات المالية والمحاسبية</div>
-          <a href="https://www.linkedin.com/in/jalharoon" target="_blank" rel="noopener">لينكد إن</a>
-        </div>
-        <div class="bn-speaker">
-          <img src="assets/speakers/lamya-alrasheed.webp" alt="الأستاذة لمياء الرشيد" width="360" height="360" loading="lazy">
-          <div class="bn-name">أ. لمياء الرشيد</div>
-          <div class="bn-role">شريك المراجعة في KPMG</div>
-          <a href="https://www.linkedin.com/in/lamya-s-alrasheed-cpa-socpa-7a312b56" target="_blank" rel="noopener">لينكد إن</a>
-        </div>
-        <div class="bn-speaker">
-          <img src="assets/speakers/abdulrahman-alkharashi.webp" alt="الأستاذ عبدالرحمن الخراشي" width="360" height="360" loading="lazy">
-          <div class="bn-name">أ. عبدالرحمن الخراشي</div>
-          <div class="bn-role">استشاري في ديلويت</div>
-          <a href="https://www.linkedin.com/in/abdulrahmanalkharashi" target="_blank" rel="noopener">لينكد إن</a>
-        </div>
+      <p class="speakers-hint">اضغط على اسم المتحدث للتعرف عليه</p>
+      <div class="speakers-buttons bn-buttons">
+        <button type="button" class="speaker-btn" data-bn-speaker="rashed">أ. راشد العواجي</button>
+        <button type="button" class="speaker-btn" data-bn-speaker="jasem">أ. جاسم الهارون</button>
+        <button type="button" class="speaker-btn" data-bn-speaker="lamya">أ. لمياء الرشيد</button>
+        <button type="button" class="speaker-btn" data-bn-speaker="abdulrahman">أ. عبدالرحمن الخراشي</button>
+      </div>
+      <div class="speaker-info bn-info" id="bnSpeaker-rashed">
+        <img class="bn-photo" src="assets/speakers/rashed-alawaji.webp" alt="أ. راشد العواجي" width="360" height="360" loading="lazy">
+        <p>الأستاذ راشد العواجي، الرئيس التنفيذي لشركة رياندا للاستشارات المهنية.</p>
+        <a href="https://www.linkedin.com/in/rashedawaji" target="_blank" rel="noopener">الملف الشخصي</a>
+      </div>
+      <div class="speaker-info bn-info" id="bnSpeaker-jasem">
+        <img class="bn-photo" src="assets/speakers/jasem-alharoon.webp" alt="أ. جاسم الهارون" width="360" height="360" loading="lazy">
+        <p>الأستاذ جاسم الهارون، مؤسس ورئيس تنفيذي لنظام سكب لأتمتة العمليات المالية والمحاسبية (sakb.sa).</p>
+        <a href="https://www.linkedin.com/in/jalharoon" target="_blank" rel="noopener">الملف الشخصي</a>
+      </div>
+      <div class="speaker-info bn-info" id="bnSpeaker-lamya">
+        <img class="bn-photo" src="assets/speakers/lamya-alrasheed.webp" alt="أ. لمياء الرشيد" width="360" height="360" loading="lazy">
+        <p>الأستاذة لمياء الرشيد، شريك المراجعة في KPMG.</p>
+        <a href="https://www.linkedin.com/in/lamya-s-alrasheed-cpa-socpa-7a312b56" target="_blank" rel="noopener">الملف الشخصي</a>
+      </div>
+      <div class="speaker-info bn-info" id="bnSpeaker-abdulrahman">
+        <img class="bn-photo" src="assets/speakers/abdulrahman-alkharashi.webp" alt="أ. عبدالرحمن الخراشي" width="360" height="360" loading="lazy">
+        <p>الأستاذ عبدالرحمن الخراشي، استشاري في ديلويت.</p>
+        <a href="https://www.linkedin.com/in/abdulrahmanalkharashi" target="_blank" rel="noopener">الملف الشخصي</a>
       </div>
     </div>
 
@@ -773,7 +743,20 @@
       document.getElementById("excellenceSpeakerSection").style.display = "block";
     }
     if (/ما وراء الأرقام/.test(eventData.name || "")) {
-      document.getElementById("beyondNumbersSpeakers").style.display = "block";
+      const section = document.getElementById("beyondNumbersSpeakers");
+      section.style.display = "block";
+      section.querySelectorAll("[data-bn-speaker]").forEach(btn => {
+        btn.addEventListener("click", function () {
+          const info = document.getElementById("bnSpeaker-" + this.dataset.bnSpeaker);
+          const isOpen = info.classList.contains("show");
+          section.querySelectorAll(".speaker-info").forEach(el => el.classList.remove("show"));
+          section.querySelectorAll(".speaker-btn").forEach(b => b.classList.remove("active"));
+          if (!isOpen) {
+            info.classList.add("show");
+            this.classList.add("active");
+          }
+        });
+      });
     }
     if (isVatSession) {
       document.getElementById("vatSpeakerSection").style.display = "block";
