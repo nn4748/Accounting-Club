@@ -199,24 +199,66 @@
       margin-bottom: 8px;
     }
 
-    .bn-buttons {
-      flex-wrap: wrap;
+    .bn-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px 12px;
+      margin-top: 6px;
     }
-    .bn-buttons .speaker-btn {
-      flex: 1 1 calc(50% - 10px);
+    @media (min-width: 640px) {
+      .bn-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .bn-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      font-family: "Almarai", sans-serif;
+      text-align: center;
+    }
+    .bn-frame {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      padding: 6px;
+      border-radius: 26px 26px 26px 8px;
+      background: linear-gradient(150deg, #6ccff6, #000878);
+      box-shadow: 0 8px 20px rgba(0, 8, 120, 0.22);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .bn-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 21px 21px 21px 5px;
+      display: block;
+    }
+    .bn-card:hover .bn-frame,
+    .bn-card.active .bn-frame {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 26px rgba(0, 8, 120, 0.32);
+    }
+    .bn-card.active .bn-frame {
+      background: linear-gradient(150deg, #000878, #6ccff6);
+    }
+    .bn-name {
+      color: #000878;
+      font-weight: 800;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .bn-role {
+      color: #4a4e78;
+      font-size: 12px;
+      line-height: 1.5;
     }
     .bn-info {
       text-align: center;
-    }
-    .bn-photo {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
-      margin: 0 auto 12px;
-      border: 3px solid #fff;
-      box-shadow: 0 4px 14px rgba(0, 8, 120, 0.18);
     }
 
     .speakers-buttons {
@@ -420,31 +462,43 @@
 
     <div class="speakers-section" id="beyondNumbersSpeakers" style="display:none;">
       <h2>المتحدثون</h2>
-      <p class="speakers-hint">اضغط على اسم المتحدث للتعرف عليه</p>
-      <div class="speakers-buttons bn-buttons">
-        <button type="button" class="speaker-btn" data-bn-speaker="rashed">أ. راشد العواجي</button>
-        <button type="button" class="speaker-btn" data-bn-speaker="jasem">أ. جاسم الهارون</button>
-        <button type="button" class="speaker-btn" data-bn-speaker="lamya">أ. لمياء الرشيد</button>
-        <button type="button" class="speaker-btn" data-bn-speaker="abdulrahman">أ. عبدالرحمن الخراشي</button>
+      <p class="speakers-hint">اضغط على صورة المتحدث للتعرف عليه</p>
+      <div class="bn-grid">
+        <button type="button" class="bn-card" data-bn-speaker="lamya" aria-label="أ. لمياء الرشيد">
+          <span class="bn-frame"><img src="assets/speakers/lamya-alrasheed.webp" alt="أ. لمياء الرشيد" width="400" height="500" loading="lazy"></span>
+          <span class="bn-name">أ. لمياء الرشيد</span>
+          <span class="bn-role">شريك المراجعة في KPMG</span>
+        </button>
+        <button type="button" class="bn-card" data-bn-speaker="rashed" aria-label="أ. راشد العواجي">
+          <span class="bn-frame"><img src="assets/speakers/rashed-alawaji.webp" alt="أ. راشد العواجي" width="400" height="500" loading="lazy"></span>
+          <span class="bn-name">أ. راشد العواجي</span>
+          <span class="bn-role">الرئيس التنفيذي لشركة رياندا</span>
+        </button>
+        <button type="button" class="bn-card" data-bn-speaker="jasem" aria-label="أ. جاسم الهارون">
+          <span class="bn-frame"><img src="assets/speakers/jasem-alharoon.webp" alt="أ. جاسم الهارون" width="400" height="500" loading="lazy"></span>
+          <span class="bn-name">أ. جاسم الهارون</span>
+          <span class="bn-role">مؤسس ورئيس تنفيذي لنظام سكب</span>
+        </button>
+        <button type="button" class="bn-card" data-bn-speaker="abdulrahman" aria-label="أ. عبدالرحمن الخراشي">
+          <span class="bn-frame"><img src="assets/speakers/abdulrahman-alkharashi.webp" alt="أ. عبدالرحمن الخراشي" width="400" height="500" loading="lazy"></span>
+          <span class="bn-name">أ. عبدالرحمن الخراشي</span>
+          <span class="bn-role">مستشار في ديلويت</span>
+        </button>
+      </div>
+      <div class="speaker-info bn-info" id="bnSpeaker-lamya">
+        <p>الأستاذة لمياء الرشيد، زميل الهيئة السعودية للمراجعين والمحاسبين، وشريك المراجعة في KPMG.</p>
+        <a href="https://www.linkedin.com/in/lamya-s-alrasheed-cpa-socpa-7a312b56" target="_blank" rel="noopener">الملف الشخصي</a>
       </div>
       <div class="speaker-info bn-info" id="bnSpeaker-rashed">
-        <img class="bn-photo" src="assets/speakers/rashed-alawaji.webp" alt="أ. راشد العواجي" width="360" height="360" loading="lazy">
         <p>الأستاذ راشد العواجي، الرئيس التنفيذي لشركة رياندا للاستشارات المهنية.</p>
         <a href="https://www.linkedin.com/in/rashedawaji" target="_blank" rel="noopener">الملف الشخصي</a>
       </div>
       <div class="speaker-info bn-info" id="bnSpeaker-jasem">
-        <img class="bn-photo" src="assets/speakers/jasem-alharoon.webp" alt="أ. جاسم الهارون" width="360" height="360" loading="lazy">
-        <p>الأستاذ جاسم الهارون، مؤسس ورئيس تنفيذي لنظام سكب لأتمتة العمليات المالية والمحاسبية (sakb.sa).</p>
+        <p>الأستاذ جاسم الهارون، مؤسس ورئيس تنفيذي لنظام «سكب» لأتمتة العمليات المالية والمحاسبية.</p>
         <a href="https://www.linkedin.com/in/jalharoon" target="_blank" rel="noopener">الملف الشخصي</a>
       </div>
-      <div class="speaker-info bn-info" id="bnSpeaker-lamya">
-        <img class="bn-photo" src="assets/speakers/lamya-alrasheed.webp" alt="أ. لمياء الرشيد" width="360" height="360" loading="lazy">
-        <p>الأستاذة لمياء الرشيد، شريك المراجعة في KPMG.</p>
-        <a href="https://www.linkedin.com/in/lamya-s-alrasheed-cpa-socpa-7a312b56" target="_blank" rel="noopener">الملف الشخصي</a>
-      </div>
       <div class="speaker-info bn-info" id="bnSpeaker-abdulrahman">
-        <img class="bn-photo" src="assets/speakers/abdulrahman-alkharashi.webp" alt="أ. عبدالرحمن الخراشي" width="360" height="360" loading="lazy">
-        <p>الأستاذ عبدالرحمن الخراشي، استشاري في ديلويت.</p>
+        <p>الأستاذ عبدالرحمن الخراشي، مستشار في ديلويت (Deloitte).</p>
         <a href="https://www.linkedin.com/in/abdulrahmanalkharashi" target="_blank" rel="noopener">الملف الشخصي</a>
       </div>
     </div>
@@ -750,7 +804,7 @@
           const info = document.getElementById("bnSpeaker-" + this.dataset.bnSpeaker);
           const isOpen = info.classList.contains("show");
           section.querySelectorAll(".speaker-info").forEach(el => el.classList.remove("show"));
-          section.querySelectorAll(".speaker-btn").forEach(b => b.classList.remove("active"));
+          section.querySelectorAll(".bn-card").forEach(b => b.classList.remove("active"));
           if (!isOpen) {
             info.classList.add("show");
             this.classList.add("active");
