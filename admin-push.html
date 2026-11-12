@@ -132,6 +132,13 @@
       <div class="result" id="statsError"></div>
       <div id="statsBox"></div>
     </div>
+
+    <div class="card stats-card">
+      <h2>تأكيدات الحضور — ما وراء الأرقام</h2>
+      <p class="hint">بنفس كلمة المرور فوق. يحمّل ملف Excel (CSV) فيه كل اللي أكدوا حضورهم ومين قال إنه سجّل عند منشآت.</p>
+      <button type="button" id="confirmExportBtn">تحميل قائمة المؤكدين</button>
+      <div class="result" id="confirmExportMsg"></div>
+    </div>
   </div>
 
   <script>
@@ -188,6 +195,32 @@
       sendBtn.textContent = "إرسال للجميع";
     });
 
+    document.getElementById("confirmExportBtn").addEventListener("click", async () => {
+      const password = document.getElementById("pwInput").value;
+      const msg = document.getElementById("confirmExportMsg");
+      if (!password) { msg.className = "result err"; msg.textContent = "اكتب كلمة المرور فوق."; return; }
+      try {
+        const res = await fetch("/.netlify/functions/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "export", password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "صار خطأ غير متوقع.");
+        const url = URL.createObjectURL(new Blob([data.csv], { type: "text/csv;charset=utf-8" }));
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "تأكيدات-الحضور-ما-وراء-الأرقام.csv";
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        msg.className = "result ok";
+        msg.textContent = `تم التحميل ✅ — عدد المؤكدين: ${data.count}`;
+      } catch (err) {
+        msg.className = "result err";
+        msg.textContent = err.message || "تعذر الاتصال بالخادم.";
+      }
+    });
+
     const STAT_COLS = [
       ["visitors", "زوار"],
       ["view:home", "الرئيسية"],
@@ -197,6 +230,7 @@
       ["view:register", "صفحة التسجيل"],
       ["register_done", "سجّلوا"],
       ["view:events", "الفعاليات"],
+      ["confirm_done", "أكدوا الحضور"],
     ];
     const statsBtn = document.getElementById("statsBtn");
     statsBtn.addEventListener("click", async () => {

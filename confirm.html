@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#000878">
+  <title>تأكيد الحضور | نادي المحاسبة</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/polish.css">
+  <link rel="stylesheet" href="/css/quiz.css">
+  <style>
+    .cf-steps { display: flex; gap: 6px; margin-bottom: 18px; }
+    .cf-steps span { flex: 1; height: 6px; border-radius: 6px; background: #e3e7f6; transition: background .3s ease; }
+    .cf-steps span.on { background: linear-gradient(90deg, #6ccff6, #000878); }
+    .cf-done { font-size: 46px; text-align: center; margin-bottom: 6px; }
+    .cf-alert { background: #fff6e5; border: 1px solid #ffd58a; color: #7a4b00; border-radius: 14px; padding: 14px; font-size: 14.5px; line-height: 1.8; margin: 12px 0 16px; font-weight: 700; text-align: center; }
+    .cf-actions { display: flex; flex-direction: column; gap: 10px; }
+    .cf-actions .quiz-btn { width: 100%; text-align: center; text-decoration: none; display: block; }
+    .quiz-btn[disabled] { opacity: .45; cursor: not-allowed; }
+    .cf-note { font-size: 12.5px; color: #6b6f99; text-align: center; margin-top: 4px; }
+    .cf-wa { background: #25d366; color: #fff; }
+    .cf-event { color: #4a4e78; font-size: 14px; line-height: 1.9; margin-bottom: 16px; }
+  </style>
+</head>
+
+<body class="quiz-page">
+
+  <div class="quiz-bg" aria-hidden="true">
+    <span style="background-image:url('/assets/visit-03.webp')"></span>
+  </div>
+
+  <div class="top-bar">
+    <img class="club-logo" src="/assets/club.webp" alt="شعار نادي المحاسبة">
+  </div>
+
+  <main class="quiz-wrap" aria-live="polite">
+
+    <!-- ١: تأكيد الحضور -->
+    <section class="quiz-card" id="stepConfirm">
+      <div class="cf-steps"><span class="on"></span><span></span><span></span></div>
+      <span class="quiz-eyebrow">تأكيد الحضور</span>
+      <h1 class="quiz-title">ما وراء الأرقام</h1>
+      <p class="cf-event">الوعي المالي وريادة الأعمال<br>الأحد ١٥ نوفمبر · ٥:٠٠ - ٧:٠٠ مساءً<br>📍 مركز دعم منشآت - الرياض</p>
+      <form id="confirmForm" novalidate>
+        <label class="quiz-label" for="email">البريد الإلكتروني اللي سجلت فيه</label>
+        <input type="email" id="email" class="quiz-input" dir="ltr" autocomplete="email" placeholder="name@example.com" required>
+        <p class="quiz-error" id="confirmError" role="alert" hidden></p>
+        <button type="submit" class="quiz-btn quiz-btn--primary" id="confirmBtn">تأكيد الحضور</button>
+      </form>
+    </section>
+
+    <!-- ٢: التسجيل عند منشآت -->
+    <section class="quiz-card" id="stepPartner" hidden>
+      <div class="cf-steps"><span class="on"></span><span class="on"></span><span></span></div>
+      <div class="cf-done">✅</div>
+      <h1 class="quiz-title" id="confirmedTitle">تم تأكيد حضورك</h1>
+      <p class="cf-alert">يجب عليك التسجيل لدى منشآت أولاً<br>للحصول على رابط مجموعة الواتساب</p>
+      <div class="cf-actions">
+        <a class="quiz-btn quiz-btn--primary" id="partnerLink" target="_blank" rel="noopener">التسجيل في منشآت</a>
+        <button type="button" class="quiz-btn quiz-btn--ghost" id="partnerDoneBtn" disabled>سجّلت في منشآت ✓</button>
+        <p class="cf-note" id="partnerNote">سجّل في منشآت أولاً، وبعدها ارجع هنا واضغط "سجّلت في منشآت".</p>
+        <p class="quiz-error" id="partnerError" role="alert" hidden></p>
+      </div>
+    </section>
+
+    <!-- ٣: قروب الواتساب -->
+    <section class="quiz-card" id="stepGroup" hidden>
+      <div class="cf-steps"><span class="on"></span><span class="on"></span><span class="on"></span></div>
+      <div class="cf-done">🎉</div>
+      <h1 class="quiz-title">كل شي جاهز!</h1>
+      <p class="quiz-lead" style="text-align:center;">انضم لمجموعة الواتساب عشان توصلك كل تفاصيل الفعالية.</p>
+      <div class="cf-actions">
+        <a class="quiz-btn cf-wa" id="groupLink" target="_blank" rel="noopener">الانضمام لمجموعة الواتساب</a>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    (function () {
+      const API = "/.netlify/functions/confirm";
+      const KEY = "confirmEmail:ما وراء الأرقام";
+      const $ = (id) => document.getElementById(id);
+      const steps = { confirm: $("stepConfirm"), partner: $("stepPartner"), group: $("stepGroup") };
+      const show = (name) => Object.entries(steps).forEach(([k, el]) => { el.hidden = k !== name; });
+      let email = "";
+
+      async function call(payload) {
+        const res = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        let data = {};
+        try { data = await res.json(); } catch (e) { /* فاضي */ }
+        return { ok: res.ok, status: res.status, data };
+      }
+
+      function goPartner(data) {
+        $("confirmedTitle").textContent = data.firstName ? `تم تأكيد حضورك يا ${data.firstName}` : "تم تأكيد حضورك";
+        if (data.partnerLink) {
+          $("partnerLink").href = data.partnerLink;
+          $("partnerLink").hidden = false;
+        } else {
+          // رابط منشآت ما انضاف للحين.
+          $("partnerLink").hidden = true;
+          $("partnerDoneBtn").disabled = false;
+        }
+        show("partner");
+      }
+
+      function goGroup(link) {
+        $("groupLink").href = link;
+        show("group");
+      }
+
+      $("confirmForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const err = $("confirmError");
+        email = $("email").value.trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          err.textContent = "اكتب بريدك الإلكتروني بشكل صحيح.";
+          err.hidden = false;
+          return;
+        }
+        err.hidden = true;
+        const btn = $("confirmBtn");
+        btn.disabled = true;
+        btn.textContent = "جارٍ التأكيد...";
+        try {
+          const { ok, status, data } = await call({ action: "check", email });
+          if (ok) {
+            try { localStorage.setItem(KEY, email); } catch (e2) { /* غير متاح */ }
+            if (window.track) window.track("confirm_done");
+            if (data.partnerDone && data.groupLink) goGroup(data.groupLink);
+            else goPartner(data);
+          } else if (status === 404) {
+            err.textContent = "هذا البريد غير مسجل في الفعالية. تأكد من البريد اللي سجلت فيه بموقع النادي.";
+            err.hidden = false;
+          } else {
+            err.textContent = "صار خطأ، حاول مرة ثانية بعد قليل.";
+            err.hidden = false;
+          }
+        } catch (e3) {
+          err.textContent = "تعذّر الاتصال، تأكد من الإنترنت.";
+          err.hidden = false;
+        }
+        btn.disabled = false;
+        btn.textContent = "تأكيد الحضور";
+      });
+
+      // زر "سجّلت" يتفعّل بعد ما يفتح رابط منشآت.
+      $("partnerLink").addEventListener("click", () => {
+        setTimeout(() => { $("partnerDoneBtn").disabled = false; }, 1500);
+      });
+
+      $("partnerDoneBtn").addEventListener("click", async () => {
+        const btn = $("partnerDoneBtn");
+        const err = $("partnerError");
+        btn.disabled = true;
+        err.hidden = true;
+        try {
+          const { ok, data } = await call({ action: "partner", email });
+          if (ok && data.groupLink) {
+            if (window.track) window.track("partner_done");
+            goGroup(data.groupLink);
+            return;
+          }
+          err.textContent = "صار خطأ، حاول مرة ثانية.";
+        } catch (e) {
+          err.textContent = "تعذّر الاتصال، تأكد من الإنترنت.";
+        }
+        err.hidden = false;
+        btn.disabled = false;
+      });
+
+      // لو رجع للصفحة بعدين، نكمل من وين وقف.
+      try {
+        const saved = localStorage.getItem(KEY);
+        if (saved) {
+          $("email").value = saved;
+          email = saved;
+          call({ action: "check", email: saved }).then(({ ok, data }) => {
+            if (!ok) return;
+            if (data.partnerDone && data.groupLink) goGroup(data.groupLink);
+            else goPartner(data);
+          }).catch(() => {});
+        }
+      } catch (e) { /* غير متاح */ }
+    })();
+  </script>
+  <script src="/js/track.js" defer></script>
+</body>
+</html>
