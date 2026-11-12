@@ -19,12 +19,11 @@ export async function submitQuizResult({ sessionId, participantName, personality
 
 // Live feed for the dashboard (admins only, enforced by firestore.rules).
 // Returns an unsubscribe function.
-export async function subscribeToSubmissions({ since, onChange, onError }) {
+export async function subscribeToSubmissions({ since, max, onChange, onError }) {
   const { db, fs } = await getFirebase();
   const constraints = [];
   if (since) constraints.push(fs.where("submittedAt", ">=", fs.Timestamp.fromDate(since)));
-  // بدون حد: الإحصائيات لازم تحسب كل المشاركين (الشاشة تعرض آخر البطاقات بس).
-  constraints.push(fs.orderBy("submittedAt", "desc"), fs.limit(20000));
+  constraints.push(fs.orderBy("submittedAt", "desc"), fs.limit(max || 60));
   const q = fs.query(fs.collection(db, COLLECTION), ...constraints);
   return fs.onSnapshot(
     q,
@@ -45,6 +44,20 @@ export async function subscribeToSubmissions({ since, onChange, onError }) {
     },
     onError
   );
+}
+
+// إحصائيات كل الأيام بعدّ من الخادم: تكلف قراءة وحدة لكل ١٠٠٠ نتيجة
+// بدل قراءة كل النتائج وحدة وحدة، عشان ما نتجاوز حد القراءة المجاني.
+export async function countAllSubmissions(personalities) {
+  const { db, fs } = await getFirebase();
+  const col = fs.collection(db, COLLECTION);
+  const [totalSnap, ...perSnaps] = await Promise.all([
+    fs.getCountFromServer(col),
+    ...personalities.map((p) => fs.getCountFromServer(fs.query(col, fs.where("personality", "==", p)))),
+  ]);
+  const counts = {};
+  personalities.forEach((p, i) => { counts[p] = perSnaps[i].data().count; });
+  return { total: totalSnap.data().count, counts };
 }
 
 export async function signInAdmin(email, password) {

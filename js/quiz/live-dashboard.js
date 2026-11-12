@@ -1,5 +1,5 @@
 import { PERSONALITIES as FIELDS, KEYS as FIELD_KEYS } from "./quiz-data.js";
-import { signInAdmin, signOutAdmin, subscribeToSubmissions, watchAdminSession } from "./quiz-service.js";
+import { countAllSubmissions, signInAdmin, signOutAdmin, subscribeToSubmissions, watchAdminSession } from "./quiz-service.js";
 
 const $ = (id) => document.getElementById(id);
 const views = { login: $("loginView"), state: $("stateView"), dashboard: $("dashboardView") };
@@ -11,6 +11,11 @@ let firstSnapshot = true;
 let lastTotal = 0;
 let retryTimer = null;
 const FEED_LIMIT = 60;
+// "اليوم فقط": نقرأ نتائج اليوم كاملة (عددها محدود). "كل الأيام": نقرأ آخر ٦٠
+// للبطاقات، والإجمالي والتوزيع بعدّ من الخادم (قراءة لكل ١٠٠٠ نتيجة).
+const TODAY_MAX = 5000;
+let countsTimer = null;
+let lastCountsAt = 0;
 
 function showView(name) {
   Object.entries(views).forEach(([key, el]) => { el.hidden = key !== name; });
@@ -53,8 +58,10 @@ function renderStats(submissions) {
     const key = LABEL_TO_KEY[s.personality];
     if (key) counts[key] += 1;
   });
+  renderCounts(submissions.length, counts);
+}
 
-  const total = submissions.length;
+function renderCounts(total, counts) {
   const totalEl = $("totalCount");
   totalEl.textContent = total;
   if (total > lastTotal && !firstSnapshot) {
@@ -149,6 +156,8 @@ function startOfToday() {
 
 function stopFeed() {
   clearTimeout(retryTimer);
+  clearTimeout(countsTimer);
+  countsTimer = null;
   if (unsubscribe) {
     unsubscribe();
     unsubscribe = null;
@@ -163,8 +172,10 @@ async function startFeed() {
   try {
     unsubscribe = await subscribeToSubmissions({
       since: todayOnly ? startOfToday() : null,
+      max: todayOnly ? TODAY_MAX : FEED_LIMIT,
       onChange: ({ submissions, addedIds, fromCache }) => {
-        renderStats(submissions);
+        if (todayOnly) renderStats(submissions);
+        else scheduleAllTimeCounts();
         renderFeed(submissions, addedIds);
         if (!fromCache) firstSnapshot = false;
         if (navigator.onLine === false) setConnection("bad", "غير متصل");
@@ -178,15 +189,44 @@ async function startFeed() {
           showState("هذا الحساب لا يملك صلاحية عرض الشاشة.", { signOut: true });
           return;
         }
-        setConnection("bad", "انقطع الاتصال");
-        retryTimer = setTimeout(startFeed, 5000);
+        handleFeedError(err);
       },
     });
   } catch (err) {
     console.error("Live feed failed to start:", err);
-    setConnection("bad", "انقطع الاتصال");
-    retryTimer = setTimeout(startFeed, 5000);
+    handleFeedError(err);
   }
+}
+
+function handleFeedError(err) {
+  stopFeed();
+  if (err && err.code === "resource-exhausted") {
+    // حد القراءة اليومي المجاني بـ Firebase انتهى: نحاول بعد ١٠ دقايق بدل ما نستهلك أكثر.
+    setConnection("bad", "تجاوزنا حد القراءة اليومي");
+    retryTimer = setTimeout(startFeed, 10 * 60 * 1000);
+    return;
+  }
+  setConnection("bad", "انقطع الاتصال" + (err && err.code ? ` (${err.code})` : ""));
+  retryTimer = setTimeout(startFeed, 30 * 1000);
+}
+
+// عدّ كل الأيام من الخادم، بحد أقصى مرة كل ١٠ ثواني.
+function scheduleAllTimeCounts() {
+  if (countsTimer) return;
+  const wait = Math.max(0, 10000 - (Date.now() - lastCountsAt));
+  countsTimer = setTimeout(async () => {
+    countsTimer = null;
+    lastCountsAt = Date.now();
+    try {
+      const labels = FIELD_KEYS.map((k) => FIELDS[k].label);
+      const { total, counts } = await countAllSubmissions(labels);
+      if (todayOnly) return;
+      renderCounts(total, Object.fromEntries(FIELD_KEYS.map((k) => [k, counts[FIELDS[k].label] || 0])));
+    } catch (err) {
+      console.error("تعذر حساب الإجمالي:", err);
+      if (err && err.code === "resource-exhausted") setConnection("bad", "تجاوزنا حد القراءة اليومي");
+    }
+  }, wait);
 }
 
 window.addEventListener("offline", () => setConnection("bad", "غير متصل"));
