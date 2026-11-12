@@ -985,7 +985,7 @@
       const state = sheetEvent && sheetEvent._sheetStatus;
       if (state === "postponed") { showOnlyMessage("postponedMessage", "الفعالية مؤجلة، والتسجيل مقفل حاليًا."); return true; }
       if (state === "closed") { showOnlyMessage("fullMessage"); return true; }
-      if (state === "soon" && onSubmit) { showOnlyMessage("notStartedMessage"); return true; }
+      if (state === "soon") { showOnlyMessage("notStartedMessage", "لم يتم بدء التسجيل حتى الآن."); return true; }
       if (state === "open" && !onSubmit) {
         registerForm.style.display = "";
         ["fullMessage", "postponedMessage", "notStartedMessage"].forEach(m => {
@@ -1001,9 +1001,20 @@
       try {
         const res = await fetch(SHEET_EVENTS_API_URL + "?t=" + Date.now());
         const list = await res.json();
-        const norm = (s) => String(s || "").replace(/\s+/g, " ").trim();
+        // نتجاهل كلمة "قريبًا" بالمقارنة، عشان الروابط القديمة (قبل فتح التسجيل) تشتغل.
+        const norm = (s) => String(s || "").replace(/قريب[اًا]*ً?/g, "").replace(/\s+/g, " ").trim();
         sheetEvent = (Array.isArray(list) ? list : []).find(ev => norm(ev.name) === norm(eventData.name)) || null;
         if (!sheetEvent) return;
+        // نعرض بيانات الفعالية المحدثة من الشيت بدل اللي بالرابط القديم.
+        if (sheetEvent.name && sheetEvent.name.trim() !== String(eventData.name || "").trim()) {
+          eventData.name = sheetEvent.name.trim();
+          if (sheetEvent.date) eventData.date = sheetEvent.date;
+          if (sheetEvent.location) eventData.location = sheetEvent.location;
+          const titleEl = document.getElementById("eventName");
+          if (titleEl) titleEl.textContent = eventData.name;
+          const infoEl = document.getElementById("eventInfo");
+          if (infoEl) infoEl.innerHTML = [eventData.date, eventData.location].filter(Boolean).map(x => `<span>${escapeHTML(x)}</span>`).join("");
+        }
         await EventSheet.annotate([sheetEvent]);
         const fid = EventSheet.formId(sheetEvent.form);
         if (fid) {
