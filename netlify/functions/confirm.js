@@ -9,7 +9,7 @@ const EVENT = {
   name: "ما وراء الأرقام",
   responsesSheetId: "1HztJpguUJqsqUlxa-WZEVs62abHzXtucnmP56zGrlsI",
   // رابط التسجيل عند منشآت (الجهة المستضيفة).
-  partnerLink: "",
+  partnerLink: "https://www.monshaat.gov.sa/ar/node/526412",
   // قروب الواتساب اللي يطلع بعد التسجيل عند منشآت.
   groupLink: "https://chat.whatsapp.com/Hbf0DNMEIMm5wB9GpNsLwd?s=cl&p=i&mlu=4&ilr=4&iam=2",
 };
