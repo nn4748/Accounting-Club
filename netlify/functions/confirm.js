@@ -1,7 +1,9 @@
 // تأكيد الحضور لفعالية "ما وراء الأرقام":
 //  check   : يتأكد إن الإيميل مسجل بشيت المسجلين، ويحفظ تأكيد الحضور.
-//  partner : الطالب أكّد إنه سجّل عند منشآت ← نرجّع رابط قروب الواتساب.
+//  partner : الطالب يرفع صورة تسجيله عند منشآت ← نحفظها ونرجّع رابط قروب الواتساب.
 //  export  : (للإدارة بكلمة المرور) ملف CSV بكل التأكيدات.
+//  proofs  : (للإدارة) قائمة المؤكدين ومين رفع صورة.
+//  proof   : (للإدارة) صورة تسجيل شخص معيّن.
 // الروابط محفوظة هنا بالخادم، وما تنكشف للصفحة إلا بعد الخطوات.
 const { getStore, connectLambda } = require("@netlify/blobs");
 
@@ -58,6 +60,29 @@ function json(statusCode, body) {
 
 exports.handler = async (event) => {
   connectLambda(event);
+
+  // للشيت: قائمة المؤكدين (IMPORTDATA) وصورهم (IMAGE).
+  if (event.httpMethod === "GET") {
+    const qs = event.queryStringParameters || {};
+    const store = getStore("confirmations");
+    if (qs.feed) {
+      const { blobs } = await store.list();
+      const records = (await Promise.all(blobs.map(({ key }) => store.get(key, { type: "json" })))).filter((r) => r && r.partnerAt && r.proofId);
+      const base = "https://" + (event.headers.host || "accclubimamu.com") + "/.netlify/functions/confirm?proof=";
+      const csv = records.map((r) => [r.email, "مؤكد", base + r.proofId].join(",")).join("\n") || "none@none,غير مؤكد,";
+      return { statusCode: 200, headers: { "Content-Type": "text/csv; charset=utf-8", "Cache-Control": "no-store" }, body: csv };
+    }
+    if (qs.proof && /^[a-z0-9]{16,40}$/.test(qs.proof)) {
+      const index = getStore("confirmation-proof-ids");
+      const key = await index.get(qs.proof);
+      const image = key && (await getStore("confirmation-proofs").get(key));
+      const m = image && image.match(/^data:(image\/[a-z]+);base64,(.+)$/);
+      if (!m) return { statusCode: 404, body: "" };
+      return { statusCode: 200, headers: { "Content-Type": m[1], "Cache-Control": "private, max-age=3600" }, body: m[2], isBase64Encoded: true };
+    }
+    return { statusCode: 404, body: "" };
+  }
+
   if (event.httpMethod !== "POST") return json(405, { error: "method" });
   let body = {};
   try {
@@ -65,7 +90,22 @@ exports.handler = async (event) => {
   } catch (e) { return json(400, { error: "bad json" }); }
 
   const store = getStore("confirmations");
+  const proofs = getStore("confirmation-proofs");
   const action = body.action;
+  const isAdmin = () => process.env.ADMIN_PUSH_PASSWORD && body.password === process.env.ADMIN_PUSH_PASSWORD;
+
+  if (action === "proofs" || action === "proof") {
+    if (!isAdmin()) return json(401, { error: "كلمة المرور غير صحيحة" });
+    if (action === "proof") {
+      const k = normEmail(body.email).replace(/[^a-z0-9@._+-]/g, "_");
+      const img = await proofs.get(k);
+      return img ? json(200, { image: img }) : json(404, { error: "no proof" });
+    }
+    const { blobs } = await store.list();
+    const records = (await Promise.all(blobs.map(({ key }) => store.get(key, { type: "json" })))).filter(Boolean);
+    records.sort((a, b) => (b.partnerAt || 0) - (a.partnerAt || 0));
+    return json(200, { items: records.map((r) => ({ name: r.name, email: r.email, phone: r.phone, confirmedAt: r.confirmedAt, proofAt: r.partnerAt || null })) });
+  }
 
   if (action === "export") {
     if (!process.env.ADMIN_PUSH_PASSWORD || body.password !== process.env.ADMIN_PUSH_PASSWORD) {
@@ -75,7 +115,7 @@ exports.handler = async (event) => {
     const records = await Promise.all(blobs.map(({ key }) => store.get(key, { type: "json" })));
     const esc = (v) => `"${String(v || "").replace(/"/g, '""')}"`;
     const fmt = (t) => (t ? new Date(t + 3 * 3600e3).toISOString().replace("T", " ").slice(0, 16) : "");
-    const lines = [["الاسم", "البريد", "الجوال", "وقت تأكيد الحضور", "سجّل عند منشآت", "وقت التسجيل عند منشآت"].map(esc).join(",")];
+    const lines = [["الاسم", "البريد", "الجوال", "وقت تأكيد الحضور", "رفع صورة تسجيل منشآت", "وقت رفع الصورة"].map(esc).join(",")];
     records.filter(Boolean).sort((a, b) => a.confirmedAt - b.confirmedAt).forEach((r) => {
       lines.push([r.name, r.email, r.phone, fmt(r.confirmedAt), r.partnerAt ? "نعم" : "لا", fmt(r.partnerAt)].map(esc).join(","));
     });
@@ -105,10 +145,19 @@ exports.handler = async (event) => {
   if (action === "partner") {
     const record = await store.get(key, { type: "json" });
     if (!record) return json(404, { error: "not_confirmed" });
-    if (!record.partnerAt) {
-      record.partnerAt = Date.now();
-      await store.setJSON(key, record);
+    const image = String(body.image || "");
+    // صورة مضغوطة من المتصفح (حد أقصى تقريبًا ٣ ميقا).
+    if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(image) || image.length > 4.2e6) {
+      return json(400, { error: "invalid_image" });
     }
+    await proofs.set(key, image);
+    // معرّف عشوائي للصورة (يستخدمه الشيت لعرضها) بدل الإيميل.
+    if (!record.proofId) {
+      record.proofId = require("crypto").randomBytes(12).toString("hex");
+      await getStore("confirmation-proof-ids").set(record.proofId, key);
+    }
+    record.partnerAt = Date.now();
+    await store.setJSON(key, record);
     return json(200, { ok: true, groupLink: EVENT.groupLink });
   }
 
