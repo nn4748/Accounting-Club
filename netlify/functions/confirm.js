@@ -67,9 +67,12 @@ exports.handler = async (event) => {
     const store = getStore("confirmations");
     if (qs.feed) {
       const { blobs } = await store.list();
-      const records = (await Promise.all(blobs.map(({ key }) => store.get(key, { type: "json" })))).filter((r) => r && r.partnerAt && r.proofId);
+      const records = (await Promise.all(blobs.map(({ key }) => store.get(key, { type: "json" })))).filter(Boolean);
       const base = "https://" + (event.headers.host || "accclubimamu.com") + "/.netlify/functions/confirm?proof=";
-      const csv = records.map((r) => [r.email, "مؤكد", base + r.proofId].join(",")).join("\n") || "none@none,غير مؤكد,";
+      // مؤكد = رفع صورة تسجيل منشآت. أكّد بدون صورة = ضغط تأكيد الحضور وما رفع الصورة.
+      const csv = records.map((r) => (r.partnerAt && r.proofId
+        ? [r.email, "مؤكد", base + r.proofId]
+        : [r.email, "أكّد بدون صورة", ""]).join(",")).join("\n") || "none@none,غير مؤكد,";
       return { statusCode: 200, headers: { "Content-Type": "text/csv; charset=utf-8", "Cache-Control": "no-store" }, body: csv };
     }
     if (qs.proof && /^[a-z0-9]{16,40}$/.test(qs.proof)) {
@@ -147,7 +150,7 @@ exports.handler = async (event) => {
     if (!record) return json(404, { error: "not_confirmed" });
     const image = String(body.image || "");
     // صورة مضغوطة من المتصفح (حد أقصى تقريبًا ٣ ميقا).
-    if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(image) || image.length > 4.2e6) {
+    if (!/^data:image\/(jpeg|png|webp|heic|heif|gif);base64,[A-Za-z0-9+/=]+$/.test(image) || image.length > 5.5e6) {
       return json(400, { error: "invalid_image" });
     }
     await proofs.set(key, image);
