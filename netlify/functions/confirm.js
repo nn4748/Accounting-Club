@@ -35,7 +35,8 @@ function parseCSV(text) {
 
 const normEmail = (s) => String(s || "").trim().toLowerCase();
 
-async function findRegistrant(email) {
+// كل المسجلين من شيت الردود.
+async function registrants() {
   const res = await fetch(`https://docs.google.com/spreadsheets/d/${EVENT.responsesSheetId}/export?format=csv&t=${Date.now()}`);
   if (!res.ok) throw new Error("sheet " + res.status);
   const rows = parseCSV(await res.text());
@@ -44,12 +45,21 @@ async function findRegistrant(email) {
   const emailCol = col(/بريد|ايميل|إيميل|email/i);
   const nameCol = col(/اسم/);
   const phoneCol = col(/جوال|هاتف|رقم/);
+  const majorCol = col(/تخصص/);
+  const timeCol = col(/طابع|timestamp/i);
   if (emailCol < 0) throw new Error("no email column");
+  const cell = (r, c) => (c >= 0 ? String(r[c] || "").trim() : "");
+  return rows.slice(1).filter((r) => r.some((v) => String(v).trim())).map((r, i) => ({
+    row: i + 2, name: cell(r, nameCol), email: cell(r, emailCol), phone: cell(r, phoneCol),
+    major: cell(r, majorCol), registeredAt: cell(r, timeCol),
+  }));
+}
+
+async function findRegistrant(email) {
+  const list = await registrants();
   // آخر تسجيل بنفس الإيميل هو المعتمد.
-  for (let i = rows.length - 1; i >= 1; i--) {
-    if (normEmail(rows[i][emailCol]) === email) {
-      return { name: (rows[i][nameCol] || "").trim(), phone: (rows[i][phoneCol] || "").trim() };
-    }
+  for (let i = list.length - 1; i >= 0; i--) {
+    if (normEmail(list[i].email) === email) return { name: list[i].name, phone: list[i].phone };
   }
   return null;
 }
@@ -104,8 +114,12 @@ exports.handler = async (event) => {
     return !!pw && body.password === pw;
   };
 
-  if (action === "review-list") {
+  if (action === "review-list" || action === "hr-list") {
     if (!isReviewer()) return json(401, { error: "كلمة المرور غير صحيحة" });
+    let regs = null;
+    if (action === "hr-list") {
+      try { regs = await registrants(); } catch (e) { return json(502, { error: "sheet_unavailable" }); }
+    }
     const { blobs } = await store.list();
     const records = (await Promise.all(blobs.map(({ key }) => store.get(key, { type: "json" })))).filter(Boolean);
     const base = "/.netlify/functions/confirm?proof=";
@@ -118,6 +132,7 @@ exports.handler = async (event) => {
         review: r.partnerAt && r.proofId ? (r.review || "pending") : "no_photo",
         note: r.reviewNote || "", reviewedAt: r.reviewedAt || null,
       })),
+      registrants: regs || undefined,
     });
   }
 
