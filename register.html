@@ -341,6 +341,29 @@
       background: #fff;
     }
 
+    .field-hint, .field-error {
+      margin: -8px 0 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .field-hint { background: #fff6e5; border: 1px solid #ffd58a; color: #7a4b00; }
+    .field-error { background: #fdeceb; border: 1px solid #f5c2bf; color: #b3261e; }
+    .field-hint button {
+      margin-inline-start: 6px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid #c98a10;
+      background: #fff;
+      color: #7a4b00;
+      font-family: "Almarai", sans-serif;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .field-hint button.primary { background: #000878; border-color: #000878; color: #fff; }
+
     .team-member-label {
       font-size: 13px;
       font-weight: 700;
@@ -508,7 +531,9 @@
         <div id="individualFields">
           <input type="text" id="name" placeholder="الاسم الثلاثي" required>
           <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-          <input type="tel" id="phone" placeholder="+966 " required>
+          <div class="field-hint" id="emailHint" hidden></div>
+          <input type="tel" id="phone" placeholder="05XXXXXXXX" inputmode="tel" required>
+          <div class="field-error" id="phoneError" hidden></div>
           <input type="text" id="major" placeholder="التخصص" required>
         </div>
 
@@ -603,6 +628,7 @@
   </div>
 
   <script src="js/event-sheet.js"></script>
+  <script src="js/register-checks.js"></script>
   <script>
 
     // يبني رابط إضافة الفعالية لتقويم قوقل كحدث ليوم كامل. يدعم صيغتي
@@ -1132,6 +1158,100 @@
       }
     })();
 
+    /* =========================================
+       تحققات الإيميل والجوال والتسجيل المكرر
+    ========================================= */
+    let emailKeptAsIs = "";
+    const emailInput = document.getElementById("email");
+    const phoneInput = document.getElementById("phone");
+
+    function showEmailSuggestion() {
+      const hint = document.getElementById("emailHint");
+      const value = RegisterChecks.cleanEmail(emailInput.value);
+      const suggestion = value && value !== emailKeptAsIs ? RegisterChecks.suggestEmail(value) : null;
+      if (!suggestion) { hint.hidden = true; return false; }
+      // نفس الاقتراح ظاهر: لا نعيد بناءه (عشان ضغطة "تصحيح" ما تضيع).
+      if (!hint.hidden && hint.dataset.suggestion === suggestion) return true;
+      hint.dataset.suggestion = suggestion;
+      hint.innerHTML = "";
+      hint.append("تأكد من بريدك، قصدك ");
+      const b = document.createElement("b");
+      b.dir = "ltr";
+      b.textContent = suggestion;
+      hint.append(b, "؟");
+      const fix = document.createElement("button");
+      fix.type = "button";
+      fix.className = "primary";
+      fix.textContent = "تصحيح";
+      fix.onclick = () => { emailInput.value = suggestion; hint.hidden = true; };
+      const keep = document.createElement("button");
+      keep.type = "button";
+      keep.textContent = "لا، بريدي صحيح";
+      keep.onclick = () => { emailKeptAsIs = value; hint.hidden = true; };
+      hint.append(fix, keep);
+      hint.hidden = false;
+      return true;
+    }
+
+    function duplicateSource() {
+      if (sheetEvent && sheetEvent.responses && window.EventSheet && EventSheet.sheetId(sheetEvent.responses)) {
+        return { url: `https://docs.google.com/spreadsheets/d/${EventSheet.sheetId(sheetEvent.responses)}/export?format=csv` };
+      }
+      if (sheetForm) return null;
+      if (isFinanceWorkshop) return { url: FINANCE_WORKSHOP_RESPONSES_CSV_URL };
+      if (isSocpaCmaWorkshop) return { url: SOCPA_CMA_RESPONSES_CSV_URL };
+      if (isVatSession) return { url: VAT_SESSION_RESPONSES_CSV_URL };
+      if (isExcellenceWorkshop) return { url: EXCELLENCE_RESPONSES_CSV_URL };
+      return { url: REGISTRATIONS_CSV_URL, eventName: eventData.name };
+    }
+
+    async function runRegisterChecks() {
+      const phoneError = document.getElementById("phoneError");
+      phoneError.hidden = true;
+
+      emailInput.value = RegisterChecks.cleanEmail(emailInput.value);
+      if (!RegisterChecks.isValidEmail(emailInput.value)) {
+        document.getElementById("emailHint").hidden = true;
+        phoneError.textContent = "اكتب بريدك الإلكتروني بشكل صحيح.";
+        phoneError.hidden = false;
+        emailInput.focus();
+        return false;
+      }
+      if (showEmailSuggestion()) {
+        emailInput.focus();
+        return false;
+      }
+
+      const phone = RegisterChecks.normalizePhone(phoneInput.value);
+      if (!phone.ok) {
+        phoneError.textContent = "رقم الجوال لازم يبدأ بـ 05 ويكون ١٠ أرقام (مثال: 0501234567).";
+        phoneError.hidden = false;
+        phoneInput.focus();
+        return false;
+      }
+      phoneInput.value = phone.value;
+
+      const btn = registerForm.querySelector("button[type=submit]");
+      const label = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "جارِ التحقق...";
+      const dup = await RegisterChecks.isDuplicate(emailInput.value, duplicateSource());
+      btn.disabled = false;
+      btn.textContent = label;
+      if (dup) {
+        phoneError.textContent = "هذا البريد مسجّل مسبقًا في الفعالية ✅ ما تحتاج تسجل مرة ثانية.";
+        phoneError.hidden = false;
+        return false;
+      }
+      return true;
+    }
+
+    if (window.RegisterChecks) {
+      emailInput.addEventListener("blur", showEmailSuggestion);
+      emailInput.addEventListener("input", () => { document.getElementById("emailHint").hidden = true; });
+      phoneInput.addEventListener("input", () => { document.getElementById("phoneError").hidden = true; });
+    }
+
     registerForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
@@ -1194,6 +1314,10 @@
         document.getElementById("notStartedMessage").style.display = "block";
         return;
       }
+      }
+
+      if (!isTeamEvent && window.RegisterChecks) {
+        if (!(await runRegisterChecks())) return;
       }
 
       const submitBtn = registerForm.querySelector("button[type=submit]");
