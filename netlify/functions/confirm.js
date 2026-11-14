@@ -176,9 +176,10 @@ exports.handler = async (event) => {
     (await store.list()).blobs.forEach(({ key }) => allowed.add(normEmail(key)));
     const valid = messages.filter((m) => allowed.has(normEmail(m.to)) && String(m.text || "").trim());
     if (!valid.length) return json(400, { error: "no valid recipients" });
-    const from = process.env.EMAIL_FROM || "نادي المحاسبة <noreply@accclubimamu.com>";
+    const from = process.env.EMAIL_FROM || "الموارد البشرية - نادي المحاسبة <hr@accclubimamu.com>";
+    const replyTo = process.env.EMAIL_REPLY_TO || "hracc.imamu@gmail.com";
     const payload = valid.map((m) => ({
-      from, to: [normEmail(m.to)], reply_to: "accclub.imamu@gmail.com",
+      from, to: [normEmail(m.to)], reply_to: replyTo,
       subject: String(m.subject || "نادي المحاسبة").slice(0, 150),
       text: String(m.text).slice(0, 5000), html: emailHTML(String(m.text).slice(0, 5000)),
     }));
