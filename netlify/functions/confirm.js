@@ -69,10 +69,12 @@ exports.handler = async (event) => {
       const { blobs } = await store.list();
       const records = (await Promise.all(blobs.map(({ key }) => store.get(key, { type: "json" })))).filter(Boolean);
       const base = "https://" + (event.headers.host || "accclubimamu.com") + "/.netlify/functions/confirm?proof=";
-      // مؤكد = رفع صورة تسجيل منشآت. أكّد بدون صورة = ضغط تأكيد الحضور وما رفع الصورة.
-      const csv = records.map((r) => (r.partnerAt && r.proofId
-        ? [r.email, "مؤكد", base + r.proofId]
-        : [r.email, "أكّد بدون صورة", ""]).join(",")).join("\n") || "none@none,غير مؤكد,";
+      // الحالة بالشيت: مقبول / مرفوض / بانتظار المراجعة (رفع صورة) / أكّد بدون صورة.
+      const label = (r) => (!r.partnerAt || !r.proofId ? "أكّد بدون صورة"
+        : r.review === "approved" ? "مقبول"
+        : r.review === "rejected" ? "مرفوض"
+        : "بانتظار المراجعة");
+      const csv = records.map((r) => [r.email, label(r), r.partnerAt && r.proofId ? base + r.proofId : ""].join(",")).join("\n") || "none@none,غير مؤكد,";
       return { statusCode: 200, headers: { "Content-Type": "text/csv; charset=utf-8", "Cache-Control": "no-store" }, body: csv };
     }
     if (qs.proof && /^[a-z0-9]{16,40}$/.test(qs.proof)) {
@@ -96,6 +98,41 @@ exports.handler = async (event) => {
   const proofs = getStore("confirmation-proofs");
   const action = body.action;
   const isAdmin = () => process.env.ADMIN_PUSH_PASSWORD && body.password === process.env.ADMIN_PUSH_PASSWORD;
+  // كلمة مرور المراجعة (للموارد) — لو ما انضافت نستخدم كلمة مرور الأدمن.
+  const isReviewer = () => {
+    const pw = process.env.REVIEW_PASSWORD || process.env.ADMIN_PUSH_PASSWORD;
+    return !!pw && body.password === pw;
+  };
+
+  if (action === "review-list") {
+    if (!isReviewer()) return json(401, { error: "كلمة المرور غير صحيحة" });
+    const { blobs } = await store.list();
+    const records = (await Promise.all(blobs.map(({ key }) => store.get(key, { type: "json" })))).filter(Boolean);
+    const base = "/.netlify/functions/confirm?proof=";
+    records.sort((a, b) => (b.partnerAt || b.confirmedAt || 0) - (a.partnerAt || a.confirmedAt || 0));
+    return json(200, {
+      items: records.map((r) => ({
+        name: r.name, email: r.email, phone: r.phone,
+        confirmedAt: r.confirmedAt, proofAt: r.partnerAt || null,
+        image: r.partnerAt && r.proofId ? base + r.proofId : null,
+        review: r.partnerAt && r.proofId ? (r.review || "pending") : "no_photo",
+        note: r.reviewNote || "", reviewedAt: r.reviewedAt || null,
+      })),
+    });
+  }
+
+  if (action === "review-set") {
+    if (!isReviewer()) return json(401, { error: "كلمة المرور غير صحيحة" });
+    const k = normEmail(body.email).replace(/[^a-z0-9@._+-]/g, "_");
+    const rec = await store.get(k, { type: "json" });
+    if (!rec) return json(404, { error: "not_found" });
+    if (!["approved", "rejected", "pending"].includes(body.decision)) return json(400, { error: "bad decision" });
+    rec.review = body.decision;
+    rec.reviewNote = String(body.note || "").slice(0, 200);
+    rec.reviewedAt = Date.now();
+    await store.setJSON(k, rec);
+    return json(200, { ok: true });
+  }
 
   if (action === "proofs" || action === "proof") {
     if (!isAdmin()) return json(401, { error: "كلمة المرور غير صحيحة" });
@@ -118,9 +155,10 @@ exports.handler = async (event) => {
     const records = await Promise.all(blobs.map(({ key }) => store.get(key, { type: "json" })));
     const esc = (v) => `"${String(v || "").replace(/"/g, '""')}"`;
     const fmt = (t) => (t ? new Date(t + 3 * 3600e3).toISOString().replace("T", " ").slice(0, 16) : "");
-    const lines = [["الاسم", "البريد", "الجوال", "وقت تأكيد الحضور", "رفع صورة تسجيل منشآت", "وقت رفع الصورة"].map(esc).join(",")];
+    const lines = [["الاسم", "البريد", "الجوال", "وقت تأكيد الحضور", "رفع صورة تسجيل منشآت", "وقت رفع الصورة", "المراجعة"].map(esc).join(",")];
+    const reviewLabel = (r) => (!r.partnerAt ? "" : r.review === "approved" ? "مقبول" : r.review === "rejected" ? "مرفوض" : "بانتظار المراجعة");
     records.filter(Boolean).sort((a, b) => a.confirmedAt - b.confirmedAt).forEach((r) => {
-      lines.push([r.name, r.email, r.phone, fmt(r.confirmedAt), r.partnerAt ? "نعم" : "لا", fmt(r.partnerAt)].map(esc).join(","));
+      lines.push([r.name, r.email, r.phone, fmt(r.confirmedAt), r.partnerAt ? "نعم" : "لا", fmt(r.partnerAt), reviewLabel(r)].map(esc).join(","));
     });
     return json(200, { csv: "﻿" + lines.join("\n"), count: records.filter(Boolean).length });
   }
@@ -140,8 +178,10 @@ exports.handler = async (event) => {
       ok: true,
       firstName: (record.name || "").split(/\s+/)[0] || "",
       partnerLink: EVENT.partnerLink || null,
-      partnerDone: !!record.partnerAt,
-      groupLink: record.partnerAt ? EVENT.groupLink : null,
+      partnerDone: !!record.partnerAt && record.review !== "rejected",
+      rejected: record.review === "rejected",
+      rejectNote: record.review === "rejected" ? (record.reviewNote || "") : "",
+      groupLink: record.partnerAt && record.review !== "rejected" ? EVENT.groupLink : null,
     });
   }
 
@@ -160,6 +200,9 @@ exports.handler = async (event) => {
       await getStore("confirmation-proof-ids").set(record.proofId, key);
     }
     record.partnerAt = Date.now();
+    // صورة جديدة ترجع للمراجعة.
+    record.review = "pending";
+    record.reviewNote = "";
     await store.setJSON(key, record);
     return json(200, { ok: true, groupLink: EVENT.groupLink });
   }
