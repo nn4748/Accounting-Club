@@ -548,11 +548,15 @@
       }
 
 
+      .visit-image {
+        order: -1;
+      }
+
       .visit-content {
 
-        min-height: 230px;
+        min-height: 0;
 
-        padding: 22px;
+        padding: 18px 20px 20px;
       }
 
 
@@ -754,6 +758,15 @@
     /* =========================================
        GOOGLE SHEET
     ========================================= */
+
+    const EXTRA_VISITS = [
+      {
+        name: "PKF البسام",
+        date: "27/10/2026",
+        image: "assets/visits/13-pkf-bassam.webp",
+        description: "جانب من زيارة نادي المحاسبة إلى شركة PKF البسام، تعرّف خلالها الأعضاء على واقع العمل المحاسبي وجوانب من الممارسة المهنية.",
+      },
+    ];
 
     const VISITS_SHEET_CSV_URL =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFDEZv-P6YxohrZPYeVvUY1BY1eirg0czoWkqOuLras-AS9GemQBmNnE9ubT_oXzBm_VhNN8xeTLCh/pub?gid=329727116&single=true&output=csv";
@@ -1088,6 +1101,12 @@
 
             .filter(Boolean);
 
+
+        // زيارات جديدة لسا ما انضافت لشيت الزيارات (ما تتكرر لو انضافت).
+        EXTRA_VISITS.forEach((extra) => {
+          const exists = visits.some((v) => v.name.trim() === extra.name && v.date.trim() === extra.date);
+          if (!exists) visits.push({ ...extra });
+        });
 
         /* الأحدث ← الأقدم */
 
