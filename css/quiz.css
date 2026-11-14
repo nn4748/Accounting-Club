@@ -275,3 +275,8 @@ body.live-page{
   .p-card.is-new,.live-total-num.bump,.live-pill--live .live-dot{animation:none;}
   .live-dist-fill{transition:none;}
 }
+
+/* حقوق أسفل صفحة الاختبار */
+.site-credit{position:relative;z-index:1;text-align:center;color:rgba(255,255,255,.85);font-size:12.5px;line-height:1.8;padding:4px 16px 28px;}
+.club-logo--white{width:150px;height:auto;}
+@media (max-width:600px){.club-logo--white{width:124px;height:auto;}}
