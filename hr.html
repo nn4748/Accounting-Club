@@ -213,6 +213,8 @@
       let password = "";
       let people = [];
       let filter = "all";
+      let emailEnabled = false;
+      let reminders = {};
       try { password = sessionStorage.getItem("hrPw") || sessionStorage.getItem("reviewPw") || ""; } catch (e) { /* */ }
 
       async function call(payload) {
@@ -238,6 +240,8 @@
           toast("تعذّر تحميل البيانات، حاول مرة ثانية.");
           return;
         }
+        emailEnabled = !!data.emailEnabled;
+        reminders = data.reminders || {};
         people = build(data.registrants || [], data.items || []);
         $("loginBox").hidden = true; $("app").hidden = false; $("logoutBtn").hidden = false;
         render();
@@ -245,6 +249,7 @@
 
       /* ---------- دمج المسجلين مع التأكيدات + كشف المشاكل ---------- */
       const norm = (s) => String(s || "").trim().toLowerCase();
+      const keyOf = (e) => norm(e).replace(/[^a-z0-9@._+-]/g, "_");
 
       function build(regs, confirmations) {
         const byEmail = new Map(confirmations.map((c) => [norm(c.email), c]));
@@ -390,6 +395,8 @@
         if (p.status === "rejected" && p.note) st.append(el("div", "note", "السبب: " + p.note));
         const t = p.proofAt ? "رفع الصورة " + fmt(p.proofAt) : p.confirmedAt ? "أكّد " + fmt(p.confirmedAt) : "";
         if (t) st.append(el("div", "time", t));
+        const rem = reminders[keyOf(p.email)];
+        if (rem && rem.at) st.append(el("div", "time", "✉️ آخر تذكير " + fmt(rem.at)));
 
         const acts = el("div", "acts");
         if (p.image) {
@@ -486,7 +493,9 @@
           recipients = single || people.filter(GROUPS.find((g) => g[0] === kind)[2]).filter((p) => RegisterChecks.isValidEmail(p.email));
           hint.textContent = single
             ? single[0].email
-            : `سيتم الإرسال إلى ${recipients.length} شخص (مخفيين عن بعض في نسخة BCC).`;
+            : emailEnabled
+              ? `${recipients.length} شخص — الإرسال المباشر يوصل لكل واحد رسالة باسمه من إيميل النادي.`
+              : `سيتم الإرسال إلى ${recipients.length} شخص (مخفيين عن بعض في نسخة BCC).`;
           subj.value = SUBJECT[kind];
           body.value = template(kind, single && single[0]);
           seg.querySelectorAll("button").forEach((b) => b.classList.toggle("sel", b.dataset.k === kind));
@@ -507,6 +516,33 @@
           const to = single ? `&to=${encodeURIComponent(emails(list))}` : `&to=${CLUB_EMAIL}&bcc=${encodeURIComponent(emails(list))}`;
           window.open(`https://mail.google.com/mail/?view=cm&fs=1${to}&su=${encodeURIComponent(subj.value)}&body=${encodeURIComponent(body.value)}`, "_blank", "noopener");
         };
+        const personal = (p) => {
+          const first = (p.name || "").split(" ")[0];
+          return first ? body.value.replace(/^مرحبًا،/, `مرحبًا ${first}،`) : body.value;
+        };
+        async function sendDirect(list, button) {
+          if (!list.length) return toast("ما فيه أحد بهالمجموعة");
+          if (!confirm(`يرسل الإيميل الحين لـ ${list.length} شخص من إيميل النادي. متأكد؟`)) return;
+          button.disabled = true;
+          let sent = 0, failed = "";
+          for (let i = 0; i < list.length; i += 100) {
+            button.textContent = `جاري الإرسال… ${sent}/${list.length}`;
+            const part = list.slice(i, i + 100);
+            const { ok, data } = await call({ action: "send-email", messages: part.map((p) => ({ to: p.email, subject: subj.value, text: single ? body.value : personal(p), kind })) });
+            if (!ok) { failed = data.detail || data.error || "خطأ"; break; }
+            sent += data.sent || 0;
+            part.forEach((p) => { reminders[keyOf(p.email)] = { at: Date.now(), kind }; });
+          }
+          button.disabled = false;
+          button.textContent = failed ? "✉️ إرسال مباشر من الموقع" : `✓ انرسل لـ ${sent}`;
+          toast(failed ? "ما انرسل: " + failed : `تم الإرسال لـ ${sent} شخص`);
+          render();
+        }
+        if (emailEnabled) {
+          const direct = btn("✉️ إرسال مباشر من الموقع", "btn-primary", () => sendDirect(recipients, direct));
+          direct.style.width = "100%"; direct.style.marginTop = "12px";
+          d.__direct = direct;
+        }
         if (single) {
           bs.append(
             btn("فتح في Gmail", "btn-primary", () => gmail()),
@@ -559,7 +595,9 @@
         close.style.width = "100%"; close.style.marginTop = "8px";
         d.append(title, hint);
         if (!single) d.append(seg);
-        d.append(lblS, subj, lblB, body, batchBox, waBox, bs, close);
+        d.append(lblS, subj, lblB, body);
+        if (d.__direct) d.append(d.__direct);
+        d.append(batchBox, waBox, bs, close);
         ov.append(d);
         ov.onclick = (e) => { if (e.target === ov) ov.remove(); };
         document.body.append(ov);
