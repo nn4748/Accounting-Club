@@ -565,7 +565,7 @@
           batchBox.replaceChildren();
           waBox.replaceChildren();
           if (!recipients.length) return;
-          batchBox.append(el("label", "", `إيميل على دفعات (${BATCH} شخص بكل رسالة) — اضغط كل دفعة وأرسلها من Gmail:`));
+          batchBox.append(el("label", "", `${emailEnabled ? "أو " : ""}إيميل على دفعات (${BATCH} شخص بكل رسالة) — اضغط كل دفعة وأرسلها من Gmail:`));
           const row = el("div", "seg");
           for (let i = 0; i < recipients.length; i += BATCH) {
             const part = recipients.slice(i, i + BATCH);
