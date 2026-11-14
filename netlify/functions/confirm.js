@@ -172,6 +172,8 @@ exports.handler = async (event) => {
     // نرسل بس للمسجلين بالفعالية (عشان ما تنستخدم للإرسال لأي أحد).
     let allowed;
     try { allowed = new Set((await registrants()).map((r) => normEmail(r.email))); } catch (e) { return json(502, { error: "sheet_unavailable" }); }
+    // واللي أكّدوا من صفحة التأكيد (حتى لو انحذف سطرهم من الشيت).
+    (await store.list()).blobs.forEach(({ key }) => allowed.add(normEmail(key)));
     const valid = messages.filter((m) => allowed.has(normEmail(m.to)) && String(m.text || "").trim());
     if (!valid.length) return json(400, { error: "no valid recipients" });
     const from = process.env.EMAIL_FROM || "نادي المحاسبة <noreply@accclubimamu.com>";
