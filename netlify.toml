@@ -31,6 +31,16 @@
   to = "/confirm.html"
   status = 200
 
+[[redirects]]
+  from = "/review"
+  to = "/review.html"
+  status = 200
+
+[[headers]]
+  for = "/review*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 [[headers]]
   for = "/confirm*"
   [headers.values]
