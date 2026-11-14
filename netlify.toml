@@ -32,9 +32,19 @@
   status = 200
 
 [[redirects]]
-  from = "/review"
-  to = "/review.html"
+  from = "/hr"
+  to = "/hr.html"
   status = 200
+
+[[redirects]]
+  from = "/review"
+  to = "/hr"
+  status = 301
+
+[[headers]]
+  for = "/hr*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
 
 [[headers]]
   for = "/review*"
