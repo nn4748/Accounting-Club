@@ -64,6 +64,24 @@ async function findRegistrant(email) {
   return null;
 }
 
+
+// سجل آخر إيميل انرسل لكل شخص من لوحة الموارد.
+async function reminderLog() {
+  const store = getStore("email-reminders");
+  const { blobs } = await store.list();
+  const out = {};
+  await Promise.all(blobs.map(async ({ key }) => { out[key] = await store.get(key, { type: "json" }); }));
+  return out;
+}
+
+const escHTML = (t) => String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function emailHTML(text) {
+  const body = escHTML(text)
+    .replace(/(https:\/\/[^\s<]+)/g, '<a href="$1" style="color:#000878;font-weight:bold">$1</a>')
+    .replace(/\n/g, "<br>");
+  return `<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;font-size:15px;line-height:1.9;color:#1a1d3a;text-align:right;max-width:560px;margin:auto">${body}</div>`;
+}
+
 function json(statusCode, body) {
   return { statusCode, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }, body: JSON.stringify(body) };
 }
@@ -139,7 +157,38 @@ exports.handler = async (event) => {
         note: r.reviewNote || "", reviewedAt: r.reviewedAt || null,
       })),
       registrants: regs || undefined,
+      emailEnabled: !!process.env.RESEND_API_KEY,
+      reminders: regs ? await reminderLog() : undefined,
     });
+  }
+
+
+  if (action === "send-email") {
+    if (!isReviewer()) return json(401, { error: "كلمة المرور غير صحيحة" });
+    const key = process.env.RESEND_API_KEY;
+    if (!key) return json(400, { error: "email_not_configured" });
+    const messages = Array.isArray(body.messages) ? body.messages.slice(0, 100) : [];
+    if (!messages.length) return json(400, { error: "no messages" });
+    // نرسل بس للمسجلين بالفعالية (عشان ما تنستخدم للإرسال لأي أحد).
+    let allowed;
+    try { allowed = new Set((await registrants()).map((r) => normEmail(r.email))); } catch (e) { return json(502, { error: "sheet_unavailable" }); }
+    const valid = messages.filter((m) => allowed.has(normEmail(m.to)) && String(m.text || "").trim());
+    if (!valid.length) return json(400, { error: "no valid recipients" });
+    const from = process.env.EMAIL_FROM || "نادي المحاسبة <noreply@accclubimamu.com>";
+    const payload = valid.map((m) => ({
+      from, to: [normEmail(m.to)], reply_to: "accclub.imamu@gmail.com",
+      subject: String(m.subject || "نادي المحاسبة").slice(0, 150),
+      text: String(m.text).slice(0, 5000), html: emailHTML(String(m.text).slice(0, 5000)),
+    }));
+    const res = await fetch("https://api.resend.com/emails/batch", {
+      method: "POST", headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" }, body: JSON.stringify(payload),
+    });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) return json(502, { error: "send_failed", detail: out.message || out.name || res.status });
+    const log = getStore("email-reminders");
+    const at = Date.now();
+    await Promise.all(valid.map((m) => log.setJSON(normEmail(m.to).replace(/[^a-z0-9@._+-]/g, "_"), { at, kind: String(m.kind || "") })));
+    return json(200, { ok: true, sent: valid.length, skipped: messages.length - valid.length });
   }
 
   if (action === "review-set") {
