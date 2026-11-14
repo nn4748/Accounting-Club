@@ -183,6 +183,8 @@
     (function () {
       const API = "/.netlify/functions/confirm";
       const CONFIRM_URL = "https://accclubimamu.com/confirm";
+      const CLUB_EMAIL = "accclub.imamu@gmail.com";
+      const BATCH = 20;
       const EVENT_LINE = "فعالية «ما وراء الأرقام» يوم الأحد ١٥ نوفمبر من ٥ إلى ٧ مساءً في مركز دعم منشآت - الرياض";
       const $ = (id) => document.getElementById(id);
       $("year").textContent = new Date().getFullYear();
@@ -456,10 +458,10 @@
       const SUBJECT = { unconfirmed: "تذكير بتأكيد حضورك — ما وراء الأرقام", rejected: "صورة تسجيلك في منشآت — ما وراء الأرقام", approved: "تأكيد حضورك — ما وراء الأرقام" };
       const kindOf = (p) => (p.status === "rejected" ? "rejected" : p.status === "approved" ? "approved" : "unconfirmed");
 
-      function whatsapp(p) {
+      function whatsapp(p, kind) {
         let n = p.phone.replace(/^\+/, "");
         if (/^05\d{8}$/.test(n)) n = "966" + n.slice(1);
-        window.open(`https://wa.me/${n}?text=${encodeURIComponent(template(kindOf(p), p))}`, "_blank", "noopener");
+        window.open(`https://wa.me/${n}?text=${encodeURIComponent(template(kind || kindOf(p), p))}`, "_blank", "noopener");
       }
 
       // المجموعات الجاهزة للتذكير الجماعي.
@@ -488,6 +490,7 @@
           subj.value = SUBJECT[kind];
           body.value = template(kind, single && single[0]);
           seg.querySelectorAll("button").forEach((b) => b.classList.toggle("sel", b.dataset.k === kind));
+          if (typeof renderSend === "function") renderSend();
         }
 
         if (!single) {
@@ -498,25 +501,65 @@
         }
         const lblS = el("label", "", "العنوان"); const lblB = el("label", "", "نص الرسالة");
         const bs = el("div", "btns");
-        const emails = () => recipients.map((p) => p.email).join(",");
-        bs.append(
-          btn("فتح في Gmail", "btn-primary", () => {
-            if (!recipients.length) return toast("ما فيه أحد بهالمجموعة");
-            const to = single ? `&to=${encodeURIComponent(emails())}` : `&bcc=${encodeURIComponent(emails())}`;
-            window.open(`https://mail.google.com/mail/?view=cm&fs=1${to}&su=${encodeURIComponent(subj.value)}&body=${encodeURIComponent(body.value)}`, "_blank", "noopener");
-          }),
-          btn("تطبيق البريد", "btn-ghost", () => {
-            if (!recipients.length) return toast("ما فيه أحد بهالمجموعة");
-location.href = (single ? `mailto:${encodeURIComponent(emails())}?` : `mailto:?bcc=${encodeURIComponent(emails())}&`) + `subject=${encodeURIComponent(subj.value)}&body=${encodeURIComponent(body.value)}`;
-          }),
-          btn("نسخ الإيميلات", "btn-ghost", () => copy(emails(), "تم نسخ " + recipients.length + " إيميل")),
-          btn("نسخ الرسالة", "btn-ghost", () => copy(body.value, "تم نسخ الرسالة"))
-        );
+        const emails = (list) => (list || recipients).map((p) => p.email).join(",");
+        const gmail = (list) => {
+          // "إلى" = إيميل النادي، والناس في BCC — رسالة بدون "إلى" تروح للسبام أكثر.
+          const to = single ? `&to=${encodeURIComponent(emails(list))}` : `&to=${CLUB_EMAIL}&bcc=${encodeURIComponent(emails(list))}`;
+          window.open(`https://mail.google.com/mail/?view=cm&fs=1${to}&su=${encodeURIComponent(subj.value)}&body=${encodeURIComponent(body.value)}`, "_blank", "noopener");
+        };
+        if (single) {
+          bs.append(
+            btn("فتح في Gmail", "btn-primary", () => gmail()),
+            btn("تطبيق البريد", "btn-ghost", () => {
+              location.href = `mailto:${encodeURIComponent(emails())}?subject=${encodeURIComponent(subj.value)}&body=${encodeURIComponent(body.value)}`;
+            }),
+            btn("نسخ الرسالة", "btn-ghost", () => copy(body.value, "تم نسخ الرسالة"))
+          );
+        } else {
+          bs.append(
+            btn("نسخ الإيميلات", "btn-ghost", () => copy(emails(), "تم نسخ " + recipients.length + " إيميل")),
+            btn("نسخ الرسالة", "btn-ghost", () => copy(body.value, "تم نسخ الرسالة"))
+          );
+        }
+        // دفعات صغيرة عشان ما يصنّفها Gmail سبام.
+        const batchBox = el("div");
+        const waBox = el("div");
+        function renderSend() {
+          if (single) return;
+          batchBox.replaceChildren();
+          waBox.replaceChildren();
+          if (!recipients.length) return;
+          batchBox.append(el("label", "", `إيميل على دفعات (${BATCH} شخص بكل رسالة) — اضغط كل دفعة وأرسلها من Gmail:`));
+          const row = el("div", "seg");
+          for (let i = 0; i < recipients.length; i += BATCH) {
+            const part = recipients.slice(i, i + BATCH);
+            const b = btn(`دفعة ${i / BATCH + 1} (${i + 1}–${i + part.length})`, "", () => { gmail(part); b.classList.add("sel"); b.textContent = "✓ " + b.textContent.replace(/^✓ /, ""); });
+            row.append(b);
+          }
+          batchBox.append(row);
+
+          const phones = recipients.filter((p) => p.phoneOk);
+          if (!phones.length) return;
+          let i = 0;
+          waBox.append(el("label", "", "واتساب واحد واحد (يوصل أكيد ومو سبام):"));
+          const next = btn("", "a-wa", () => {
+            if (i >= phones.length) return;
+            whatsapp(phones[i], kind);
+            i++; update();
+          });
+          next.style.width = "100%";
+          function update() {
+            next.textContent = i < phones.length ? `📱 أرسل لـ ${phones[i].name || phones[i].phone} (${i + 1} من ${phones.length})` : "✓ خلصت كل الأرقام";
+            next.disabled = i >= phones.length;
+          }
+          update();
+          waBox.append(next);
+        }
         const close = btn("إغلاق", "btn-ghost", () => ov.remove());
         close.style.width = "100%"; close.style.marginTop = "8px";
         d.append(title, hint);
         if (!single) d.append(seg);
-        d.append(lblS, subj, lblB, body, bs, close);
+        d.append(lblS, subj, lblB, body, batchBox, waBox, bs, close);
         ov.append(d);
         ov.onclick = (e) => { if (e.target === ov) ov.remove(); };
         document.body.append(ov);
