@@ -183,7 +183,7 @@
     (function () {
       const API = "/.netlify/functions/confirm";
       const CONFIRM_URL = "https://accclubimamu.com/confirm";
-      const CLUB_EMAIL = "accclub.imamu@gmail.com";
+      const CLUB_EMAIL = "hracc.imamu@gmail.com";
       const BATCH = 20;
       const EVENT_LINE = "فعالية «ما وراء الأرقام» يوم الأحد ١٥ نوفمبر من ٥ إلى ٧ مساءً في مركز دعم منشآت - الرياض";
       const $ = (id) => document.getElementById(id);
@@ -455,12 +455,12 @@
       function template(kind, p) {
         const hi = p && p.name ? `مرحبًا ${p.name.split(" ")[0]}،` : "مرحبًا،";
         if (kind === "rejected") {
-          return `${hi}\n\nشكرًا لتسجيلك في ${EVENT_LINE}.\n\nراجعنا صورة تسجيلك في منشآت ولم تُقبل${p && p.note ? " (" + p.note + ")" : ""}. نرجو رفع صورة واضحة لرسالة التسجيل في منشآت تظهر فيها اسم الفعالية من الرابط التالي:\n${CONFIRM_URL}\n\nنادي المحاسبة — جامعة الإمام محمد بن سعود الإسلامية`;
+          return `${hi}\n\nشكرًا لتسجيلك في ${EVENT_LINE}.\n\nراجعنا صورة تسجيلك في منشآت ولم تُقبل${p && p.note ? " (" + p.note + ")" : ""}. نرجو رفع صورة واضحة لرسالة التسجيل في منشآت تظهر فيها اسم الفعالية من الرابط التالي:\n${CONFIRM_URL}\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
         }
         if (kind === "approved") {
-          return `${hi}\n\nتم تأكيد حضورك في ${EVENT_LINE}.\n\nنتشرف بحضورك 🌟\n\nنادي المحاسبة — جامعة الإمام محمد بن سعود الإسلامية`;
+          return `${hi}\n\nتم تأكيد حضورك في ${EVENT_LINE}.\n\nنتشرف بحضورك 🌟\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
         }
-        return `${hi}\n\nشكرًا لتسجيلك في ${EVENT_LINE}.\n\nنذكّرك بتأكيد حضورك وإرفاق صورة تسجيلك في منشآت، عشان يظهر لك رابط قروب الفعالية:\n${CONFIRM_URL}\n\nنادي المحاسبة — جامعة الإمام محمد بن سعود الإسلامية`;
+        return `${hi}\n\nشكرًا لتسجيلك في ${EVENT_LINE}.\n\nنذكّرك بتأكيد حضورك وإرفاق صورة تسجيلك في منشآت، عشان يظهر لك رابط قروب الفعالية:\n${CONFIRM_URL}\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
       }
       const SUBJECT = { unconfirmed: "تذكير بتأكيد حضورك — ما وراء الأرقام", rejected: "صورة تسجيلك في منشآت — ما وراء الأرقام", approved: "تأكيد حضورك — ما وراء الأرقام" };
       const kindOf = (p) => (p.status === "rejected" ? "rejected" : p.status === "approved" ? "approved" : "unconfirmed");
