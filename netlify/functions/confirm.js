@@ -109,9 +109,11 @@ exports.handler = async (event) => {
   const action = body.action;
   const isAdmin = () => process.env.ADMIN_PUSH_PASSWORD && body.password === process.env.ADMIN_PUSH_PASSWORD;
   // كلمة مرور المراجعة (للموارد) — لو ما انضافت نستخدم كلمة مرور الأدمن.
+  // تقبل كلمة مرور الموارد أو الأدمن، وتتجاهل المسافات الزايدة.
   const isReviewer = () => {
-    const pw = process.env.REVIEW_PASSWORD || process.env.ADMIN_PUSH_PASSWORD;
-    return !!pw && body.password === pw;
+    const given = String(body.password || "").trim();
+    return !!given && [process.env.REVIEW_PASSWORD, process.env.ADMIN_PUSH_PASSWORD]
+      .some((pw) => pw && String(pw).trim() === given);
   };
 
   if (action === "review-list" || action === "hr-list") {
