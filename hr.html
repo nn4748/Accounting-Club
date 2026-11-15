@@ -460,7 +460,7 @@
         if (kind === "approved") {
           return `${hi}\n\nتم تأكيد حضورك في ${EVENT_LINE}.\n\nنتشرف بحضورك 🌟\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
         }
-        return `${hi}\n\nشكرًا لتسجيلك في ${EVENT_LINE}.\n\nنذكّرك بتأكيد حضورك وإرفاق صورة تسجيلك في منشآت، عشان يظهر لك رابط قروب الفعالية:\n${CONFIRM_URL}\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
+        return `مرحبًا،\n\nشكرًا لتسجيلك في ${EVENT_LINE}.\n\nنذكّرك بتأكيد حضورك وإرفاق صورة تسجيلك في منشآت، لكي يظهر لك رابط قروب الفعالية:\n${CONFIRM_URL}\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
       }
       const SUBJECT = { unconfirmed: "تذكير بتأكيد حضورك — ما وراء الأرقام", rejected: "صورة تسجيلك في منشآت — ما وراء الأرقام", approved: "تأكيد حضورك — ما وراء الأرقام" };
       const kindOf = (p) => (p.status === "rejected" ? "rejected" : p.status === "approved" ? "approved" : "unconfirmed");
@@ -518,7 +518,7 @@
         };
         const personal = (p) => {
           const first = (p.name || "").split(" ")[0];
-          return first ? body.value.replace(/^مرحبًا،/, `مرحبًا ${first}،`) : body.value;
+          return first && kind !== "unconfirmed" ? body.value.replace(/^مرحبًا،/, `مرحبًا ${first}،`) : body.value;
         };
         async function sendDirect(list, button) {
           if (!list.length) return toast("ما فيه أحد بهالمجموعة");
