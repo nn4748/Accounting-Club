@@ -823,13 +823,13 @@
         events = Array.isArray(events) ? events : [];
         if (window.EventSheet) {
           EventSheet.cache.set("events", events);
-          events = events.filter(e => !EventSheet.isPast(e));
+          events = events.filter(e => EventSheet.visible(e));
           await EventSheet.annotate(events);
         }
         return events;
       } catch (error) {
         console.error("تعذر تحميل بيانات الفعاليات:", error);
-        return [];
+        return null;
       }
     }
 
@@ -1027,7 +1027,7 @@
       // عرض فوري من آخر زيارة لين توصل البيانات المحدثة.
       const cached = window.EventSheet && EventSheet.cache.get("events");
       if (Array.isArray(cached) && cached.length) {
-        const quick = cached.filter(e => !EventSheet.isPast(e));
+        const quick = cached.filter(e => EventSheet.visible(e));
         quick.forEach(e => { e._sheetStatus = EventSheet.status(e); });
         if (quick.length) {
           container.innerHTML = "";
@@ -1043,8 +1043,12 @@
       ]);
 
       container.innerHTML = "";
-      if (events.length === 0) {
+      if (!events) {
         container.innerHTML = `<div class="error">تعذر تحميل بيانات الفعاليات.</div>`;
+        return;
+      }
+      if (events.length === 0) {
+        container.innerHTML = `<div class="error">لا توجد فعاليات متاحة حاليًا، ترقّبوا فعالياتنا القادمة ✨</div>`;
         return;
       }
       events.forEach((event, index) => {

@@ -378,7 +378,7 @@ async function loadEvents(isRetry) {
     if (!isRetry && window.EventSheet) {
         const cached = EventSheet.cache.get("events");
         if (Array.isArray(cached) && cached.length) {
-            const quick = cached.filter(e => !EventSheet.isPast(e));
+            const quick = cached.filter(e => EventSheet.visible(e));
             quick.forEach(e => { e._sheetStatus = EventSheet.status(e); });
             try { displayEvents(quick, {}, 0, 0, 0, 0); } catch (e) { /* نكمل للتحميل العادي */ }
         }
@@ -395,7 +395,7 @@ async function loadEvents(isRetry) {
         let events = await response.json();
         if (window.EventSheet && Array.isArray(events)) {
             EventSheet.cache.set("events", events);
-            events = events.filter(e => !EventSheet.isPast(e));
+            events = events.filter(e => EventSheet.visible(e));
             await EventSheet.annotate(events);
         }
         displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatSessionCount, excellenceCount);
@@ -436,6 +436,10 @@ function displayEvents(events, counts, financeWorkshopCount, socpaCmaCount, vatS
     const moreLink = document.getElementById("eventsMore");
     if (moreLink) {
         moreLink.style.display = events.length > EVENTS_HOME_LIMIT ? "block" : "none";
+    }
+    if (!events.length) {
+        container.innerHTML = '<p class="events-loading">لا توجد فعاليات متاحة حاليًا، ترقّبوا فعالياتنا القادمة ✨</p>';
+        return;
     }
     events.slice(0, EVENTS_HOME_LIMIT).forEach(event => {
 
