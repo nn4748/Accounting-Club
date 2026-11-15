@@ -1094,7 +1094,7 @@
     function applySheetState(onSubmit) {
       const state = sheetEvent && sheetEvent._sheetStatus;
       if (state === "postponed") { showOnlyMessage("postponedMessage", "الفعالية مؤجلة، والتسجيل مقفل حاليًا."); return true; }
-      if (state === "closed") { showOnlyMessage("fullMessage"); return true; }
+      if (state === "closed" || state === "hidden") { showOnlyMessage("fullMessage"); return true; }
       if (state === "soon") { showOnlyMessage("notStartedMessage", "لم يتم بدء التسجيل حتى الآن."); return true; }
       if (state === "open" && !onSubmit) {
         registerForm.style.display = "";

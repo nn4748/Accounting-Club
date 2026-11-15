@@ -11,6 +11,8 @@
    ========================================================= */
 (function () {
   const STATUS = [
+    // "مخفي" = الفعالية ما تطلع بالموقع أبد (والتسجيل مقفل).
+    ["hidden", /مخفي|إخفاء|اخفاء|hidden/i],
     ["postponed", /مؤجل/],
     // "مغلق حاليًا" أو "مؤقتًا" أو "لم يبدأ" = التسجيل ما بدأ للحين (مو منتهي).
     ["soon", /قريب|حالي|مؤقت|لم يبدأ|ما بدأ|لم يتم/],
@@ -82,6 +84,11 @@
     return d < today;
   }
 
+  // الفعاليات اللي تنعرض: مو منتهية ومو مخفية.
+  function visible(event) {
+    return status(event) !== "hidden" && !isPast(event);
+  }
+
   /* ---------- عدد المسجلين ---------- */
   function parseCSV(text) {
     const rows = [];
@@ -149,5 +156,5 @@
     },
   };
 
-  window.EventSheet = { status, limit, formId, sheetId, parseDate, isPast, count, annotate, parseCSV, driveImage, cache };
+  window.EventSheet = { status, limit, formId, sheetId, parseDate, isPast, visible, count, annotate, parseCSV, driveImage, cache };
 })();
