@@ -46,6 +46,9 @@
     .btn-block { width: 100%; margin-top: 12px; }
     .err { color: var(--bad); font-size: 13px; margin-top: 10px; text-align: center; }
 
+    .evbar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+    .evbar label { font-weight: 800; color: var(--ink); font-size: 13.5px; }
+    .evbar select { flex: 1; min-width: 200px; font-weight: 700; color: var(--ink); }
     .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 14px; }
     .kpi { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; text-align: right; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
     .kpi:hover { border-color: #c8cde6; }
@@ -137,7 +140,7 @@
     <div class="in">
       <div>
         <h1>لوحة الموارد البشرية</h1>
-        <p>فعالية «ما وراء الأرقام» — متابعة التأكيد والتسجيل في منشآت</p>
+        <p id="evSub">متابعة تأكيد الحضور للفعاليات</p>
       </div>
       <div style="display:flex;align-items:center;gap:12px">
         <button class="logout" id="logoutBtn" type="button" hidden>خروج</button>
@@ -158,6 +161,11 @@
     </section>
 
     <section id="app" hidden>
+      <div class="evbar">
+        <label for="eventSel">الفعالية</label>
+        <select class="field" id="eventSel"></select>
+        <button class="btn btn-ghost" id="copyLinkBtn" type="button">🔗 نسخ رابط التأكيد</button>
+      </div>
       <div class="kpis" id="kpis"></div>
       <div class="progress" id="progress"></div>
       <div class="toolbar">
@@ -182,10 +190,12 @@
   <script>
     (function () {
       const API = "/.netlify/functions/confirm";
-      const CONFIRM_URL = "https://accclubimamu.com/confirm";
+      let CONFIRM_URL = "https://accclubimamu.com/confirm";
       const CLUB_EMAIL = "hracc.imamu@gmail.com";
       const BATCH = 20;
-      const EVENT_LINE = "فعالية «ما وراء الأرقام» يوم الأحد ١٥ نوفمبر من ٥ إلى ٧ مساءً في مركز دعم منشآت - الرياض";
+      let EVENT_LINE = "";
+      let events = [];
+      let current = null; // الفعالية المختارة {slug, name, when, place, partner, photo, status}
       const $ = (id) => document.getElementById(id);
       $("year").textContent = new Date().getFullYear();
 
@@ -196,19 +206,36 @@
         no_photo: { label: "أكّد بدون صورة", cls: "s-no_photo" },
         unconfirmed: { label: "لم يؤكد", cls: "s-unconfirmed" },
       };
-      const REASONS = [
-        "الصورة ما تخص منشآت",
-        "ما يبان اسم الفعالية (ما وراء الأرقام)",
-        "الصورة لفعالية ثانية",
-        "الصورة غير واضحة",
-      ];
-      const FILTERS = [
+      let REASONS = [];
+      const ALL_FILTERS = [
         ["all", "إجمالي المسجلين", "#000878"],
         ["approved", "المؤكدين", "#157a43"],
         ["pending", "بانتظار المراجعة", "#d48a00"],
         ["not_confirmed", "غير المؤكدين", "#9aa0c2"],
         ["issues", "فيهم ملاحظات", "#b42318"],
       ];
+      let FILTERS = ALL_FILTERS;
+      let SUBJECT = {};
+      const STATE_LABEL = { open: "مفتوح", closed: "مقفل", ended: "منتهية" };
+
+      // نصوص الصفحة والرسائل حسب الفعالية المختارة.
+      function applyEvent(ev) {
+        current = ev;
+        const partner = ev.partner || "الجهة المنظمة";
+        CONFIRM_URL = "https://accclubimamu.com/confirm?e=" + encodeURIComponent(ev.slug);
+        EVENT_LINE = `فعالية «${ev.name}»` + (ev.when ? " " + ev.when : "") + (ev.place ? " في " + ev.place : "");
+        REASONS = [`الصورة ما تخص ${partner}`, `ما يبان اسم الفعالية (${ev.name})`, "الصورة لفعالية ثانية", "الصورة غير واضحة"];
+        SUBJECT = {
+          unconfirmed: `تذكير بتأكيد حضورك — ${ev.name}`,
+          rejected: `صورة تسجيلك في ${partner} — ${ev.name}`,
+          approved: `تأكيد حضورك — ${ev.name}`,
+        };
+        FILTERS = ev.photo ? ALL_FILTERS : ALL_FILTERS.filter((f) => f[0] !== "pending");
+        STATUS.no_photo.label = "أكّد بدون صورة";
+        $("evSub").textContent = `فعالية «${ev.name}» — متابعة تأكيد الحضور` + (ev.photo ? ` والتسجيل في ${partner}` : "");
+        document.title = `لوحة الموارد — ${ev.name} | نادي المحاسبة`;
+        try { sessionStorage.setItem("hrEvent", ev.slug); } catch (e) { /* */ }
+      }
 
       let password = "";
       let people = [];
@@ -218,7 +245,7 @@
       try { password = sessionStorage.getItem("hrPw") || sessionStorage.getItem("reviewPw") || ""; } catch (e) { /* */ }
 
       async function call(payload) {
-        const res = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, password }) });
+        const res = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event: current && current.slug, ...payload, password }) });
         let data = {};
         try { data = await res.json(); } catch (e) { /* */ }
         return { ok: res.ok, status: res.status, data };
@@ -231,7 +258,28 @@
         $("loginErr").textContent = msg || ""; $("loginErr").hidden = !msg;
       }
 
+      async function loadEvents() {
+        const { ok, status, data } = await call({ action: "hr-events" });
+        if (!ok) { if (status === 401) showLogin("كلمة المرور غير صحيحة."); else toast("تعذّر تحميل الفعاليات."); return false; }
+        events = data.events || [];
+        if (!events.length) { toast("ما فيه فعاليات بتبويب «تأكيد الحضور»."); return false; }
+        let saved = "";
+        try { saved = sessionStorage.getItem("hrEvent") || ""; } catch (e) { /* */ }
+        // المحفوظة، وإلا أول فعالية مفتوحة، وإلا آخر فعالية.
+        const pick = events.find((e) => e.slug === saved) || events.find((e) => e.status === "open") || events[events.length - 1];
+        $("eventSel").replaceChildren(...events.map((e) => {
+          const o = document.createElement("option");
+          o.value = e.slug;
+          o.textContent = `${e.name} (${STATE_LABEL[e.status] || e.status})`;
+          return o;
+        }));
+        $("eventSel").value = pick.slug;
+        applyEvent(pick);
+        return true;
+      }
+
       async function load() {
+        if (!current && !(await loadEvents())) return;
         $("refreshBtn").disabled = true;
         const { ok, status, data } = await call({ action: "hr-list" });
         $("refreshBtn").disabled = false;
@@ -305,7 +353,7 @@
         else if ((phoneCount.get(ph.value) || 0) > 1 && dupCount === 1) issues.push({ t: "نفس الجوال مسجل بإيميل ثاني", lvl: "warn" });
         // الصورة
         if (status === "rejected") issues.push({ t: "صورة التأكيد مرفوضة", lvl: "bad" });
-        if (status === "no_photo") issues.push({ t: "أكّد بدون ما يرفع صورة", lvl: "warn" });
+        if (status === "no_photo" && current && current.photo) issues.push({ t: "أكّد بدون ما يرفع صورة", lvl: "warn" });
         return {
           name, email: String(r.email || "").trim(), phone: ph.ok ? ph.value : String(r.phone || "").trim(), phoneOk: ph.ok,
           major: String(r.major || "").trim(), status, image: c && c.image, note: (c && c.note) || "",
@@ -337,7 +385,7 @@
 
         const a = count("approved"), w = count("pending"), n = count("not_confirmed");
         const seg = (v, c) => (total ? `<span style="width:${(v / total) * 100}%;background:${c}"></span>` : "");
-        $("progress").innerHTML = `<div class="row"><span>نسبة التأكيد</span><span><b>${a}</b> مؤكد · <b>${w}</b> بانتظار المراجعة · <b>${n}</b> غير مؤكد</span></div>`
+        $("progress").innerHTML = `<div class="row"><span>نسبة التأكيد</span><span><b>${a}</b> مؤكد${current && current.photo ? ` · <b>${w}</b> بانتظار المراجعة` : ""} · <b>${n}</b> غير مؤكد</span></div>`
           + `<div class="bar">${seg(a, "#157a43")}${seg(w, "#d48a00")}</div>`;
 
         const q = $("search").value.trim().toLowerCase();
@@ -455,14 +503,16 @@
       function template(kind, p) {
         const hi = p && p.name ? `مرحبًا ${p.name.split(" ")[0]}،` : "مرحبًا،";
         if (kind === "rejected") {
-          return `${hi}\n\nشكرًا لتسجيلك في ${EVENT_LINE}.\n\nراجعنا صورة تسجيلك في منشآت ولم تُقبل${p && p.note ? " (" + p.note + ")" : ""}. نرجو رفع صورة واضحة لرسالة التسجيل في منشآت تظهر فيها اسم الفعالية من الرابط التالي:\n${CONFIRM_URL}\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
+          return `${hi}\n\nشكرًا لتسجيلك في ${EVENT_LINE}.\n\nراجعنا صورة تسجيلك في ${current.partner || "الجهة المنظمة"} ولم تُقبل${p && p.note ? " (" + p.note + ")" : ""}. نرجو رفع صورة واضحة لرسالة التسجيل في ${current.partner || "الجهة المنظمة"} تظهر فيها اسم الفعالية من الرابط التالي:\n${CONFIRM_URL}\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
         }
         if (kind === "approved") {
           return `${hi}\n\nتم تأكيد حضورك في ${EVENT_LINE}.\n\nنتشرف بحضورك 🌟\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
         }
-        return `مرحبًا،\n\nشكرًا لتسجيلك في ${EVENT_LINE}.\n\nنذكّرك بتأكيد حضورك وإرفاق صورة تسجيلك في منشآت، لكي يظهر لك رابط قروب الفعالية:\n${CONFIRM_URL}\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
+        const ask = current.photo
+          ? `نذكّرك بتأكيد حضورك وإرفاق صورة تسجيلك في ${current.partner || "الجهة المنظمة"}، لكي يظهر لك رابط قروب الفعالية:`
+          : "نذكّرك بتأكيد حضورك من الرابط التالي:";
+        return `مرحبًا،\n\nشكرًا لتسجيلك في ${EVENT_LINE}.\n\n${ask}\n${CONFIRM_URL}\n\nالموارد البشرية — نادي المحاسبة\nجامعة الإمام محمد بن سعود الإسلامية`;
       }
-      const SUBJECT = { unconfirmed: "تذكير بتأكيد حضورك — ما وراء الأرقام", rejected: "صورة تسجيلك في منشآت — ما وراء الأرقام", approved: "تأكيد حضورك — ما وراء الأرقام" };
       const kindOf = (p) => (p.status === "rejected" ? "rejected" : p.status === "approved" ? "approved" : "unconfirmed");
 
       function whatsapp(p, kind) {
@@ -647,6 +697,15 @@
       $("logoutBtn").addEventListener("click", () => showLogin(""));
       $("search").addEventListener("input", render);
       $("refreshBtn").addEventListener("click", load);
+      $("eventSel").addEventListener("change", () => {
+        const ev = events.find((e) => e.slug === $("eventSel").value);
+        if (!ev) return;
+        applyEvent(ev);
+        filter = "all";
+        $("rows").innerHTML = '<p class="loading">جاري التحميل…</p>';
+        load();
+      });
+      $("copyLinkBtn").addEventListener("click", () => copy(CONFIRM_URL, "تم نسخ رابط التأكيد"));
       $("remindBtn").addEventListener("click", () => remind(null));
       $("exportBtn").addEventListener("click", exportCSV);
       document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.querySelectorAll(".overlay,.lightbox").forEach((x) => x.remove()); });

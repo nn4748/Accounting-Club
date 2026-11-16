@@ -46,12 +46,27 @@
 
   <main class="quiz-wrap" aria-live="polite">
 
+    <!-- اختيار الفعالية (لو فيه أكثر من وحدة مفتوحة) -->
+    <section class="quiz-card" id="stepPick" hidden>
+      <span class="quiz-eyebrow">تأكيد الحضور</span>
+      <h1 class="quiz-title">اختر الفعالية</h1>
+      <div class="cf-actions" id="pickList"></div>
+    </section>
+
+    <!-- ما فيه تأكيد مفتوح -->
+    <section class="quiz-card" id="stepNone" hidden>
+      <div class="cf-done">📭</div>
+      <h1 class="quiz-title" id="noneTitle">لا يوجد تأكيد حضور مفتوح حاليًا</h1>
+      <p class="quiz-lead" style="text-align:center;" id="noneText">تابعنا عشان توصلك فعالياتنا القادمة.</p>
+      <div class="cf-actions"><a class="quiz-btn quiz-btn--primary" href="/events">الفعاليات</a></div>
+    </section>
+
     <!-- ١: تأكيد الحضور -->
-    <section class="quiz-card" id="stepConfirm">
+    <section class="quiz-card" id="stepConfirm" hidden>
       <div class="cf-steps"><span class="on"></span><span></span><span></span></div>
       <span class="quiz-eyebrow">تأكيد الحضور</span>
-      <h1 class="quiz-title">ما وراء الأرقام</h1>
-      <p class="cf-event">الوعي المالي وريادة الأعمال<br>الأحد ١٥ نوفمبر · ٥:٠٠ - ٧:٠٠ مساءً<br>📍 مركز دعم منشآت - الرياض</p>
+      <h1 class="quiz-title" id="evName"></h1>
+      <p class="cf-event" id="evInfo"></p>
       <form id="confirmForm" novalidate>
         <label class="quiz-label" for="email">البريد الإلكتروني اللي سجلت فيه</label>
         <input type="email" id="email" class="quiz-input" dir="ltr" autocomplete="email" placeholder="name@example.com" required>
@@ -60,19 +75,19 @@
       </form>
     </section>
 
-    <!-- ٢: التسجيل عند منشآت -->
+    <!-- ٢: التسجيل عند الجهة -->
     <section class="quiz-card" id="stepPartner" hidden>
       <div class="cf-steps"><span class="on"></span><span class="on"></span><span></span></div>
       <div class="cf-done">✅</div>
       <h1 class="quiz-title" id="confirmedTitle">تم تأكيد حضورك</h1>
-      <p class="cf-alert">يجب عليك التسجيل لدى منشآت أولاً<br>للحصول على رابط مجموعة الواتساب</p>
+      <p class="cf-alert" id="partnerAlert"></p>
       <div class="cf-actions">
-        <a class="quiz-btn quiz-btn--primary" id="partnerLink" target="_blank" rel="noopener">١. التسجيل في منشآت</a>
+        <a class="quiz-btn quiz-btn--primary" id="partnerLink" target="_blank" rel="noopener"></a>
         <label class="quiz-btn quiz-btn--ghost cf-upload" id="uploadLabel" for="proofInput">٢. أرفق صورة تسجيلك ليظهر لك رابط القروب</label>
         <input type="file" id="proofInput" accept="image/*" hidden>
         <img id="proofPreview" class="cf-preview" alt="صورة التسجيل" hidden>
         <p class="cf-alert cf-rejected" id="rejectedNote" hidden></p>
-        <p class="cf-note">بعد ما تسجل في منشآت، ارفع صورة <b>رسالة التأكيد من منشآت (SMS أو إيميل)</b> اللي فيها اسم الفعالية.</p>
+        <p class="cf-note" id="partnerNote"></p>
         <p class="cf-note" style="font-weight:700;">⚠️ سيتم التحقق من التسجيل عند الحضور.</p>
         <p class="quiz-error" id="partnerError" role="alert" hidden></p>
       </div>
@@ -82,8 +97,8 @@
     <section class="quiz-card" id="stepGroup" hidden>
       <div class="cf-steps"><span class="on"></span><span class="on"></span><span class="on"></span></div>
       <div class="cf-done">🎉</div>
-      <h1 class="quiz-title">كل شي جاهز!</h1>
-      <p class="quiz-lead" style="text-align:center;">انضم لمجموعة الواتساب عشان توصلك كل تفاصيل الفعالية.</p>
+      <h1 class="quiz-title" id="groupTitle">كل شي جاهز!</h1>
+      <p class="quiz-lead" style="text-align:center;" id="groupText">انضم لمجموعة الواتساب عشان توصلك كل تفاصيل الفعالية.</p>
       <div class="cf-actions">
         <a class="quiz-btn cf-wa" id="groupLink" target="_blank" rel="noopener">الانضمام لمجموعة الواتساب</a>
       </div>
@@ -100,11 +115,13 @@
     document.getElementById("cfYear").textContent = new Date().getFullYear();
     (function () {
       const API = "/.netlify/functions/confirm";
-      const KEY = "confirmEmail:ما وراء الأرقام";
       const $ = (id) => document.getElementById(id);
-      const steps = { confirm: $("stepConfirm"), partner: $("stepPartner"), group: $("stepGroup") };
+      const steps = { pick: $("stepPick"), none: $("stepNone"), confirm: $("stepConfirm"), partner: $("stepPartner"), group: $("stepGroup") };
       const show = (name) => Object.entries(steps).forEach(([k, el]) => { el.hidden = k !== name; });
+      const LEGACY = "beyond-numbers";
       let email = "";
+      let ev = null; // الفعالية الحالية {slug, name, when, place, partner, photo}
+      const storeKey = () => "confirmEmail:" + (ev && ev.slug !== LEGACY ? ev.slug : "ما وراء الأرقام");
 
       async function call(payload) {
         const res = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -113,11 +130,51 @@
         return { ok: res.ok, status: res.status, data };
       }
 
+      function setEvent(e) {
+        ev = Object.assign({}, ev || {}, e || {});
+        $("evName").textContent = ev.name || "";
+        $("evInfo").replaceChildren();
+        [ev.when, ev.place ? "📍 " + ev.place : ""].filter(Boolean).forEach((t, i) => {
+          if (i) $("evInfo").append(document.createElement("br"));
+          $("evInfo").append(t);
+        });
+        const partner = ev.partner || "الجهة المنظمة";
+        const goal = ev.group === false ? "لإكمال تأكيد حضورك" : "للحصول على رابط مجموعة الواتساب";
+        $("partnerAlert").replaceChildren(`يجب عليك التسجيل لدى ${partner} أولاً`, document.createElement("br"), goal);
+        $("uploadLabel").textContent = ev.group === false ? "٢. أرفق صورة تسجيلك لإكمال التأكيد" : "٢. أرفق صورة تسجيلك ليظهر لك رابط القروب";
+        $("partnerLink").textContent = `١. التسجيل في ${partner}`;
+        $("partnerNote").innerHTML = "";
+        $("partnerNote").append(`بعد ما تسجل في ${partner}، ارفع صورة `);
+        const b = document.createElement("b"); b.textContent = `رسالة التأكيد من ${partner} (SMS أو إيميل)`;
+        $("partnerNote").append(b, " اللي فيها اسم الفعالية.");
+        document.title = `تأكيد الحضور — ${ev.name || ""} | نادي المحاسبة`;
+      }
+
+      function startConfirm(e) {
+        setEvent(e);
+        show("confirm");
+        // لو رجع للصفحة بعدين، نكمل من وين وقف.
+        try {
+          const saved = localStorage.getItem(storeKey());
+          if (saved) {
+            $("email").value = saved;
+            email = saved;
+            call({ action: "check", email: saved, event: ev.slug }).then(({ ok, data }) => { if (ok) route(data); }).catch(() => {});
+          }
+        } catch (err) { /* غير متاح */ }
+      }
+
+      function route(data) {
+        if (data.event) setEvent(data.event);
+        if (data.partnerDone) goGroup(data.groupLink);
+        else goPartner(data);
+      }
+
       function goPartner(data) {
         $("confirmedTitle").textContent = data.firstName ? `تم تأكيد حضورك يا ${data.firstName}` : "تم تأكيد حضورك";
         const rej = $("rejectedNote");
         if (data.rejected) {
-          rej.textContent = "تمت مراجعة صورتك ولم تُقبل" + (data.rejectNote ? ": " + data.rejectNote : "") + ". ارفع صورة رسالة التأكيد من منشآت اللي فيها اسم الفعالية.";
+          rej.textContent = "تمت مراجعة صورتك ولم تُقبل" + (data.rejectNote ? ": " + data.rejectNote : "") + `. ارفع صورة رسالة التأكيد من ${ev.partner || "الجهة"} اللي فيها اسم الفعالية.`;
           rej.hidden = false;
         } else {
           rej.hidden = true;
@@ -125,6 +182,20 @@
         if (data.partnerLink) $("partnerLink").href = data.partnerLink;
         $("partnerLink").hidden = !data.partnerLink;
         show("partner");
+      }
+
+      function goGroup(link) {
+        if (link) {
+          $("groupLink").href = link;
+          $("groupLink").hidden = false;
+          $("groupTitle").textContent = "كل شي جاهز!";
+          $("groupText").textContent = "انضم لمجموعة الواتساب عشان توصلك كل تفاصيل الفعالية.";
+        } else {
+          $("groupLink").hidden = true;
+          $("groupTitle").textContent = "تم تأكيد حضورك!";
+          $("groupText").textContent = "نتشرف بحضورك، ونشوفك في الفعالية ✨";
+        }
+        show("group");
       }
 
       // نصغّر الصورة بالمتصفح قبل الرفع (أقصى عرض ١٤٠٠ بكسل) عشان ترفع بسرعة.
@@ -158,11 +229,6 @@
         });
       }
 
-      function goGroup(link) {
-        $("groupLink").href = link;
-        show("group");
-      }
-
       $("confirmForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const err = $("confirmError");
@@ -177,14 +243,18 @@
         btn.disabled = true;
         btn.textContent = "جارٍ التأكيد...";
         try {
-          const { ok, status, data } = await call({ action: "check", email });
+          const { ok, status, data } = await call({ action: "check", email, event: ev.slug });
           if (ok) {
-            try { localStorage.setItem(KEY, email); } catch (e2) { /* غير متاح */ }
+            try { localStorage.setItem(storeKey(), email); } catch (e2) { /* غير متاح */ }
             if (window.track) window.track("confirm_done");
-            if (data.partnerDone && data.groupLink) goGroup(data.groupLink);
-            else goPartner(data);
+            route(data);
           } else if (status === 404) {
+            if (data.event) setEvent(data.event);
             err.textContent = "هذا البريد غير مسجل في الفعالية. تأكد من البريد اللي سجلت فيه بموقع النادي.";
+            err.hidden = false;
+          } else if (status === 403) {
+            if (data.event) setEvent(data.event);
+            err.textContent = "انتهى تأكيد الحضور لهذه الفعالية.";
             err.hidden = false;
           } else {
             err.textContent = "صار خطأ، حاول مرة ثانية بعد قليل.";
@@ -221,35 +291,50 @@
             if (file.size > 4e6) throw new Error("too big");
             image = await readAsDataURL(file);
           }
-          const { ok, data } = await call({ action: "partner", email, image });
-          if (ok && data.groupLink) {
+          const { ok, data } = await call({ action: "partner", email, image, event: ev.slug });
+          if (ok && data.partnerDone) {
             if (window.track) window.track("partner_done");
             goGroup(data.groupLink);
             return;
           }
-          err.textContent = data && data.error === "invalid_image" ? "تعذّر قراءة الصورة، جرّب صورة ثانية." : "صار خطأ، حاول مرة ثانية.";
+          err.textContent = data && data.error === "invalid_image" ? "تعذّر قراءة الصورة، جرّب صورة ثانية."
+            : data && data.error === "closed" ? "انتهى تأكيد الحضور لهذه الفعالية." : "صار خطأ، حاول مرة ثانية.";
         } catch (e) {
           err.textContent = "تعذّر رفع الصورة، تأكد من الإنترنت وحاول مرة ثانية.";
         }
         err.hidden = false;
-        label.textContent = "٢. أرفق صورة تسجيلك ليظهر لك رابط القروب";
+        label.textContent = ev.group === false ? "٢. أرفق صورة تسجيلك لإكمال التأكيد" : "٢. أرفق صورة تسجيلك ليظهر لك رابط القروب";
         label.style.pointerEvents = "";
         $("proofInput").value = "";
       });
 
-      // لو رجع للصفحة بعدين، نكمل من وين وقف.
-      try {
-        const saved = localStorage.getItem(KEY);
-        if (saved) {
-          $("email").value = saved;
-          email = saved;
-          call({ action: "check", email: saved }).then(({ ok, data }) => {
-            if (!ok) return;
-            if (data.partnerDone && data.groupLink) goGroup(data.groupLink);
-            else goPartner(data);
-          }).catch(() => {});
+      // أي فعالية؟ ?e=رمز الفعالية، وإلا المفتوحة (لو وحدة)، وإلا نخليه يختار.
+      async function init() {
+        const slug = (new URLSearchParams(location.search).get("e") || "").trim().toLowerCase();
+        let open = [];
+        try { open = (await call({ action: "events" })).data.events || []; } catch (e) { /* */ }
+        if (slug) {
+          const found = open.find((x) => x.slug === slug);
+          return startConfirm(found || { slug, name: "تأكيد الحضور" });
         }
-      } catch (e) { /* غير متاح */ }
+        if (open.length === 1) return startConfirm(open[0]);
+        if (open.length > 1) {
+          $("pickList").replaceChildren(...open.map((x) => {
+            const a = document.createElement("a");
+            a.className = "quiz-btn quiz-btn--ghost";
+            a.href = "?e=" + encodeURIComponent(x.slug);
+            a.textContent = x.name;
+            return a;
+          }));
+          return show("pick");
+        }
+        // ما فيه شي مفتوح: اللي أكّد قبل (ما وراء الأرقام) يقدر يرجع يشوف حالته.
+        let legacySaved = null;
+        try { legacySaved = localStorage.getItem("confirmEmail:ما وراء الأرقام"); } catch (e) { /* */ }
+        if (legacySaved) return startConfirm({ slug: LEGACY, name: "ما وراء الأرقام" });
+        show("none");
+      }
+      init();
     })();
   </script>
   <script src="/js/track.js" defer></script>
