@@ -53,15 +53,54 @@ function statusOf(raw) {
   return "open";
 }
 
+/* ---------- التاريخ ---------- */
+const EN_MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+const AR_MONTHS = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+const AR_DAYS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+const toLatin = (t) => String(t || "").replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+const toArabicDigits = (n) => String(n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
+// تاريخ الشيت (مثل 15Nov أو 2026/11/15 أو 15 نوفمبر) ← وقت بتوقيت الرياض، أو null.
+function parseDate(text) {
+  const s = toLatin(text).replace(/إ|آ/g, "أ");
+  const now = new Date();
+  const withYear = (m, d, y) => {
+    if (y) return Date.UTC(y, m, d);
+    let t = Date.UTC(now.getUTCFullYear(), m, d);
+    if (now - t > 180 * 864e5) t = Date.UTC(now.getUTCFullYear() + 1, m, d);
+    return t;
+  };
+  let m = s.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);
+  if (m) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  m = s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);
+  if (m) return Date.UTC(+m[3], +m[2] - 1, +m[1]);
+  m = s.match(/(\d{1,2})\s*([A-Za-z]{3,})/);
+  if (m && EN_MONTHS.indexOf(m[2].slice(0, 3).toLowerCase()) >= 0) return withYear(EN_MONTHS.indexOf(m[2].slice(0, 3).toLowerCase()), +m[1]);
+  m = s.match(/(\d{1,2})\s*(يناير|فبراير|مارس|أبريل|ابريل|مايو|يونيو|يوليو|أغسطس|اغسطس|سبتمبر|أكتوبر|اكتوبر|نوفمبر|ديسمبر)/);
+  if (m) return withYear(AR_MONTHS.indexOf(m[2].replace(/^ا/, "أ")), +m[1]);
+  return null;
+}
+const arabicDay = (t) => { const d = new Date(t); return `يوم ${AR_DAYS[d.getUTCDay()]} ${toArabicDigits(d.getUTCDate())} ${AR_MONTHS[d.getUTCMonth()]}`; };
+const todayUTC = () => { const n = new Date(Date.now() + 3 * 3600e3); return Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()); };
+
 /* ---------- إعدادات الفعاليات من الشيت ---------- */
+// ١) تبويب "تأكيد الحضور": إعدادات خاصة (مثل ما وراء الأرقام).
+// ٢) تبويب Events: أي فعالية فيها شيت مسجلين (responses) تنضاف تلقائيًا — تأكيد بدون صورة.
+// والفعالية اللي تنحذف من Events تبقى محفوظة (منتهية) عشان الموارد يرجعون لها.
+const csvOf = async (gid) => {
+  const res = await fetch(`https://docs.google.com/spreadsheets/d/${EVENTS_SHEET}/export?format=csv&gid=${gid}&t=${Date.now()}`);
+  if (!res.ok) throw new Error("sheet " + res.status);
+  return parseCSV(await res.text());
+};
+const slugOf = (name) => "e" + crypto.createHash("md5").update(String(name).trim()).digest("hex").slice(0, 8);
+const normName = (t) => String(t || "").replace(/[\u064B-\u0652\u0640]/g, "").replace(/[أإآ]/g, "ا").replace(/\s+/g, " ").trim();
+
 let cache = { at: 0, list: null };
 async function loadEvents() {
   if (cache.list && Date.now() - cache.at < 30e3) return cache.list;
   let list = [];
+  let auto = [];
   try {
-    const res = await fetch(`https://docs.google.com/spreadsheets/d/${EVENTS_SHEET}/export?format=csv&gid=${CONFIG_GID}&t=${Date.now()}`);
-    if (!res.ok) throw new Error("config " + res.status);
-    const rows = parseCSV(await res.text());
+    const rows = await csvOf(CONFIG_GID);
     const header = (rows[0] || []).map((h) => h.trim());
     const col = (re) => header.findIndex((h) => re.test(h));
     const c = {
@@ -74,21 +113,68 @@ async function loadEvents() {
       const name = cell(r, c.name);
       if (!name) return null;
       let slug = cell(r, c.slug).toLowerCase();
-      if (!/^[a-z0-9-]{1,40}$/.test(slug)) slug = "e" + crypto.createHash("md5").update(name).digest("hex").slice(0, 8);
+      if (!/^[a-z0-9-]{1,40}$/.test(slug)) slug = slugOf(name);
       const partnerLink = cell(r, c.partnerLink);
+      const when = cell(r, c.when);
       return {
         slug, name, status: statusOf(cell(r, c.status)),
         responsesSheetId: sheetIdOf(cell(r, c.responses)),
-        when: cell(r, c.when), place: cell(r, c.place),
+        when, place: cell(r, c.place), date: slug === LEGACY ? Date.UTC(2026, 10, 15) : parseDate(when),
         partner: cell(r, c.partner), partnerLink,
         photo: !!partnerLink && !/^(لا|no)$/i.test(cell(r, c.photo)),
         groupLink: cell(r, c.group),
       };
     }).filter((e) => e && e.responsesSheetId);
   } catch (e) {
-    list = cache.list || [];
+    list = (cache.list || []).filter((x) => !x.auto);
   }
-  if (!list.some((e) => e.slug === LEGACY)) list.push(LEGACY_EVENT);
+  if (!list.some((e) => e.slug === LEGACY)) list.push(Object.assign({ date: Date.UTC(2026, 10, 15) }, LEGACY_EVENT));
+
+  // الفعاليات من تبويب Events.
+  const registry = getStore("events-registry");
+  try {
+    const rows = await csvOf("0");
+    const header = (rows[0] || []).map((h) => h.trim().toLowerCase());
+    const col = (n) => header.indexOf(n);
+    const cell = (r, n) => (col(n) >= 0 ? String(r[col(n)] || "").trim() : "");
+    const known = new Set(list.map((e) => normName(e.name)));
+    const today = todayUTC();
+    for (const r of rows.slice(1)) {
+      const name = cell(r, "name");
+      const responsesSheetId = sheetIdOf(cell(r, "responses"));
+      if (!name || !responsesSheetId || known.has(normName(name))) continue;
+      const raw = cell(r, "status");
+      if (/مخفي|hidden/i.test(raw)) continue;
+      const date = parseDate(cell(r, "date"));
+      const past = date !== null && date < today;
+      const ev = {
+        slug: slugOf(name), name, auto: true,
+        // التأكيد مفتوح لين يعدّي يوم الفعالية (إلا لو مؤجلة).
+        status: /مؤجل/.test(raw) ? "closed" : past ? "ended" : "open",
+        responsesSheetId, date,
+        when: date !== null ? arabicDay(date) : cell(r, "date"),
+        place: cell(r, "location").replace(/📍/g, "").replace(/\s+/g, " ").trim(),
+        partner: "", partnerLink: "", photo: false,
+        groupLink: cell(r, "whatsapp"),
+      };
+      auto.push(ev);
+    }
+    // نحفظ آخر نسخة من كل فعالية (عشان تبقى بعد ما تنحذف من الشيت).
+    await Promise.all(auto.map(async (ev) => {
+      const old = await registry.get(ev.slug, { type: "json" });
+      const { status, ...data } = ev;
+      if (!old || JSON.stringify(old.data) !== JSON.stringify(data)) await registry.setJSON(ev.slug, { data, savedAt: Date.now() });
+    }));
+  } catch (e) { /* نكمل بالمحفوظ */ }
+  try {
+    const present = new Set(auto.map((e) => e.slug).concat(list.map((e) => e.slug)));
+    const { blobs } = await registry.list();
+    const saved = await Promise.all(blobs.filter(({ key }) => !present.has(key)).map(({ key }) => registry.get(key, { type: "json" })));
+    saved.filter(Boolean).forEach(({ data }) => auto.push(Object.assign({}, data, { status: "ended" })));
+  } catch (e) { /* */ }
+
+  // بالترتيب: الأقدم أول (ما وراء الأرقام ← الفعالية الجاية ← اللي بعدها).
+  list = list.concat(auto).sort((a, b) => (a.date || 9e15) - (b.date || 9e15));
   cache = { at: Date.now(), list };
   return list;
 }
@@ -103,7 +189,7 @@ function storesOf(slug) {
   };
 }
 
-const publicEvent = (e) => ({ slug: e.slug, name: e.name, when: e.when, place: e.place, partner: e.partner, photo: e.photo, group: !!e.groupLink, status: e.status });
+const publicEvent = (e) => ({ slug: e.slug, name: e.name, when: e.when, place: e.place, partner: e.partner, photo: e.photo, group: !!e.groupLink, status: e.status, date: e.date || null });
 
 /* ---------- المسجلين ---------- */
 async function registrants(ev) {
