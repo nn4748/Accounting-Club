@@ -46,9 +46,14 @@
     .btn-block { width: 100%; margin-top: 12px; }
     .err { color: var(--bad); font-size: 13px; margin-top: 10px; text-align: center; }
 
-    .evbar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
-    .evbar label { font-weight: 800; color: var(--ink); font-size: 13.5px; }
-    .evbar select { flex: 1; min-width: 200px; font-weight: 700; color: var(--ink); }
+    .evtabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 10px; scrollbar-width: thin; }
+    .evtab { flex-shrink: 0; background: #fff; border: 1px solid var(--line); color: #4b4f73; border-radius: 12px; padding: 10px 14px; font-weight: 800; font-size: 13.5px; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 150px; text-align: right; }
+    .evtab small { font-weight: 700; font-size: 11.5px; color: var(--muted); }
+    .evtab.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .evtab.active small { color: rgba(255,255,255,.8); }
+    .evtab .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-left: 5px; vertical-align: middle; }
+    .evbar { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; }
+    .evstate { font-size: 13px; color: var(--muted); font-weight: 700; }
     .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 14px; }
     .kpi { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; text-align: right; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
     .kpi:hover { border-color: #c8cde6; }
@@ -116,6 +121,8 @@
 
     footer { text-align: center; color: var(--muted); font-size: 12px; padding: 10px 16px 24px; line-height: 1.8; }
 
+    .nophoto .thumb, .nophoto .thead span:first-child { display: none; }
+    .nophoto .thead, .nophoto .tr { grid-template-columns: minmax(170px, 1.4fr) minmax(200px, 1.4fr) 150px minmax(210px, 1fr); }
     @media (max-width: 960px) {
       .kpis { grid-template-columns: repeat(3, 1fr); }
       .thead { display: none; }
@@ -125,6 +132,7 @@
       .tr .contact { grid-area: contact; }
       .tr .status { grid-area: st; }
       .tr .acts { grid-area: ac; }
+      .nophoto .tr { grid-template-columns: 1fr; grid-template-areas: "who" "contact" "st" "ac"; }
     }
     @media (max-width: 560px) {
       .kpis { grid-template-columns: repeat(2, 1fr); }
@@ -161,9 +169,9 @@
     </section>
 
     <section id="app" hidden>
+      <div class="evtabs" id="eventTabs" role="tablist" aria-label="الفعاليات"></div>
       <div class="evbar">
-        <label for="eventSel">الفعالية</label>
-        <select class="field" id="eventSel"></select>
+        <span class="evstate" id="evState"></span>
         <button class="btn btn-ghost" id="copyLinkBtn" type="button">🔗 نسخ رابط التأكيد</button>
       </div>
       <div class="kpis" id="kpis"></div>
@@ -218,6 +226,36 @@
       let SUBJECT = {};
       const STATE_LABEL = { open: "مفتوح", closed: "مقفل", ended: "منتهية" };
 
+      const STATE_COLOR = { open: "#1fbf63", closed: "#d48a00", ended: "#9aa0c2" };
+      function renderTabs() {
+        $("eventTabs").replaceChildren(...events.map((e) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "evtab" + (current && current.slug === e.slug ? " active" : "");
+          b.setAttribute("role", "tab");
+          b.setAttribute("aria-selected", String(!!(current && current.slug === e.slug)));
+          const name = document.createElement("span"); name.textContent = e.name;
+          const sub = document.createElement("small");
+          const dot = document.createElement("span"); dot.className = "dot"; dot.style.background = STATE_COLOR[e.status] || "#9aa0c2";
+          sub.append(dot, (e.status === "open" ? "التأكيد مفتوح" : e.status === "closed" ? "التأكيد مقفل" : "منتهية") + (e.when ? " · " + e.when.replace(/^يوم /, "") : ""));
+          b.append(name, sub);
+          b.onclick = () => {
+            if (current && current.slug === e.slug) return;
+            applyEvent(e); renderTabs();
+            filter = "all";
+            $("rows").innerHTML = '<p class="loading">جاري التحميل…</p>';
+            load();
+          };
+          return b;
+        }));
+        const active = $("eventTabs").querySelector(".active");
+        if (active) requestAnimationFrame(() => {
+          const box = $("eventTabs");
+          box.scrollLeft += active.getBoundingClientRect().left - box.getBoundingClientRect().left - (box.clientWidth - active.offsetWidth) / 2;
+        });
+        $("evState").textContent = current ? (current.photo ? `تأكيد مع صورة تسجيل في ${current.partner || "الجهة"}` : "تأكيد حضور بدون صورة") : "";
+      }
+
       // نصوص الصفحة والرسائل حسب الفعالية المختارة.
       function applyEvent(ev) {
         current = ev;
@@ -231,6 +269,7 @@
           approved: `تأكيد حضورك — ${ev.name}`,
         };
         FILTERS = ev.photo ? ALL_FILTERS : ALL_FILTERS.filter((f) => f[0] !== "pending");
+        $("app").classList.toggle("nophoto", !ev.photo);
         STATUS.no_photo.label = "أكّد بدون صورة";
         $("evSub").textContent = `فعالية «${ev.name}» — متابعة تأكيد الحضور` + (ev.photo ? ` والتسجيل في ${partner}` : "");
         document.title = `لوحة الموارد — ${ev.name} | نادي المحاسبة`;
@@ -267,14 +306,8 @@
         try { saved = sessionStorage.getItem("hrEvent") || ""; } catch (e) { /* */ }
         // المحفوظة، وإلا أول فعالية مفتوحة، وإلا آخر فعالية.
         const pick = events.find((e) => e.slug === saved) || events.find((e) => e.status === "open") || events[events.length - 1];
-        $("eventSel").replaceChildren(...events.map((e) => {
-          const o = document.createElement("option");
-          o.value = e.slug;
-          o.textContent = `${e.name} (${STATE_LABEL[e.status] || e.status})`;
-          return o;
-        }));
-        $("eventSel").value = pick.slug;
         applyEvent(pick);
+        renderTabs();
         return true;
       }
 
@@ -697,14 +730,6 @@
       $("logoutBtn").addEventListener("click", () => showLogin(""));
       $("search").addEventListener("input", render);
       $("refreshBtn").addEventListener("click", load);
-      $("eventSel").addEventListener("change", () => {
-        const ev = events.find((e) => e.slug === $("eventSel").value);
-        if (!ev) return;
-        applyEvent(ev);
-        filter = "all";
-        $("rows").innerHTML = '<p class="loading">جاري التحميل…</p>';
-        load();
-      });
       $("copyLinkBtn").addEventListener("click", () => copy(CONFIRM_URL, "تم نسخ رابط التأكيد"));
       $("remindBtn").addEventListener("click", () => remind(null));
       $("exportBtn").addEventListener("click", exportCSV);
