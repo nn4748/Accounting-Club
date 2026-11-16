@@ -765,7 +765,7 @@
 
   <section class="past-section">
     <h2 class="past-title">الفعاليات السابقة</h2>
-    <div class="past-grid">
+    <div class="past-grid" id="pastGrid">
       <div class="past-card"><div class="past-photo"><img src="assets/events/23-vat-workshop.webp" alt="ورشة ضريبة القيمة المضافة" loading="lazy"></div><span class="past-date">25-10-2026</span><div class="past-name">من المفهوم إلى التطبيق تتضح صورة الضريبة</div><div class="past-desc">جانب من ورشة عمل مع أ. علي الناصر حول ضريبة القيمة المضافة، بما أسهم في تعزيز فهم الطلاب لتطبيقاتها في واقع الأعمال.</div></div>
       <div class="past-card"><div class="past-photo"><img src="assets/events/22-cia-cisa-workshop.webp" alt="ورشة CIA & CISA" loading="lazy"></div><span class="past-date">6-10-2026</span><div class="past-name">نحو مستقبل مهني تتكامل فيه كفاءة المراجعة مع تدقيق الأنظمة</div><div class="past-desc">جانب من ورشة العمل مع أ. ملاك بن هديان وأ. سارة الدريس، حول شهادتي CIA &amp; CISA، والتي أسهمت في إثراء معرفة الطلبة بمجالات المراجعة الداخلية وتدقيق نظم المعلومات ومساراتهما المهنية.</div></div>
       <div class="past-card"><div class="past-photo"><img src="assets/events/21-finance-workshop.webp" alt="ورشة بين دقة المحاسبة ورؤية المالية" loading="lazy"></div><span class="past-date">21-9-2026</span><div class="past-name">بين دقة المحاسبة ورؤية المالية يُصنع مستقبل الأعمال</div><div class="past-desc">جانب من ورشة عمل مع أ. سعيد الشهراني حول مستقبل المحاسبة والمالية وتأثير التحول الرقمي على مسارهما المهني، بما أسهم في توسيع مدارك الطلبة حول تطور المهنة ومتطلباتها.</div></div>
@@ -793,6 +793,59 @@
   </section>
 
   <script src="js/event-sheet.js"></script>
+  <script>
+    // فعاليات سابقة جديدة من تبويب "الفعاليات السابقة" بشيت الفعاليات (الاسم | التاريخ | الصورة | الوصف).
+    // تنضاف فوق القائمة الثابتة، والمكررة بالاسم ما تتكرر.
+    (async function () {
+      const grid = document.getElementById("pastGrid");
+      if (!grid || !window.EventSheet) return;
+      const URL_CSV = "https://docs.google.com/spreadsheets/d/1M0VZlDs8J5FWIFc1OTWRYbMfpCX82hzaQpk4jTr2QuU/export?format=csv&gid=510002";
+      const norm = (t) => String(t || "").replace(/[\u064B-\u0652\u0640]/g, "").replace(/[أإآ]/g, "ا").replace(/\s+/g, " ").trim();
+      function render(rows) {
+        grid.querySelectorAll(".past-card[data-sheet]").forEach((c) => c.remove());
+        const existing = new Set([...grid.querySelectorAll(".past-name")].map((n) => norm(n.textContent)));
+        const header = (rows[0] || []).map((h) => h.trim());
+        const col = (re) => header.findIndex((h) => re.test(h));
+        const c = { name: col(/الاسم|الفعالية/), date: col(/التاريخ/), image: col(/الصورة/), desc: col(/الوصف|النبذة/) };
+        const cell = (r, i) => (i >= 0 ? String(r[i] || "").trim() : "");
+        const items = rows.slice(1).map((r) => ({ name: cell(r, c.name), date: cell(r, c.date), image: cell(r, c.image), desc: cell(r, c.desc) }))
+          .filter((e) => e.name && !existing.has(norm(e.name)));
+        // الأحدث أول.
+        items.sort((a, b) => (EventSheet.parseDate(b.date) || 0) - (EventSheet.parseDate(a.date) || 0));
+        const frag = document.createDocumentFragment();
+        items.forEach((e) => {
+          const card = document.createElement("div");
+          card.className = "past-card";
+          card.dataset.sheet = "1";
+          const photo = document.createElement("div");
+          photo.className = "past-photo";
+          if (e.image) {
+            const img = document.createElement("img");
+            img.src = EventSheet.driveImage(e.image, 720);
+            img.alt = e.name;
+            img.loading = "lazy";
+            img.onerror = () => { photo.remove(); };
+            photo.appendChild(img);
+          }
+          card.appendChild(photo);
+          if (e.date) { const d = document.createElement("span"); d.className = "past-date"; d.textContent = e.date; card.appendChild(d); }
+          const n = document.createElement("div"); n.className = "past-name"; n.textContent = e.name; card.appendChild(n);
+          if (e.desc) { const d = document.createElement("div"); d.className = "past-desc"; d.textContent = e.desc; card.appendChild(d); }
+          frag.appendChild(card);
+        });
+        grid.prepend(frag);
+      }
+      const cached = EventSheet.cache.get("past-events");
+      if (cached) render(cached);
+      try {
+        const res = await fetch(URL_CSV + "&t=" + Date.now());
+        if (!res.ok) return;
+        const rows = EventSheet.parseCSV(await res.text());
+        EventSheet.cache.set("past-events", rows);
+        render(rows);
+      } catch (e) { /* نكتفي بالقائمة الثابتة */ }
+    })();
+  </script>
   <script>
 
     /* =========================================
