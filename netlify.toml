@@ -6,15 +6,24 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# اختبار "مجالك المحاسبي" مخفي: روابطه تحوّل للرئيسية (quiz.html باقي بالكود).
 [[redirects]]
   from = "/quiz"
-  to = "/quiz.html"
-  status = 200
+  to = "/"
+  status = 302
+  force = true
 
 [[redirects]]
   from = "/quiz/*"
-  to = "/quiz.html"
-  status = 200
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/quiz.html"
+  to = "/"
+  status = 302
+  force = true
 
 [[redirects]]
   from = "/live-display"
