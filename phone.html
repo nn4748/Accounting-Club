@@ -88,7 +88,7 @@
   .screen { position: absolute; inset: 0; padding: 62px 18px 26px; display: flex; flex-direction: column; overflow-y: auto; }
 
   /* ---------- lock ---------- */
-  .lock { text-align: center; gap: 6px; }
+  .lock { text-align: center; gap: 6px; padding-bottom: 56px; }
   .lock .date { font: 500 15px var(--display); opacity: .85; margin-top: 18px; }
   .lock .clock { font: 200 84px/1 var(--display); letter-spacing: 1px; }
   .lost { margin: 14px 0 4px; }
@@ -220,7 +220,8 @@
   .toast { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); background: #121638; color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 13px; z-index: 20; white-space: nowrap; }
   .phone.dark-status .status { color: #121638; }
   .phone.dark-status .homebar { background: rgba(18, 22, 56, .6); }
-  .credit { position: absolute; bottom: 14px; inset-inline: 0; text-align: center; font-size: 10.5px; opacity: .45; pointer-events: none; }
+  .made { font-size: 11.5px; color: var(--muted); text-align: center; margin-top: 4px; }
+  .credit { line-height: 1.6; position: absolute; bottom: 14px; inset-inline: 0; text-align: center; font-size: 10.5px; opacity: .45; pointer-events: none; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -245,7 +246,7 @@
     <div class="notes">
       <div class="note"><div class="ic" style="background:#2b3bd6">ن</div><div><div class="top">أبو نجلاء · المدير التنفيذي <span>٩:٤٠ م</span></div><div class="msg">المراجع الخارجي يوصل بكرة ٨ الصبح. أبي كل الحسابات مطابقة</div></div></div>
       <div class="note"><div class="ic" style="background:#0f8a63">﷼</div><div><div class="top">تطبيق البنك <span>٢:١٤ ص</span></div><div class="msg">تم تحويل ٤٩٬٥٠٠ ريال إلى «مؤسسة النخبة للتوريد»</div></div></div>
-      <div class="note"><div class="ic" style="background:#b4489a">ر</div><div><div class="top">ريم · المحاسبة <span>أمس</span></div><div class="msg">لقيت فواتير ما لها أوامر شراء… لا تقول لأحد لين نتأكد</div></div></div>
+      <div class="note"><div class="ic" style="background:#b4489a">ل</div><div><div class="top">لينا · المحاسبة <span>أمس</span></div><div class="msg">لقيت فواتير ما لها أوامر شراء… لا تقول لأحد لين نتأكد</div></div></div>
       <div class="note"><div class="ic" style="background:#d69a12">✎</div><div><div class="top">ملاحظات <span>الأسبوع الماضي</span></div><div class="msg">رمز الجوال: نسبة ضريبة القيمة المضافة… مكررة مرتين</div></div></div>
     </div>
     <button class="unlock-btn" id="toPin" type="button">افتح الجوال</button>
@@ -326,7 +327,7 @@
     <div class="appbody result" id="resultBody" style="padding-top:56px"></div>
   </section>
 
-  <div class="credit">نادي المحاسبة — جامعة الإمام محمد بن سعود الإسلامية</div>
+  <div class="credit">Made by Nourah N Aleissa<br>نادي المحاسبة — جامعة الإمام محمد بن سعود الإسلامية</div>
 </div>
 </div>
 
@@ -595,7 +596,7 @@
     row.append(copy, again);
     const board = el("div", "board");
     board.append(el("h4", "", "المتصدرين"), el("p", "board-note", "جاري التحميل…"));
-    body.append(row, board);
+    body.append(row, board, el("div", "made", "Made by Nourah N Aleissa"));
     show("sResult");
     saveScore(solved, board);
   }

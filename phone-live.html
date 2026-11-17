@@ -70,7 +70,12 @@
     </section>
   </main>
 
+  <footer style="text-align:center;color:rgba(255,255,255,.7);font-size:14px;line-height:1.8;margin-top:24px">
+    Made by Nourah N Aleissa<br>© <span id="year">2026</span> نادي المحاسبة — جامعة الإمام محمد بن سعود الإسلامية
+  </footer>
+
   <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
     (function () {
       const API = "/.netlify/functions/phone-scores?live=1";
       const $ = (id) => document.getElementById(id);
