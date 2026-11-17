@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#050a5c">
+  <title>شاشة المتصدرين — جوال المدير المالي | نادي المحاسبة</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/quiz.css">
+  <style>
+    .rank-row { display: grid; grid-template-columns: 40px 1fr auto auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.06); }
+    .rank-row + .rank-row { margin-top: 8px; }
+    .rank-pos { font-size: 20px; font-weight: 800; color: var(--sky); font-variant-numeric: tabular-nums; text-align: center; }
+    .rank-row:nth-child(1) .rank-pos { color: #ffd166; } .rank-row:nth-child(2) .rank-pos { color: #d9dde8; } .rank-row:nth-child(3) .rank-pos { color: #e3a46b; }
+    .rank-name { font-size: clamp(16px, 1.5vw, 20px); font-weight: 800; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rank-score { font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .rank-time { font-size: 14px; color: rgba(255,255,255,.7); font-variant-numeric: tabular-nums; min-width: 52px; text-align: left; }
+    .solved-pill { display: inline-block; font-size: 13px; font-weight: 800; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
+    .solved-pill.ok { background: #e3f6ea; color: #157a43; } .solved-pill.no { background: #fdecea; color: #b42318; }
+    .live-sub-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .live-sub-stats div { background: rgba(255,255,255,.08); border-radius: 14px; padding: 12px; text-align: center; }
+    .live-sub-stats b { display: block; font-size: clamp(26px, 3vw, 36px); font-weight: 800; color: var(--sky); font-variant-numeric: tabular-nums; }
+    .live-sub-stats span { font-size: 14px; color: rgba(255,255,255,.8); font-weight: 700; }
+    .board-title { font-size: clamp(18px, 1.8vw, 22px); font-weight: 800; margin-bottom: 12px; }
+  </style>
+</head>
+
+<body class="live-page">
+
+  <header class="live-header">
+    <div class="live-brand">
+      <img src="/assets/club.webp" alt="شعار نادي المحاسبة">
+      <div>
+        <h1>شاشة المتصدرين</h1>
+        <p>لعبة «جوال المدير المالي» · نادي المحاسبة</p>
+      </div>
+    </div>
+    <div class="live-status" id="liveStatus">
+      <span class="live-pill live-pill--live"><span class="live-dot"></span>LIVE</span>
+      <span class="live-pill live-pill--warn" id="connectionPill"><span class="live-dot"></span><span id="connectionText">جارٍ الاتصال</span></span>
+    </div>
+  </header>
+
+  <main class="live-grid" id="dashboardView">
+    <aside class="live-panel" aria-label="الإحصائيات">
+      <div class="live-total">
+        <span class="live-total-num" id="totalCount">٠</span>
+        <span class="live-total-label">إجمالي اللاعبين</span>
+      </div>
+      <div class="live-sub-stats">
+        <div><b id="solvedCount">٠</b><span>كشفوا القضية</span></div>
+        <div><b id="solvedPct">٠٪</b><span>نسبة الكشف</span></div>
+      </div>
+      <div class="board-title">أفضل ١٠</div>
+      <div id="board"></div>
+    </aside>
+
+    <section class="live-panel" aria-label="آخر اللاعبين">
+      <div class="live-feed-head"><h2>آخر اللاعبين</h2></div>
+      <div class="live-state" id="feedEmpty" hidden>
+        بانتظار أول لاعب...
+        <small>تظهر النتائج هنا تلقائيًا فور ما أحد يخلص اللعبة.</small>
+      </div>
+      <div class="live-feed" id="feed" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const API = "/.netlify/functions/phone-scores?live=1";
+      const $ = (id) => document.getElementById(id);
+      const AR = (n) => String(n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
+      const clock = (ms) => { const s = Math.floor(ms / 1000); return AR(String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0")); };
+      const TIERS = [[21, "المدير المالي | CFO"], [16, "GOAT | الأسطورة"], [11, "MVP | النجم"], [6, "Clutcher | الحاسم"], [0, "Rookie | المبتدئ"]];
+      const tier = (s) => TIERS.find(([m]) => s >= m)[1];
+      const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+      let seen = new Set(), first = true, lastTotal = -1;
+
+      function pill(kind, text) {
+        $("connectionPill").className = "live-pill live-pill--" + kind;
+        $("connectionText").textContent = text;
+      }
+
+      function render(d) {
+        if (d.total !== lastTotal) {
+          $("totalCount").textContent = AR(d.total);
+          if (!first) { $("totalCount").classList.remove("bump"); void $("totalCount").offsetWidth; $("totalCount").classList.add("bump"); }
+          lastTotal = d.total;
+        }
+        $("solvedCount").textContent = AR(d.solved);
+        $("solvedPct").textContent = AR(d.total ? Math.round((d.solved / d.total) * 100) : 0) + "٪";
+
+        $("board").replaceChildren(...d.top.map((r, i) => {
+          const row = el("div", "rank-row");
+          row.append(el("span", "rank-pos", AR(i + 1)), el("span", "rank-name", r.name),
+            el("span", "rank-score", (r.solved ? "✓ " : "") + AR(r.score) + "/٢٥"), el("span", "rank-time", clock(r.ms)));
+          return row;
+        }));
+
+        $("feedEmpty").hidden = d.latest.length > 0;
+        $("feed").replaceChildren(...d.latest.map((r) => {
+          const key = r.at + r.name;
+          const isNew = !first && !seen.has(key);
+          seen.add(key);
+          const card = el("article", "p-card" + (isNew ? " is-new" : ""));
+          card.style.setProperty("--field-color", r.solved ? "#3ddc84" : "#ff6b6b");
+          card.append(el("div", "p-name", r.name), el("span", "solved-pill " + (r.solved ? "ok" : "no"), r.solved ? "كشف القضية" : "المختلس هرب"));
+          card.append(el("div", "p-label", "اللقب"), el("div", "p-field", tier(r.score)));
+          card.append(el("div", "p-label", "النتيجة"), el("div", "p-sub", AR(r.score) + " / ٢٥ إجابة صحيحة"));
+          card.append(el("div", "p-label", "الوقت"), el("div", "p-time", clock(r.ms)));
+          return card;
+        }));
+        first = false;
+      }
+
+      async function load() {
+        try {
+          const res = await fetch(API + "&t=" + Date.now());
+          if (!res.ok) throw new Error(res.status);
+          const d = await res.json();
+          render({ top: d.top || [], latest: d.latest || [], total: d.total || 0, solved: d.solved || 0 });
+          pill("ok", "متصل");
+        } catch (e) {
+          pill("bad", "انقطع الاتصال — نحاول مرة ثانية");
+        }
+      }
+      load();
+      setInterval(load, 8000);
+    })();
+  </script>
+</body>
+</html>

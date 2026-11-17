@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>جوال المدير المالي | نادي المحاسبة</title>
+<meta name="description" content="جوال المدير المالي ضايع، وفيه دليل على اختلاس. جاوب أسئلة محاسبية، افتح التطبيقات، واكشف المختلس.">
+<meta name="theme-color" content="#04082e">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="نادي المحاسبة">
+<meta property="og:title" content="فيه جوال ضايع 📱">
+<meta property="og:description" content="جوال المدير المالي ضايع، وفيه دليل على اختلاس. تقدر تكشف المختلس؟">
+<meta property="og:url" content="https://accclubimamu.com/phone">
+<meta property="og:image" content="https://accclubimamu.com/assets/og-phone.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="فيه جوال ضايع 📱">
+<meta name="twitter:description" content="جوال المدير المالي ضايع، وفيه دليل على اختلاس. تقدر تكشف المختلس؟">
+<meta name="twitter:image" content="https://accclubimamu.com/assets/og-phone.png">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Readex+Pro:wght@200;300;500;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a single phone on a night desk — lock screen → PIN → home with 5 locked apps → evidence → accusation. */
+  :root {
+    --night: #04082e;        /* desk / wallpaper base */
+    --ink: #000878;          /* club navy */
+    --cyan: #6ccff6;         /* club accent */
+    --glass: rgba(255, 255, 255, .12);
+    --glass-line: rgba(255, 255, 255, .18);
+    --paper: #f3f5fd;        /* app surfaces */
+    --text: #121638;
+    --muted: #6a6f97;
+    --ok: #17a35b;
+    --bad: #d93a3a;
+    --display: "Readex Pro", "Almarai", system-ui, sans-serif;
+    --body: "Almarai", "Readex Pro", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(120% 80% at 70% 0%, #1a2290 0%, transparent 60%), var(--night);
+    color: #fff; font-family: var(--body); direction: rtl;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  button { font-family: inherit; cursor: pointer; border: 0; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ---------- phone ---------- */
+  .phone {
+    position: relative; width: min(390px, 100%); height: min(820px, 100%);
+    border-radius: 46px; overflow: hidden; isolation: isolate;
+    background: linear-gradient(165deg, #1d2bb8 0%, #0a1170 38%, #050a3a 100%);
+    /* إطار آيفون: حافة سوداء رفيعة + إطار تيتانيوم */
+    box-shadow: 0 0 0 9px #050507, 0 0 0 11px #8d8f98, 0 0 0 12px #3a3c44, 0 30px 80px rgba(0, 0, 0, .55);
+  }
+  /* خلفية الجوال: شعار النادي */
+  .wall { position: absolute; inset: 0; z-index: -1; pointer-events: none; display: grid; place-items: center; }
+  .wall img { width: 78%; opacity: .1; filter: drop-shadow(0 0 30px rgba(108, 207, 246, .35)); transform: translateY(8%); }
+  .island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 120px; height: 35px; border-radius: 20px; background: #000; z-index: 10; }
+  .island::after { content: ""; position: absolute; right: 22px; top: 12px; width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #2a3a6a, #05070f 60%); }
+  .side { position: absolute; width: 4px; background: #6f727c; border-radius: 2px; z-index: -2; }
+  .phone-wrap { position: relative; width: min(390px, 100%); height: min(820px, 100%); }
+  .phone-wrap .phone { width: 100%; height: 100%; }
+  .phone-wrap .b1 { left: -15px; top: 130px; height: 30px; } .phone-wrap .b2 { left: -15px; top: 180px; height: 60px; }
+  .phone-wrap .b3 { left: -15px; top: 255px; height: 60px; } .phone-wrap .b4 { right: -15px; top: 200px; height: 90px; }
+  .homebar { position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, .85); z-index: 10; pointer-events: none; }
+  .phone::before { /* soft glow on the wallpaper */
+    content: ""; position: absolute; inset: -20% -30% auto auto; width: 120%; aspect-ratio: 1;
+    background: radial-gradient(circle, rgba(108, 207, 246, .28), transparent 62%); z-index: -1;
+  }
+  @media (max-width: 480px) {
+    body { padding-block: 0; }
+    .phone-wrap { height: 100%; }
+    .phone { border-radius: 40px; box-shadow: 0 0 0 4px #050507, 0 0 0 5px #8d8f98; }
+    .side { display: none; }
+  }
+  .status { position: absolute; inset: 0 0 auto; height: 54px; padding-top: 4px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; font: 600 14px var(--display); z-index: 5; direction: ltr; }
+  .status .bat { width: 24px; height: 11px; border: 1.5px solid currentColor; border-radius: 3px; position: relative; opacity: .9; }
+  .status .bat::after { content: ""; position: absolute; inset: 1.5px; width: 40%; background: #ff5b5b; border-radius: 1px; }
+  .screen { position: absolute; inset: 0; padding: 62px 18px 26px; display: flex; flex-direction: column; overflow-y: auto; }
+
+  /* ---------- lock ---------- */
+  .lock { text-align: center; gap: 6px; }
+  .lock .date { font: 500 15px var(--display); opacity: .85; margin-top: 18px; }
+  .lock .clock { font: 200 84px/1 var(--display); letter-spacing: 1px; }
+  .lost { margin: 14px 0 4px; }
+  .lost h1 { font: 800 25px var(--body); text-wrap: balance; }
+  .lost p { font-size: 13.5px; opacity: .8; margin-top: 6px; }
+  .notes { display: flex; flex-direction: column; gap: 9px; margin-top: 16px; text-align: right; }
+  .note { background: var(--glass); border: 1px solid var(--glass-line); backdrop-filter: blur(14px); border-radius: 20px; padding: 11px 13px; display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: center; animation: drop .5s both; }
+  .note:nth-child(2) { animation-delay: .12s } .note:nth-child(3) { animation-delay: .24s } .note:nth-child(4) { animation-delay: .36s }
+  .note .ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 17px; font-weight: 800; }
+  .note .top { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 800; }
+  .note .top span { font-weight: 400; opacity: .65; font-size: 11.5px; white-space: nowrap; }
+  .note .msg { font-size: 13px; opacity: .92; margin-top: 2px; line-height: 1.5; }
+  .unlock-btn { margin-top: auto; align-self: center; background: rgba(255, 255, 255, .16); color: #fff; padding: 12px 28px; border-radius: 999px; font-weight: 800; font-size: 14px; border: 1px solid var(--glass-line); }
+  .hint-line { font-size: 12px; opacity: .6; margin-top: 8px; }
+  @keyframes drop { from { opacity: 0; transform: translateY(-10px) } }
+
+  /* ---------- pin ---------- */
+  .pin { align-items: center; text-align: center; }
+  .pin h2 { font: 500 17px var(--display); margin-top: 50px; }
+  .dots { display: flex; gap: 16px; margin: 22px 0 8px; direction: ltr; }
+  .dots i { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid #fff; }
+  .dots i.on { background: #fff; }
+  .dots.shake { animation: shake .4s; }
+  @keyframes shake { 20%, 60% { transform: translateX(-9px) } 40%, 80% { transform: translateX(9px) } }
+  .pin-msg { min-height: 40px; font-size: 13px; color: #ffd4d4; line-height: 1.5; padding: 0 10px; }
+  .pad { display: grid; grid-template-columns: repeat(3, 72px); gap: 16px 22px; margin-top: 8px; direction: ltr; }
+  .pad button { width: 72px; height: 72px; border-radius: 50%; background: rgba(255, 255, 255, .14); color: #fff; font: 300 30px var(--display); }
+  .pad button:active { background: rgba(255, 255, 255, .32); }
+  .pad .txt { background: none; font: 600 14px var(--body); }
+  .pad .blank { visibility: hidden; }
+
+  /* ---------- intro (name) ---------- */
+  .intro { gap: 14px; justify-content: center; }
+  .card-glass { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 22px; padding: 18px; backdrop-filter: blur(14px); }
+  .intro h2 { font: 700 20px var(--display); margin-bottom: 8px; }
+  .intro p { font-size: 14px; line-height: 1.85; opacity: .92; }
+  .field { width: 100%; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--glass-line); background: rgba(0, 0, 0, .25); color: #fff; font: 700 15px var(--body); }
+  .field::placeholder { color: rgba(255, 255, 255, .5); }
+  .cta { width: 100%; padding: 14px; border-radius: 16px; background: var(--cyan); color: var(--ink); font-weight: 800; font-size: 15.5px; }
+  .cta[disabled] { opacity: .45; cursor: not-allowed; }
+  .err { color: #ffd4d4; font-size: 12.5px; }
+
+  /* ---------- home ---------- */
+  .home { gap: 16px; }
+  .hud { display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, .22); border-radius: 16px; padding: 10px 14px; font-size: 13px; }
+  .hud b { font: 700 18px var(--display); color: var(--cyan); }
+  .home-title { font: 700 14px var(--display); opacity: .75; margin-top: 4px; }
+  .apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 8px; justify-items: center; }
+  .app { background: none; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 7px; width: 86px; }
+  .app .sq { position: relative; width: 64px; height: 64px; border-radius: 17px; display: grid; place-items: center; box-shadow: 0 8px 18px rgba(0, 0, 0, .3); transition: transform .15s; }
+  .app:hover .sq { transform: translateY(-2px); }
+  .app svg { width: 32px; height: 32px; fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .app .lk { position: absolute; bottom: -5px; left: -5px; width: 24px; height: 24px; border-radius: 50%; background: #0b0f3d; border: 2px solid var(--night); display: grid; place-items: center; font-size: 12px; }
+  .app .lbl { font-size: 12px; font-weight: 700; text-align: center; line-height: 1.3; }
+  .app.done .lk { background: var(--ok); }
+  .dock { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(255, 255, 255, .1); border: 1px solid var(--glass-line); border-radius: 24px; padding: 10px; }
+  .dock button { padding: 12px 8px; border-radius: 16px; background: rgba(255, 255, 255, .1); color: #fff; font-weight: 800; font-size: 13.5px; }
+  .dock .accuse { background: var(--cyan); color: var(--ink); }
+  .dock .accuse[disabled] { background: rgba(255, 255, 255, .08); color: rgba(255, 255, 255, .45); cursor: not-allowed; }
+
+  /* ---------- in-app (light surfaces like real apps) ---------- */
+  .appview { padding: 0; background: var(--paper); color: var(--text); }
+  .appbar { padding: 62px 18px 16px; color: #fff; display: flex; align-items: center; gap: 12px; }
+  .appbar .back { background: rgba(255, 255, 255, .2); color: #fff; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; }
+  .appbar h2 { font: 700 18px var(--display); }
+  .appbar small { display: block; font-size: 12px; opacity: .85; margin-top: 2px; }
+  .appbody { padding: 18px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+  .qmeta { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); font-weight: 700; }
+  .qbar { height: 6px; border-radius: 6px; background: #dfe3f4; overflow: hidden; }
+  .qbar span { display: block; height: 100%; background: var(--ink); transition: width .3s; }
+  .qcard { background: #fff; border-radius: 18px; padding: 16px; box-shadow: 0 2px 12px rgba(0, 8, 120, .06); }
+  .qcard .dom { font-size: 11.5px; font-weight: 800; color: var(--ink); background: #e8ebff; padding: 3px 9px; border-radius: 8px; display: inline-block; }
+  .qcard p { font: 700 16px/1.75 var(--body); margin-top: 10px; text-wrap: pretty; }
+  .opts { display: flex; flex-direction: column; gap: 9px; }
+  .opt { text-align: right; background: #fff; color: var(--text); border: 1.5px solid #dfe3f4 !important; border-radius: 14px; padding: 13px 14px; font-size: 14.5px; font-weight: 700; }
+  .opt:hover:not([disabled]) { border-color: var(--ink) !important; }
+  .opt.right { background: #e3f6ea; border-color: var(--ok) !important; color: #0d6b3b; }
+  .opt.wrong { background: #fdeaea; border-color: var(--bad) !important; color: #9c1f1f; }
+  .opt[disabled] { cursor: default; }
+  .feedback { font-weight: 800; font-size: 14px; min-height: 20px; }
+  .feedback.ok { color: var(--ok); } .feedback.no { color: var(--bad); }
+  .next { padding: 14px; border-radius: 16px; background: var(--ink); color: #fff; font-weight: 800; font-size: 15px; margin-top: auto; }
+  .unlocked { text-align: center; padding: 8px 0; }
+  .unlocked .big { font: 700 44px var(--display); color: var(--ink); }
+  .unlocked h3 { font: 700 18px var(--display); margin-top: 4px; }
+  .unlocked p { color: var(--muted); font-size: 13.5px; margin-top: 4px; }
+  .clue { background: #fff; border-radius: 18px; padding: 16px; border: 1.5px dashed #c9cff0; }
+  .clue h4 { font: 700 13px var(--display); color: var(--muted); letter-spacing: .3px; margin-bottom: 8px; }
+  .clue p { font-size: 15px; line-height: 1.9; font-weight: 700; }
+  .redact { background: #121638; color: transparent; border-radius: 3px; padding: 0 3px; user-select: none; }
+  .clue .warn { font-size: 12.5px; color: var(--bad); font-weight: 700; margin-top: 8px; }
+
+  /* ---------- file / accuse / result ---------- */
+  .sheet { padding: 0; background: var(--paper); color: var(--text); }
+  .list { display: flex; flex-direction: column; gap: 10px; }
+  .item { background: #fff; border-radius: 16px; padding: 13px 14px; font-size: 14px; line-height: 1.8; }
+  .item b { color: var(--ink); }
+  .item.empty { color: var(--muted); font-size: 13px; }
+  .people { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 14px; overflow: hidden; }
+  .people th, .people td { padding: 9px 8px; text-align: right; border-bottom: 1px solid #eef0f8; }
+  .people th { background: #eef0fb; color: var(--muted); font-weight: 800; font-size: 12px; }
+  .people td.u { direction: ltr; text-align: right; font-family: var(--display); font-size: 12.5px; }
+  .qgroup h4 { font: 700 14.5px var(--display); margin-bottom: 8px; }
+  .choice { display: flex; flex-direction: column; gap: 8px; }
+  .choice button { text-align: right; background: #fff; color: var(--text); border: 1.5px solid #dfe3f4 !important; border-radius: 14px; padding: 12px 14px; font-weight: 700; font-size: 14px; }
+  .choice button.sel { border-color: var(--ink) !important; background: #e8ebff; }
+  .result { text-align: center; }
+  .stamp { margin: 6px auto 0; font: 700 15px var(--display); padding: 6px 16px; border-radius: 10px; border: 2.5px solid; display: inline-block; transform: rotate(-4deg); }
+  .stamp.ok { color: var(--ok); } .stamp.no { color: var(--bad); }
+  .tier { font: 700 26px var(--display); color: var(--ink); margin-top: 14px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stats div { background: #fff; border-radius: 14px; padding: 12px 6px; }
+  .stats b { display: block; font: 700 20px var(--display); color: var(--ink); }
+  .stats span { font-size: 11.5px; color: var(--muted); font-weight: 700; }
+  .story { text-align: right; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ghost { padding: 13px; border-radius: 16px; background: #fff; color: var(--ink); font-weight: 800; border: 1.5px solid #dfe3f4 !important; }
+  .board { background: #fff; border-radius: 16px; padding: 14px; text-align: right; }
+  .board h4 { font: 700 15px var(--display); color: var(--ink); }
+  .board-note { font-size: 12.5px; color: var(--muted); margin: 4px 0 8px; }
+  .ranks { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .ranks li { display: grid; grid-template-columns: 26px 1fr auto 52px; gap: 8px; align-items: center; font-size: 13.5px; padding: 7px 8px; border-radius: 10px; }
+  .ranks li:nth-child(odd) { background: #f5f6fc; }
+  .ranks li.me { background: #e8ebff; font-weight: 800; }
+  .ranks .pos { font: 700 13px var(--display); color: var(--ink); }
+  .ranks .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+  .ranks .sc { color: var(--ok); font-weight: 800; }
+  .ranks .tm { color: var(--muted); font-size: 12px; text-align: left; }
+  .toast { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); background: #121638; color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 13px; z-index: 20; white-space: nowrap; }
+  .phone.dark-status .status { color: #121638; }
+  .phone.dark-status .homebar { background: rgba(18, 22, 56, .6); }
+  .credit { position: absolute; bottom: 14px; inset-inline: 0; text-align: center; font-size: 10.5px; opacity: .45; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+
+<div class="phone-wrap"><i class="side b1"></i><i class="side b2"></i><i class="side b3"></i><i class="side b4"></i>
+<div class="phone" id="phone">
+  <div class="wall" aria-hidden="true"><img src="data:image/webp;base64,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" alt=""></div>
+  <div class="island" aria-hidden="true"></div>
+  <div class="homebar" aria-hidden="true"></div>
+  <div class="status"><span class="num" id="sbTime">9:41</span><span style="display:flex;gap:6px;align-items:center">5G <i class="bat"></i></span></div>
+
+  <!-- 1. شاشة القفل -->
+  <section class="screen lock" id="sLock">
+    <div class="date" id="lockDate"></div>
+    <div class="clock num" id="lockClock"></div>
+    <div class="lost">
+      <h1>هذا الجوال ضايع</h1>
+      <p>إذا لقيته، رجّعه لنادي المحاسبة — قسم المراجعة الداخلية</p>
+    </div>
+    <div class="notes">
+      <div class="note"><div class="ic" style="background:#2b3bd6">ف</div><div><div class="top">أبو فهد · المدير التنفيذي <span>٩:٤٠ م</span></div><div class="msg">المراجع الخارجي يوصل بكرة ٨ الصبح. أبي كل الحسابات مطابقة</div></div></div>
+      <div class="note"><div class="ic" style="background:#0f8a63">﷼</div><div><div class="top">تطبيق البنك <span>٢:١٤ ص</span></div><div class="msg">تم تحويل ٤٩٬٥٠٠ ريال إلى «مؤسسة النخبة للتوريد»</div></div></div>
+      <div class="note"><div class="ic" style="background:#b4489a">ر</div><div><div class="top">ريم · المحاسبة <span>أمس</span></div><div class="msg">لقيت فواتير ما لها أوامر شراء… لا تقول لأحد لين نتأكد</div></div></div>
+      <div class="note"><div class="ic" style="background:#d69a12">✎</div><div><div class="top">ملاحظات <span>الأسبوع الماضي</span></div><div class="msg">رمز الجوال: نسبة ضريبة القيمة المضافة… مكررة مرتين</div></div></div>
+    </div>
+    <button class="unlock-btn" id="toPin" type="button">افتح الجوال</button>
+    <div class="hint-line">اقرأ الإشعارات زين، فيها رمز القفل</div>
+  </section>
+
+  <!-- 2. الرمز -->
+  <section class="screen pin" id="sPin" hidden>
+    <h2>أدخل رمز الجوال</h2>
+    <div class="dots" id="dots"><i></i><i></i><i></i><i></i></div>
+    <div class="pin-msg" id="pinMsg"></div>
+    <div class="pad" id="pad"></div>
+  </section>
+
+  <!-- 3. الاسم والقصة -->
+  <section class="screen intro" id="sIntro" hidden>
+    <div class="card-glass">
+      <h2>انفتح الجوال</h2>
+      <p>هذا جوال <b>فهد</b>، المدير المالي لشركة «مدار». قبل المراجعة بيوم وصلتنا معلومة إن فيه <b>اختلاس</b> من الشركة.</p>
+      <p style="margin-top:8px">كل تطبيق مقفول بـ<b>٥ أسئلة محاسبية</b>. جاوب صح عشان يطلع لك الدليل كامل، واجمع الأدلة من التطبيقات الخمسة، بعدها حدّد المختلس.</p>
+    </div>
+    <label for="nameIn" style="font-size:13px;opacity:.8">اسمك يا المحقق</label>
+    <input class="field" id="nameIn" maxlength="30" placeholder="اكتب اسمك" autocomplete="given-name">
+    <p class="err" id="nameErr" hidden>اكتب اسمك عشان نبدأ التحقيق</p>
+    <button class="cta" id="startBtn" type="button">ابدأ التحقيق</button>
+  </section>
+
+  <!-- 4. الرئيسية -->
+  <section class="screen home" id="sHome" hidden>
+    <div class="hud">
+      <div>المحقق: <strong id="hudName"></strong></div>
+      <div style="display:flex;gap:16px">
+        <div>الأدلة <b class="num" id="hudClues">٠/٥</b></div>
+        <div>الوقت <b class="num" id="hudTime">٠٠:٠٠</b></div>
+      </div>
+    </div>
+    <div class="home-title">التطبيقات المقفولة</div>
+    <div class="apps" id="apps"></div>
+    <div class="dock">
+      <button type="button" id="fileBtn">ملف القضية</button>
+      <button type="button" class="accuse" id="accuseBtn" disabled>حدّد المختلس</button>
+    </div>
+  </section>
+
+  <!-- 5. داخل التطبيق -->
+  <section class="screen appview" id="sApp" hidden>
+    <div class="appbar" id="appBar">
+      <button class="back" id="appBack" type="button" aria-label="رجوع">→</button>
+      <div><h2 id="appTitle"></h2><small id="appSub"></small></div>
+    </div>
+    <div class="appbody" id="appBody"></div>
+  </section>
+
+  <!-- 6. ملف القضية -->
+  <section class="screen sheet" id="sFile" hidden>
+    <div class="appbar" style="background:#1b2496">
+      <button class="back" data-home type="button" aria-label="رجوع">→</button>
+      <div><h2>ملف القضية</h2><small>الأدلة اللي جمعتها والموظفين المشتبه فيهم</small></div>
+    </div>
+    <div class="appbody">
+      <div class="list" id="fileList"></div>
+      <h4 style="font:700 14px var(--display);margin-top:6px">الموظفين اللي عندهم صلاحية</h4>
+      <div style="overflow-x:auto"><table class="people" id="people"></table></div>
+    </div>
+  </section>
+
+  <!-- 7. الاتهام -->
+  <section class="screen sheet" id="sAccuse" hidden>
+    <div class="appbar" style="background:#7a1630">
+      <button class="back" data-home type="button" aria-label="رجوع">→</button>
+      <div><h2>تقرير المحقق</h2><small>جاوب الثلاثة، وعندك فرصة وحدة</small></div>
+    </div>
+    <div class="appbody" id="accuseBody"></div>
+  </section>
+
+  <!-- 8. النتيجة -->
+  <section class="screen sheet" id="sResult" hidden>
+    <div class="appbody result" id="resultBody" style="padding-top:56px"></div>
+  </section>
+
+  <div class="credit">نادي المحاسبة — جامعة الإمام محمد بن سعود الإسلامية</div>
+</div>
+</div>
+
+<script>
+(function () {
+  const QUESTIONS = [{"domain":"المحاسبة المالية","question":"أي مما يلي يُعد أصلًا؟","options":["الدائنون","رأس المال","النقد","الإيرادات"],"answerIndex":2},{"domain":"المحاسبة المالية","question":"صح أم خطأ: شراء معدات نقدًا يزيد إجمالي الأصول دائمًا.","options":["صح","خطأ"],"answerIndex":1},{"domain":"المحاسبة المالية","question":"ما الحساب الناتج عن البيع بالآجل؟","options":["الدائنون","المدينون","رأس المال","المصروفات"],"answerIndex":1},{"domain":"المحاسبة المالية","question":"أي عملية تزيد الأصول والخصوم؟","options":["شراء بضاعة بالآجل","سداد قرض","تحصيل دين","دفع الرواتب"],"answerIndex":0},{"domain":"المحاسبة المالية","question":"أي قائمة توضح الربح أو الخسارة؟","options":["المركز المالي","قائمة الدخل","التدفقات النقدية","التغيرات في حقوق الملكية"],"answerIndex":1},{"domain":"المحاسبة المالية","question":"صح أم خطأ: توازن ميزان المراجعة يعني خلو الحسابات من الأخطاء.","options":["صح","خطأ"],"answerIndex":1},{"domain":"المحاسبة المالية","question":"ماذا يحدث عند الحصول على قرض نقدي؟","options":["تزيد الأصول والخصوم","تزيد الإيرادات","تنخفض الأصول","تزيد المصروفات"],"answerIndex":0},{"domain":"المحاسبة المالية","question":"مصروف الرواتب طبيعته:","options":["مدين","دائن"],"answerIndex":0},{"domain":"المحاسبة المالية","question":"ما أثر دفع الإيجار نقدًا؟","options":["زيادة المصروفات وانخفاض النقد","زيادة الإيرادات","زيادة الخصوم","زيادة النقد"],"answerIndex":0},{"domain":"المحاسبة المالية","question":"كيف يُسجّل المصروف المستحق غير المدفوع؟","options":["مدين مصروفات، دائن خصوم","مدين نقد، دائن مصروفات","مدين إيرادات، دائن نقد","مدين خصوم، دائن إيرادات"],"answerIndex":0},{"domain":"المحاسبة الإدارية والتكاليف","question":"ما هدف المحاسبة الإدارية؟","options":["دعم القرارات","حساب الضرائب فقط","مراجعة الحسابات","إعداد القوائم الخارجية فقط"],"answerIndex":0},{"domain":"المحاسبة الإدارية والتكاليف","question":"صح أم خطأ: إجمالي التكاليف الثابتة يتغير مع كل زيادة في الإنتاج ضمن المدى الملائم.","options":["صح","خطأ"],"answerIndex":1},{"domain":"المحاسبة الإدارية والتكاليف","question":"ما التكلفة المباشرة لصناعة طاولة خشبية؟","options":["إيجار المصنع","راتب المشرف","الخشب","راتب المدير"],"answerIndex":2},{"domain":"المحاسبة الإدارية والتكاليف","question":"ماذا يحدث للتكلفة الثابتة للوحدة عند زيادة الإنتاج؟","options":["ترتفع","تنخفض","تبقى ثابتة","تختفي"],"answerIndex":1},{"domain":"المحاسبة الإدارية والتكاليف","question":"صح أم خطأ: تساعد الموازنات في التخطيط والرقابة.","options":["صح","خطأ"],"answerIndex":0},{"domain":"المحاسبة الإدارية والتكاليف","question":"متى تتحقق نقطة التعادل؟","options":["عندما تتساوى الإيرادات والتكاليف الكلية","عندما تزيد المصروفات","عند توقف الإنتاج","عند تحقيق أعلى ربح"],"answerIndex":0},{"domain":"المحاسبة الإدارية والتكاليف","question":"ما التكلفة غير المباشرة في مصنع الأثاث؟","options":["الخشب","أجور صانع الطاولة","راتب مشرف المصنع","المواد المباشرة"],"answerIndex":2},{"domain":"المحاسبة الإدارية والتكاليف","question":"كيف نتعامل مع التكلفة الغارقة عند مقارنة البدائل؟","options":["ندرجها دائمًا","نستبعدها","نعدّها إيرادًا","نعدّها أصلًا"],"answerIndex":1},{"domain":"المحاسبة الإدارية والتكاليف","question":"ما التكلفة الغارقة؟","options":["تكلفة مستقبلية","تكلفة لا يمكن استردادها","تكلفة تتغير مع الإنتاج","تكلفة لم تُدفع"],"answerIndex":1},{"domain":"المحاسبة الإدارية والتكاليف","question":"ماذا نفعل إذا زادت التكلفة الفعلية عن المخططة؟","options":["نتجاهل الفرق","نحلل الانحراف وأسبابه","نوقف الإنتاج","نحذف التكلفة"],"answerIndex":1},{"domain":"المراجعة","question":"ما هدف المراجعة الخارجية؟","options":["إعداد القوائم","إبداء رأي مستقل في القوائم المالية","إدارة المنشأة","تسعير المنتجات"],"answerIndex":1},{"domain":"المراجعة","question":"صح أم خطأ: الإدارة مسؤولة عن إعداد القوائم المالية.","options":["صح","خطأ"],"answerIndex":0},{"domain":"المراجعة","question":"أي مما يلي يُعد دليل مراجعة؟","options":["تأكيد البنك للرصيد","توقع شخصي","إعلان الشركة","رأي غير موثق"],"answerIndex":0},{"domain":"المراجعة","question":"ماذا يفعل المراجع عند اختلاف رصيد البنك عن الدفاتر؟","options":["يتجاهل الفرق","يتحقق من أسباب الاختلاف","يحذف الرصيد","يغيّر الأرقام دون دليل"],"answerIndex":1},{"domain":"المراجعة","question":"صح أم خطأ: تضمن المراجعة اكتشاف جميع حالات الاحتيال.","options":["صح","خطأ"],"answerIndex":1},{"domain":"المراجعة","question":"ما مثال الرقابة الداخلية؟","options":["فصل المهام","مشاركة كلمات المرور","إلغاء المراجعة","إتاحة الحسابات للجميع"],"answerIndex":0},{"domain":"المراجعة","question":"ماذا يفعل المراجع إذا رفضت الإدارة تصحيح تحريف جوهري؟","options":["يتجاهله","يقيّم أثره على رأيه","يعتمد القوائم مباشرة","يحذف التحريف"],"answerIndex":1},{"domain":"المراجعة","question":"ما الأهمية النسبية في المراجعة؟","options":["حجم المنشأة","تأثير التحريف على القرارات","عدد الموظفين","قيمة الأصول فقط"],"answerIndex":1},{"domain":"المراجعة","question":"ماذا يفعل المراجع عند ارتفاع خطر التحريف الجوهري؟","options":["يقلل الإجراءات","يزيد إجراءات المراجعة المناسبة","يتجاهل الخطر","يوقف العمل مباشرة"],"answerIndex":1},{"domain":"المراجعة","question":"ما الفرق بين المراجعة الداخلية والخارجية؟","options":["الداخلية تركز على الرقابة والمخاطر، والخارجية على القوائم المالية","كلاهما يدير المنشأة","لا فرق بينهما","الخارجية تراجع الرواتب فقط"],"answerIndex":0},{"domain":"الزكاة والضريبة","question":"على ماذا تُفرض ضريبة القيمة المضافة؟","options":["التوريدات الخاضعة للضريبة","الرواتب فقط","الأرباح فقط","القروض"],"answerIndex":0},{"domain":"الزكاة والضريبة","question":"صح أم خطأ: ضريبة المدخلات هي الضريبة على مشتريات المنشأة.","options":["صح","خطأ"],"answerIndex":0},{"domain":"الزكاة والضريبة","question":"متى تُحتسب ضريبة المخرجات؟","options":["عند شراء الاحتياجات","عند إجراء توريدات خاضعة للضريبة","عند دفع الرواتب","عند الحصول على قرض"],"answerIndex":1},{"domain":"الزكاة والضريبة","question":"ما هدف الإقرار الضريبي؟","options":["الإفصاح عن البيانات وتحديد الضريبة المستحقة","تحديد الرواتب","تسجيل الأصول فقط","إعداد الموازنة"],"answerIndex":0},{"domain":"الزكاة والضريبة","question":"صح أم خطأ: يمكن خصم ضريبة المدخلات دائمًا دون شروط.","options":["صح","خطأ"],"answerIndex":1},{"domain":"الزكاة والضريبة","question":"ما الفرق بين التوريدات المعفاة والخاضعة لنسبة الصفر؟","options":["لا فرق بينهما","تختلف إمكانية خصم ضريبة المدخلات","كلتاهما تخضعان للنسبة الأساسية","لا يمكن خصم المدخلات في كلتيهما"],"answerIndex":1},{"domain":"الزكاة والضريبة","question":"صح أم خطأ: تختلف الزكاة عن ضريبة القيمة المضافة في طريقة الاحتساب.","options":["صح","خطأ"],"answerIndex":0},{"domain":"الزكاة والضريبة","question":"لماذا نحتفظ بالفواتير الضريبية؟","options":["لإثبات المعاملات والالتزام بالمتطلبات النظامية","لزيادة الإيرادات","لتقليل العمليات","للاستغناء عن السجلات"],"answerIndex":0},{"domain":"الزكاة والضريبة","question":"ما الجهة المسؤولة عن الزكاة والضرائب والجمارك في السعودية؟","options":["وزارة التعليم","هيئة الزكاة والضريبة والجمارك","وزارة الموارد البشرية","البنك المركزي"],"answerIndex":1},{"domain":"الزكاة والضريبة","question":"صح أم خطأ: مواعيد الإقرارات واحدة لجميع الضرائب والمكلفين.","options":["صح","خطأ"],"answerIndex":1},{"domain":"نظم المعلومات المحاسبية","question":"ما وظيفة نظام المعلومات المحاسبي؟","options":["معالجة البيانات المالية وإنتاج المعلومات","التسويق فقط","إدارة الموظفين فقط","تحديد أسعار الأسهم"],"answerIndex":0},{"domain":"نظم المعلومات المحاسبية","question":"صح أم خطأ: تمنع الأتمتة جميع الأخطاء المحاسبية.","options":["صح","خطأ"],"answerIndex":1},{"domain":"نظم المعلومات المحاسبية","question":"لماذا تُحدد صلاحيات المستخدمين؟","options":["لتقييد الوصول حسب الصلاحيات","للسماح للجميع بالتعديل","لإلغاء الرقابة","لحذف العمليات"],"answerIndex":0},{"domain":"نظم المعلومات المحاسبية","question":"ماذا تعني السرية في نظم المعلومات؟","options":["حماية المعلومات من الوصول غير المصرح به","إتاحة البيانات للجميع","حذف البيانات","منع التقارير"],"answerIndex":0},{"domain":"نظم المعلومات المحاسبية","question":"صح أم خطأ: مشاركة كلمة المرور ممارسة آمنة.","options":["صح","خطأ"],"answerIndex":1},{"domain":"نظم المعلومات المحاسبية","question":"ماذا تعني سلامة البيانات (Integrity)؟","options":["الحفاظ على دقة البيانات واكتمالها","إتاحة البيانات للجميع","حذف البيانات القديمة","تغيير البيانات دون توثيق"],"answerIndex":0},{"domain":"نظم المعلومات المحاسبية","question":"ما فائدة سجل المراجعة الإلكتروني؟","options":["تتبع العمليات والتغييرات","حذف الأخطاء تلقائيًا","منع التقارير","إلغاء الصلاحيات"],"answerIndex":0},{"domain":"نظم المعلومات المحاسبية","question":"ماذا نفعل عند ظهور فاتورتين بالرقم نفسه من المورد نفسه؟","options":["ندفعهما مباشرة","نتحقق من احتمال التكرار","نحذفهما","نتجاهلهما"],"answerIndex":1},{"domain":"نظم المعلومات المحاسبية","question":"صح أم خطأ: النسخ الاحتياطية تغني عن الأمن السيبراني.","options":["صح","خطأ"],"answerIndex":1},{"domain":"نظم المعلومات المحاسبية","question":"ماذا نفعل عند اكتشاف خطأ في تقرير إلكتروني صدر بالفعل؟","options":["نتجاهله","نتحقق منه ونصححه ونوثّق التعديل","نحذف النظام","نترك التقرير دون تنبيه"],"answerIndex":1}];
+  const $ = (id) => document.getElementById(id);
+  const AR = (n) => String(n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* */ } },
+  };
+  const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+
+  /* ---------- القضية ---------- */
+  const SUSPECTS = [
+    { id: "sultan", name: "سلطان", role: "أمين الصندوق", district: "حي النرجس", user: "sultan.cash" },
+    { id: "nouf", name: "نوف", role: "مسؤولة المشتريات", district: "حي الملقا", user: "nouf.purch" },
+    { id: "majed", name: "ماجد", role: "مسؤول الأنظمة", district: "حي الياسمين", user: "majed.it" },
+  ];
+  const ICONS = {
+    bank: '<svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 20h18"/></svg>',
+    factory: '<svg viewBox="0 0 24 24"><path d="M3 20V10l5 3V10l5 3V6h4l1 14"/><path d="M3 20h18"/><path d="M7 16h2M12 16h2"/></svg>',
+    mail: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
+    zakat: '<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>',
+    system: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
+  };
+  // كل تطبيق = مجال من مجالات اللعبة الخمسة. دليل كامل لو جاوب ٣ من ٥ صح، وإلا يطلع ناقص.
+  const APPS = [
+    { id: "bank", name: "البنك", domain: "المحاسبة المالية", color: "#0f8a63",
+      clue: () => ["١٢ تحويل لـ«مؤسسة النخبة للتوريد»، كل واحد ", { r: "٤٩٬٥٠٠" }, " ريال، أقل من حد الاعتماد (٥٠٬٠٠٠) بـ٥٠٠ ريال بس. المجموع: ", { r: "٥٩٤٬٠٠٠" }, " ريال."] },
+    { id: "factory", name: "المصنع", domain: "المحاسبة الإدارية والتكاليف", color: "#c46a10",
+      clue: () => ["تكلفة المواد الخام زادت ٣٨٪ والإنتاج ما زاد ولا وحدة. الفرق كله فواتير «النخبة»، و", { r: "المستودع ما استلم منهم أي بضاعة" }, "."] },
+    { id: "mail", name: "البريد", domain: "المراجعة", color: "#2b55d6",
+      clue: (c) => ["«النخبة» ما لها سجل تجاري، وعنوانها المسجّل في ", { r: c.district }, "، نفس الحي اللي يسكن فيه واحد من الموظفين."] },
+    { id: "zakat", name: "الزكاة والضريبة", domain: "الزكاة والضريبة", color: "#6b3fc4",
+      clue: () => ["الشركة طالبت بضريبة مدخلات ", { r: "٨٩٬١٠٠" }, " ريال (١٥٪) على فواتير «النخبة»، والرقم الضريبي اللي فيها غير صحيح."] },
+    { id: "system", name: "النظام", domain: "نظم المعلومات المحاسبية", color: "#3f4a63",
+      clue: (c) => ["سجل النظام: حساب «", { r: c.user }, "» غيّر رقم الآيبان حق «النخبة» الساعة ٢:١٤ فجرًا، يوم ما فيه دوام."] },
+  ];
+  const AMOUNTS = ["٤٩٬٥٠٠ ريال", "٥٩٤٬٠٠٠ ريال", "٨٩٬١٠٠ ريال"];
+  const METHODS = [
+    "مورد وهمي وتحويلات مجزأة تحت حد الاعتماد",
+    "سحب نقدي من الصندوق بدون سندات",
+    "موظفين وهميين في كشف الرواتب",
+  ];
+  const TIERS = [[21, "المدير المالي | CFO"], [16, "GOAT | الأسطورة"], [11, "MVP | النجم"], [6, "Clutcher | الحاسم"], [0, "Rookie | المبتدئ"]];
+
+  let S = null; // حالة اللعبة
+
+  function newGame(name) {
+    const qs = {};
+    APPS.forEach((a) => { qs[a.id] = shuffle(QUESTIONS.filter((q) => q.domain === a.domain)).slice(0, 5); });
+    S = { name, culprit: SUSPECTS[Math.floor(Math.random() * SUSPECTS.length)], qs, progress: {}, score: 0, start: Date.now(), end: null, guess: {} };
+    APPS.forEach((a) => { S.progress[a.id] = { i: 0, correct: 0, done: false }; });
+  }
+
+  /* ---------- الساعة وشاشة القفل ---------- */
+  function tick() {
+    const d = new Date();
+    const hm = d.toLocaleTimeString("ar-SA-u-nu-arab", { hour: "numeric", minute: "2-digit", hour12: true }).replace(/\s?[صم]$/, "");
+    $("lockClock").textContent = hm;
+    $("lockDate").textContent = d.toLocaleDateString("ar-SA-u-ca-gregory-nu-arab", { weekday: "long", day: "numeric", month: "long" });
+    $("sbTime").textContent = d.toLocaleTimeString("en-GB", { hour: "numeric", minute: "2-digit" });
+    if (S && !S.end && !$("sHome").hidden) $("hudTime").textContent = clock(Date.now() - S.start);
+  }
+  const clock = (ms) => { const s = Math.floor(ms / 1000); return AR(String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0")); };
+  setInterval(tick, 1000); tick();
+
+  const SCREENS = ["sLock", "sPin", "sIntro", "sHome", "sApp", "sFile", "sAccuse", "sResult"];
+  function show(id) {
+    SCREENS.forEach((s) => { $(s).hidden = s !== id; }); $(id).scrollTop = 0;
+    $("phone").classList.toggle("dark-status", id === "sResult");
+    document.querySelector(".credit").hidden = id !== "sLock";
+    if (id === "sHome") renderHome();
+  }
+  document.querySelectorAll("[data-home]").forEach((b) => { b.onclick = () => show("sHome"); });
+
+  /* ---------- الرمز (١٥١٥) ---------- */
+  let pin = "", fails = 0;
+  const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"];
+  keys.forEach((k) => {
+    const b = el("button", k === "⌫" ? "txt" : k === "" ? "blank" : "", k === "⌫" ? "مسح" : k);
+    b.type = "button";
+    if (k === "") b.tabIndex = -1;
+    b.onclick = () => { if (k === "⌫") pin = pin.slice(0, -1); else if (k && pin.length < 4) pin += k; drawPin(); if (pin.length === 4) setTimeout(checkPin, 120); };
+    $("pad").append(b);
+  });
+  function drawPin() { [...$("dots").children].forEach((d, i) => d.classList.toggle("on", i < pin.length)); }
+  function checkPin() {
+    if (pin === "1515") { pin = ""; drawPin(); $("pinMsg").textContent = ""; show("sIntro"); $("nameIn").value = store.get("phoneGameName") || ""; return; }
+    fails++; pin = ""; drawPin();
+    const d = $("dots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake");
+    $("pinMsg").textContent = fails >= 3 ? "تلميح: ضريبة القيمة المضافة ١٥٪، مكررة مرتين = ١٥١٥" : fails === 2 ? "رمز خطأ. ارجع لإشعار «ملاحظات» بشاشة القفل" : "رمز خطأ، حاول مرة ثانية";
+  }
+  $("toPin").onclick = () => { show("sPin"); };
+
+  /* ---------- البداية ---------- */
+  $("startBtn").onclick = () => {
+    const name = $("nameIn").value.trim();
+    if (name.length < 2) { $("nameErr").hidden = false; return; }
+    $("nameErr").hidden = true;
+    store.set("phoneGameName", name);
+    newGame(name);
+    show("sHome");
+  };
+
+  /* ---------- الرئيسية ---------- */
+  function renderHome() {
+    if (!S) return;
+    $("hudName").textContent = S.name;
+    const done = APPS.filter((a) => S.progress[a.id].done).length;
+    $("hudClues").textContent = AR(done) + "/" + AR(APPS.length);
+    $("hudTime").textContent = clock(Date.now() - S.start);
+    $("apps").replaceChildren(...APPS.map((a) => {
+      const p = S.progress[a.id];
+      const b = el("button", "app" + (p.done ? " done" : ""));
+      b.type = "button";
+      b.setAttribute("aria-label", a.name + (p.done ? " (مفتوح)" : " (مقفول)"));
+      const sq = el("div", "sq"); sq.style.background = a.color; sq.innerHTML = ICONS[a.id];
+      sq.append(el("span", "lk", p.done ? "✓" : "🔒"));
+      b.append(sq, el("span", "lbl", a.name));
+      b.onclick = () => openApp(a);
+      return b;
+    }));
+    $("accuseBtn").disabled = done < APPS.length;
+    $("accuseBtn").textContent = done < APPS.length ? `حدّد المختلس (${AR(APPS.length - done)} باقي)` : "حدّد المختلس";
+  }
+  $("fileBtn").onclick = () => { renderFile(); show("sFile"); };
+  $("accuseBtn").onclick = () => { renderAccuse(); show("sAccuse"); };
+
+  /* ---------- داخل التطبيق ---------- */
+  let current = null;
+  function openApp(a) {
+    current = a;
+    $("appBar").style.background = a.color;
+    $("appTitle").textContent = a.name;
+    show("sApp");
+    renderApp();
+  }
+  $("appBack").onclick = () => show("sHome");
+
+  function renderApp() {
+    const a = current, p = S.progress[a.id], body = $("appBody");
+    body.replaceChildren();
+    if (p.done) {
+      $("appSub").textContent = "مفتوح — الدليل محفوظ في ملف القضية";
+      const u = el("div", "unlocked");
+      u.append(el("div", "big", "✓"), el("h3", "", "انفتح التطبيق"), el("p", "", `جاوبت ${AR(p.correct)} من ٥ صح`));
+      body.append(u, clueBox(a), backHome());
+      return;
+    }
+    $("appSub").textContent = "مقفول — جاوب ٥ أسئلة عشان ينفتح";
+    const q = S.qs[a.id][p.i];
+    const meta = el("div", "qmeta");
+    meta.append(el("span", "", `سؤال ${AR(p.i + 1)} من ٥`), el("span", "", `صح: ${AR(p.correct)}`));
+    const bar = el("div", "qbar"); const fill = el("span"); fill.style.width = (p.i / 5) * 100 + "%"; bar.append(fill);
+    const card = el("div", "qcard"); card.append(el("span", "dom", q.domain), el("p", "", q.question));
+    const opts = el("div", "opts");
+    const fb = el("div", "feedback");
+    const next = el("button", "next", p.i === 4 ? "افتح التطبيق" : "التالي"); next.type = "button"; next.hidden = true;
+    q.options.forEach((o, idx) => {
+      const b = el("button", "opt", o); b.type = "button";
+      b.onclick = () => {
+        [...opts.children].forEach((x) => { x.disabled = true; });
+        const ok = idx === q.answerIndex;
+        if (ok) { p.correct++; S.score++; b.classList.add("right"); fb.textContent = "إجابة صحيحة"; fb.className = "feedback ok"; }
+        else { b.classList.add("wrong"); opts.children[q.answerIndex].classList.add("right"); fb.textContent = "إجابة خاطئة — الصح بالأخضر"; fb.className = "feedback no"; }
+        next.hidden = false; next.focus();
+      };
+      opts.append(b);
+    });
+    next.onclick = () => { p.i++; if (p.i >= 5) p.done = true; renderApp(); $("sApp").scrollTop = 0; };
+    body.append(meta, bar, card, opts, fb, next);
+  }
+
+  function clueText(a, full) {
+    const wrap = el("p");
+    a.clue(S.culprit).forEach((part) => {
+      if (typeof part === "string") wrap.append(part);
+      else if (full) wrap.append(part.r);
+      else { const r = el("span", "redact", part.r); r.setAttribute("aria-label", "مخفي"); wrap.append(r); }
+    });
+    return wrap;
+  }
+  function clueBox(a) {
+    const full = S.progress[a.id].correct >= 3;
+    const box = el("div", "clue");
+    box.append(el("h4", "", "الدليل من " + a.name), clueText(a, full));
+    if (!full) box.append(el("div", "warn", "جاوبت أقل من ٣ صح، فجزء من الدليل انمسح."));
+    return box;
+  }
+  function backHome() { const b = el("button", "next", "رجوع للرئيسية"); b.type = "button"; b.onclick = () => show("sHome"); return b; }
+
+  /* ---------- ملف القضية ---------- */
+  function renderFile() {
+    const list = $("fileList"); list.replaceChildren();
+    APPS.forEach((a) => {
+      if (!S.progress[a.id].done) { list.append(el("div", "item empty", `${a.name}: مقفول، ما فيه دليل للحين`)); return; }
+      const it = el("div", "item"); it.append(el("b", "", a.name + ": "));
+      const full = S.progress[a.id].correct >= 3;
+      [...clueText(a, full).childNodes].forEach((n) => it.append(n));
+      list.append(it);
+    });
+    const t = $("people"); t.replaceChildren();
+    const head = el("tr"); ["الموظف", "الوظيفة", "السكن", "اسم المستخدم"].forEach((h) => head.append(el("th", "", h)));
+    t.append(head);
+    SUSPECTS.forEach((s) => {
+      const r = el("tr"); r.append(el("td", "", s.name), el("td", "", s.role), el("td", "", s.district), el("td", "u", s.user)); t.append(r);
+    });
+  }
+
+  /* ---------- الاتهام ---------- */
+  function renderAccuse() {
+    const body = $("accuseBody"); body.replaceChildren();
+    const groups = [
+      ["who", "مين المختلس؟", SUSPECTS.map((s) => [s.id, `${s.name} — ${s.role}`])],
+      ["amount", "كم المبلغ المختلس؟", AMOUNTS.map((x, i) => [i, x])],
+      ["method", "وش الطريقة؟", METHODS.map((x, i) => [i, x])],
+    ];
+    groups.forEach(([key, title, opts]) => {
+      const g = el("div", "qgroup"); g.append(el("h4", "", title));
+      const c = el("div", "choice");
+      opts.forEach(([v, label]) => {
+        const b = el("button", S.guess[key] === v ? "sel" : "", label); b.type = "button";
+        b.onclick = () => { S.guess[key] = v; [...c.children].forEach((x) => x.classList.toggle("sel", x === b)); send.disabled = Object.keys(S.guess).length < 3; };
+        c.append(b);
+      });
+      g.append(c); body.append(g);
+    });
+    const send = el("button", "next", "سلّم التقرير"); send.type = "button";
+    send.disabled = Object.keys(S.guess).length < 3;
+    send.onclick = finish;
+    const file = el("button", "ghost", "راجع ملف القضية"); file.type = "button"; file.onclick = () => { renderFile(); show("sFile"); };
+    body.append(file, send);
+  }
+
+  /* ---------- النتيجة ---------- */
+  function finish() {
+    S.end = Date.now();
+    const solved = S.guess.who === S.culprit.id && S.guess.amount === 1 && S.guess.method === 0;
+    const tier = TIERS.find(([min]) => S.score >= min)[1];
+    const time = clock(S.end - S.start);
+    const best = parseInt(store.get("phoneGameBest") || "0", 10);
+    if (S.score > best) store.set("phoneGameBest", String(S.score));
+
+    const body = $("resultBody"); body.replaceChildren();
+    body.append(el("div", "stamp " + (solved ? "ok" : "no"), solved ? "القضية انكشفت" : "المختلس هرب"));
+    body.append(el("div", "tier", tier));
+    const stats = el("div", "stats");
+    [[AR(S.score) + "/٢٥", "إجابات صحيحة"], [time, "الوقت"], [solved ? "٣/٣" : AR([S.guess.who === S.culprit.id, S.guess.amount === 1, S.guess.method === 0].filter(Boolean).length) + "/٣", "التقرير"]]
+      .forEach(([v, l]) => { const d = el("div"); d.append(el("b", "num", v), el("span", "", l)); stats.append(d); });
+    body.append(stats);
+    const story = el("div", "item story");
+    story.append(el("b", "", "وش صار؟ "), `${S.culprit.name} (${S.culprit.role}) سجّل مؤسسة وهمية اسمها «النخبة» على عنوانه في ${S.culprit.district}، وحوّل لها ١٢ دفعة كل وحدة ٤٩٬٥٠٠ ريال عشان ما توصل لحد الاعتماد. المجموع ٥٩٤٬٠٠٠ ريال، وفوقها طالبت الشركة بضريبة مدخلات ما تستحقها.`);
+    body.append(story);
+    const row = el("div", "row2");
+    const copy = el("button", "ghost", "نسخ نتيجتي"); copy.type = "button";
+    copy.onclick = async () => {
+      const txt = `${solved ? "كشفت" : "حاولت أكشف"} قضية «جوال المدير المالي» 🕵️ ${S.score}/25 في ${time.replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d))} — لقبي: ${tier}\nنادي المحاسبة`;
+      try { await navigator.clipboard.writeText(txt); toast("انسخت النتيجة"); } catch (e) { toast(txt); }
+    };
+    const again = el("button", "next", "قضية جديدة"); again.type = "button"; again.style.marginTop = "0";
+    again.onclick = () => { newGame(S.name); show("sHome"); };
+    row.append(copy, again);
+    const board = el("div", "board");
+    board.append(el("h4", "", "المتصدرين"), el("p", "board-note", "جاري التحميل…"));
+    body.append(row, board);
+    show("sResult");
+    saveScore(solved, board);
+  }
+
+  // لوحة المتصدرين (على الموقع فقط).
+  async function saveScore(solved, board) {
+    const API = "/.netlify/functions/phone-scores";
+    let data = null, position = 0;
+    try {
+      const res = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: S.name, score: S.score, ms: S.end - S.start, solved }) });
+      if (res.ok) { data = await res.json(); position = data.position; }
+      else data = await (await fetch(API)).json();
+    } catch (e) { data = null; }
+    const note = board.querySelector(".board-note");
+    if (!data || !Array.isArray(data.top)) { note.textContent = "لوحة المتصدرين غير متاحة الحين."; return; }
+    note.textContent = position ? `ترتيبك: ${AR(position)} من ${AR(data.total)}` : "";
+    const ol = el("ol", "ranks");
+    data.top.forEach((r, i) => {
+      const li = el("li", r.name === S.name && i + 1 === position ? "me" : "");
+      li.append(el("span", "pos num", AR(i + 1)), el("span", "nm", r.name), el("span", "sc num", (r.solved ? "✓ " : "") + AR(r.score) + "/٢٥"), el("span", "tm num", clock(r.ms)));
+      ol.append(li);
+    });
+    if (!data.top.length) note.textContent = "كن أول واحد في القائمة.";
+    board.append(ol);
+  }
+
+  function toast(msg) {
+    const t = el("div", "toast", msg); $("phone").append(t);
+    setTimeout(() => t.remove(), 2200);
+  }
+})();
+</script>
+
+<script src="/js/track.js" defer></script>
+</body>
+</html>

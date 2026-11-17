@@ -31,6 +31,7 @@
     path.startsWith("/visits") ? "visits" :
     path.startsWith("/volunteer") ? "volunteer" :
     path.startsWith("/company") ? "company" :
-    path.startsWith("/confirm") ? "confirm" : "other";
+    path.startsWith("/confirm") ? "confirm" :
+    path.startsWith("/phone") ? "phone" : "other";
   send("view:" + page);
 })();
