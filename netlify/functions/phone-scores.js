@@ -7,6 +7,13 @@ function json(statusCode, body) {
   return { statusCode, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }, body: JSON.stringify(body) };
 }
 const rank = (a, b) => (b.solved - a.solved) || (b.score - a.score) || (a.ms - b.ms);
+// كل اسم يظهر مرة وحدة بأفضل نتيجة له.
+const normName = (n) => String(n || "").replace(/\s+/g, " ").trim().toLowerCase();
+function bestPerName(rows) {
+  const best = new Map();
+  rows.slice().sort(rank).forEach((r) => { const k = normName(r.name); if (!best.has(k)) best.set(k, r); });
+  return [...best.values()];
+}
 
 async function all(store) {
   const { blobs } = await store.list();
@@ -20,7 +27,7 @@ exports.handler = async (event) => {
   if (event.httpMethod === "GET") {
     const rows = await all(store);
     const pick = ({ name, score, ms, solved, at }) => ({ name, score, ms, solved, at });
-    const out = { top: rows.slice().sort(rank).slice(0, 10).map(pick) };
+    const out = { top: bestPerName(rows).slice(0, 10).map(pick) };
     // لشاشة العرض: العدد الكلي، اللي كشفوا القضية، وآخر اللاعبين.
     if ((event.queryStringParameters || {}).live) {
       out.total = rows.length;
@@ -43,7 +50,12 @@ exports.handler = async (event) => {
   const rec = { name, score, ms: Math.round(ms), solved: b.solved === true, at: Date.now() };
   const key = rec.at + "-" + Math.random().toString(36).slice(2, 8);
   await store.setJSON(key, rec);
-  const list = (await all(store)).sort(rank);
-  const position = list.findIndex((r) => r.at === rec.at && r.name === rec.name) + 1;
-  return json(200, { ok: true, position, total: list.length, top: list.slice(0, 10).map(({ name, score, ms, solved }) => ({ name, score, ms, solved })) });
+  const rows = await all(store);
+  const list = bestPerName(rows);
+  // ترتيب هالمحاولة بين أفضل نتائج الباقين.
+  const others = list.filter((r) => normName(r.name) !== normName(name));
+  const position = others.filter((r) => rank(r, rec) < 0).length + 1;
+  const mine = list.find((r) => normName(r.name) === normName(name));
+  return json(200, { ok: true, position, total: list.length, best: mine && { score: mine.score, ms: mine.ms, solved: mine.solved },
+    top: list.slice(0, 10).map(({ name, score, ms, solved }) => ({ name, score, ms, solved })) });
 };

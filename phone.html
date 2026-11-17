@@ -217,6 +217,35 @@
   .ranks .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
   .ranks .sc { color: var(--ok); font-weight: 800; }
   .ranks .tm { color: var(--muted); font-size: 12px; text-align: left; }
+  /* حركة الشاشات */
+  .screen:not([hidden]) { animation: fadeIn .28s ease both; }
+  #sApp:not([hidden]) { animation: appIn .34s cubic-bezier(.2, .8, .2, 1) both; transform-origin: var(--ox, 50%) var(--oy, 40%); }
+  @keyframes fadeIn { from { opacity: 0 } }
+  @keyframes appIn { from { opacity: 0; transform: scale(.3); border-radius: 40px } }
+  .swipe { margin-top: auto; align-self: center; display: flex; flex-direction: column; align-items: center; gap: 6px; background: none; color: #fff; font-weight: 800; font-size: 14px; padding: 8px 20px; touch-action: none; }
+  .swipe .chev { width: 26px; height: 26px; border-inline-start: 3px solid #fff; border-top: 3px solid #fff; transform: rotate(45deg); animation: nudge 1.6s ease-in-out infinite; opacity: .9; }
+  @keyframes nudge { 0%, 100% { transform: translateY(6px) rotate(45deg); opacity: .4 } 50% { transform: translateY(-4px) rotate(45deg); opacity: 1 } }
+  .resume { align-self: center; margin-top: 10px; background: var(--cyan); color: var(--ink); font-weight: 800; font-size: 13.5px; padding: 10px 18px; border-radius: 999px; }
+  /* محتوى التطبيقات */
+  .ev { background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 2px 12px rgba(0, 8, 120, .06); }
+  .ev-head { padding: 12px 14px; font: 700 13px var(--display); color: var(--muted); border-bottom: 1px solid #eef0f8; display: flex; justify-content: space-between; gap: 8px; }
+  .tx { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 9px 14px; border-bottom: 1px solid #f2f3f9; font-size: 13px; }
+  .tx small { color: var(--muted); font-size: 11.5px; }
+  .tx .amt { font: 700 13.5px var(--display); direction: ltr; text-align: left; }
+  .tx.flag { background: #fff6f6; }
+  .tx.flag .amt { color: var(--bad); }
+  .tx-total { padding: 11px 14px; display: flex; justify-content: space-between; font-weight: 800; font-size: 13.5px; background: #f6f7fc; }
+  .mail-meta { padding: 12px 14px; font-size: 12.5px; color: var(--muted); line-height: 1.8; border-bottom: 1px solid #eef0f8; }
+  .mail-meta b { color: var(--text); }
+  .mail-body { padding: 14px; font-size: 14px; line-height: 1.95; }
+  .ctab { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ctab th, .ctab td { padding: 9px 12px; text-align: right; border-bottom: 1px solid #f2f3f9; }
+  .ctab th { color: var(--muted); font-size: 12px; background: #f6f7fc; }
+  .ctab td.n { font-family: var(--display); font-weight: 700; }
+  .ctab tr.flag td { background: #fff6f6; color: #9c1f1f; }
+  .log-u { direction: ltr; font-family: var(--display); font-size: 12px; }
+  .share-img { width: 100%; border-radius: 16px; box-shadow: 0 6px 20px rgba(0, 8, 120, .15); }
+  .share-tip { font-size: 12px; color: var(--muted); }
   .toast { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); background: #121638; color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 13px; z-index: 20; white-space: nowrap; }
   .phone.dark-status .status { color: #121638; }
   .phone.dark-status .homebar { background: rgba(18, 22, 56, .6); }
@@ -249,7 +278,8 @@
       <div class="note"><div class="ic" style="background:#b4489a">ل</div><div><div class="top">لينا · المحاسبة <span>أمس</span></div><div class="msg">لقيت فواتير ما لها أوامر شراء… لا تقول لأحد لين نتأكد</div></div></div>
       <div class="note"><div class="ic" style="background:#d69a12">✎</div><div><div class="top">ملاحظات <span>الأسبوع الماضي</span></div><div class="msg">رمز الجوال: نسبة ضريبة القيمة المضافة… مكررة مرتين</div></div></div>
     </div>
-    <button class="unlock-btn" id="toPin" type="button">افتح الجوال</button>
+    <button class="resume" id="resumeBtn" type="button" hidden></button>
+    <button class="swipe" id="toPin" type="button" aria-label="افتح الجوال"><span class="chev"></span>اسحب للأعلى أو اضغط للفتح</button>
     <div class="hint-line">اقرأ الإشعارات زين، فيها رمز القفل</div>
   </section>
 
@@ -378,12 +408,24 @@
   const TIERS = [[21, "المدير المالي | CFO"], [16, "GOAT | الأسطورة"], [11, "MVP | النجم"], [6, "Clutcher | الحاسم"], [0, "Rookie | المبتدئ"]];
 
   let S = null; // حالة اللعبة
+  const KEY = "phoneGameState";
+  function save() { if (!S) return; try { S.elapsed = Date.now() - S.start; localStorage.setItem(KEY, JSON.stringify(Object.assign({}, S, { culprit: S.culprit.id }))); } catch (e) { /* */ } }
+  function clearSaved() { try { localStorage.removeItem(KEY); } catch (e) { /* */ } }
+  function loadSaved() {
+    try {
+      const d = JSON.parse(localStorage.getItem(KEY));
+      if (!d || d.end || !d.qs || Date.now() - (d.start + (d.elapsed || 0)) > 3 * 864e5) return null;
+      d.culprit = SUSPECTS.find((x) => x.id === d.culprit) || SUSPECTS[0];
+      return d;
+    } catch (e) { return null; }
+  }
 
   function newGame(name) {
     const qs = {};
     APPS.forEach((a) => { qs[a.id] = shuffle(QUESTIONS.filter((q) => q.domain === a.domain)).slice(0, 5); });
     S = { name, culprit: SUSPECTS[Math.floor(Math.random() * SUSPECTS.length)], qs, progress: {}, score: 0, start: Date.now(), end: null, guess: {} };
     APPS.forEach((a) => { S.progress[a.id] = { i: 0, correct: 0, done: false }; });
+    save();
   }
 
   /* ---------- الساعة وشاشة القفل ---------- */
@@ -407,6 +449,14 @@
   }
   document.querySelectorAll("[data-home]").forEach((b) => { b.onclick = () => show("sHome"); });
 
+  const saved = loadSaved();
+  if (saved) {
+    const done = APPS.filter((a) => saved.progress[a.id] && saved.progress[a.id].done).length;
+    $("resumeBtn").textContent = `كمّل تحقيقك يا ${saved.name} (${AR(done)}/٥ أدلة)`;
+    $("resumeBtn").hidden = false;
+    $("resumeBtn").onclick = () => { S = saved; S.start = Date.now() - (S.elapsed || 0); buzz(10); show("sHome"); };
+  }
+
   /* ---------- الرمز (١٥١٥) ---------- */
   let pin = "", fails = 0;
   const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"];
@@ -419,12 +469,17 @@
   });
   function drawPin() { [...$("dots").children].forEach((d, i) => d.classList.toggle("on", i < pin.length)); }
   function checkPin() {
-    if (pin === "1515") { pin = ""; drawPin(); $("pinMsg").textContent = ""; show("sIntro"); $("nameIn").value = store.get("phoneGameName") || ""; return; }
-    fails++; pin = ""; drawPin();
+    if (pin === "1515") { buzz(20); pin = ""; drawPin(); $("pinMsg").textContent = ""; show("sIntro"); $("nameIn").value = store.get("phoneGameName") || ""; return; }
+    fails++; pin = ""; drawPin(); buzz([40, 40, 40]);
     const d = $("dots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake");
     $("pinMsg").textContent = fails >= 3 ? "تلميح: ضريبة القيمة المضافة ١٥٪، مكررة مرتين = ١٥١٥" : fails === 2 ? "رمز خطأ. ارجع لإشعار «ملاحظات» بشاشة القفل" : "رمز خطأ، حاول مرة ثانية";
   }
-  $("toPin").onclick = () => { show("sPin"); };
+  const buzz = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) { /* */ } };
+  $("toPin").onclick = () => { buzz(10); show("sPin"); };
+  // سحب للأعلى بشاشة القفل.
+  let y0 = null;
+  $("sLock").addEventListener("pointerdown", (e) => { y0 = e.clientY; });
+  $("sLock").addEventListener("pointerup", (e) => { if (y0 !== null && y0 - e.clientY > 70) { buzz(10); show("sPin"); } y0 = null; });
 
   /* ---------- البداية ---------- */
   $("startBtn").onclick = () => {
@@ -451,7 +506,12 @@
       const sq = el("div", "sq"); sq.style.background = a.color; sq.innerHTML = ICONS[a.id];
       sq.append(el("span", "lk", p.done ? "✓" : "🔒"));
       b.append(sq, el("span", "lbl", a.name));
-      b.onclick = () => openApp(a);
+      b.onclick = () => {
+        const r = sq.getBoundingClientRect(), ph = $("phone").getBoundingClientRect();
+        $("sApp").style.setProperty("--ox", (r.left + r.width / 2 - ph.left) + "px");
+        $("sApp").style.setProperty("--oy", (r.top + r.height / 2 - ph.top) + "px");
+        openApp(a);
+      };
       return b;
     }));
     $("accuseBtn").disabled = done < APPS.length;
@@ -478,7 +538,7 @@
       $("appSub").textContent = "مفتوح — الدليل محفوظ في ملف القضية";
       const u = el("div", "unlocked");
       u.append(el("div", "big", "✓"), el("h3", "", "انفتح التطبيق"), el("p", "", `جاوبت ${AR(p.correct)} من ٥ صح`));
-      body.append(u, clueBox(a), backHome());
+      body.append(u, evidence(a, p.correct >= 3), clueBox(a), backHome());
       return;
     }
     $("appSub").textContent = "مقفول — جاوب ٥ أسئلة عشان ينفتح";
@@ -495,13 +555,14 @@
       b.onclick = () => {
         [...opts.children].forEach((x) => { x.disabled = true; });
         const ok = idx === q.answerIndex;
+        buzz(ok ? 15 : [30, 30, 30]);
         if (ok) { p.correct++; S.score++; b.classList.add("right"); fb.textContent = "إجابة صحيحة"; fb.className = "feedback ok"; }
         else { b.classList.add("wrong"); opts.children[q.answerIndex].classList.add("right"); fb.textContent = "إجابة خاطئة — الصح بالأخضر"; fb.className = "feedback no"; }
         next.hidden = false; next.focus();
       };
       opts.append(b);
     });
-    next.onclick = () => { p.i++; if (p.i >= 5) p.done = true; renderApp(); $("sApp").scrollTop = 0; };
+    next.onclick = () => { p.i++; if (p.i >= 5) { p.done = true; buzz([20, 60, 20]); } save(); renderApp(); $("sApp").scrollTop = 0; };
     body.append(meta, bar, card, opts, fb, next);
   }
 
@@ -521,6 +582,53 @@
     if (!full) box.append(el("div", "warn", "جاوبت أقل من ٣ صح، فجزء من الدليل انمسح."));
     return box;
   }
+  // محتوى التطبيق بعد ما ينفتح (شكل الشاشة الحقيقية).
+  const R = (txt, full) => { if (full) return document.createTextNode(txt); const r = el("span", "redact", txt); r.setAttribute("aria-label", "مخفي"); return r; };
+  function evidence(a, full) {
+    const box = el("div", "ev"), c = S.culprit;
+    if (a.id === "bank") {
+      const h = el("div", "ev-head"); h.append(el("span", "", "كشف الحساب الجاري"), el("span", "", "آخر ٣٠ يوم")); box.append(h);
+      const rows = [["رواتب الموظفين", "١ نوفمبر", "١٨٥٬٠٠٠", false], ["فاتورة الكهرباء", "٣ نوفمبر", "٣٬٢٠٠", false]];
+      for (let i = 0; i < 12; i++) rows.push(["مؤسسة النخبة للتوريد", AR(4 + i * 2) + " نوفمبر · ٢:" + AR(10 + i) + " ص", "٤٩٬٥٠٠", true]);
+      rows.forEach(([n, d, v, f]) => {
+        const r = el("div", "tx" + (f ? " flag" : "")); const t = el("div"); t.append(el("div", "", n), el("small", "", d));
+        const am = el("div", "amt"); am.append("−", R(v, full || !f)); r.append(t, am); box.append(r);
+      });
+      const tot = el("div", "tx-total"); const v = el("span"); v.append(R("٥٩٤٬٠٠٠", full), " ريال"); tot.append(el("span", "", "مجموع تحويلات «النخبة»"), v); box.append(tot);
+    } else if (a.id === "factory") {
+      box.append(el("div", "ev-head", "تقرير التكاليف الربعي"));
+      const t = el("table", "ctab");
+      const tr = (cells, cls, head) => { const r = el("tr", cls || ""); cells.forEach((x, i) => { const cell = el(head ? "th" : "td", i ? "n" : ""); if (x instanceof Node) cell.append(x); else cell.textContent = x; r.append(cell); }); t.append(r); };
+      tr(["البند", "الربع الماضي", "الربع الحالي"], "", true);
+      tr(["الوحدات المنتجة", "١٢٬٠٠٠", "١٢٬٠٠٠"]);
+      tr(["تكلفة المواد الخام", "٤١٠٬٠٠٠", "٥٦٦٬٠٠٠"], "flag");
+      tr(["تكلفة الوحدة", "٣٤٫٢", "٤٧٫٢"], "flag");
+      tr(["استلامات المستودع من «النخبة»", "—", R("٠ شحنة", full)]);
+      box.append(t);
+    } else if (a.id === "mail") {
+      const m = el("div", "mail-meta");
+      m.append("من: ", el("b", "", "لينا · المحاسبة"), document.createElement("br"), "إلى: ", el("b", "", "فهد"), document.createElement("br"), "الموضوع: ", el("b", "", "مؤسسة النخبة؟"));
+      const b = el("div", "mail-body");
+      b.append("فهد، دوّرت على «مؤسسة النخبة للتوريد» في السجل التجاري وما لقيت لها أي سجل. وعنوانها المسجّل عندنا في ", R(c.district, full), "… وهذا نفس الحي اللي يسكن فيه واحد من الموظفين. لازم نتكلم قبل المراجعة.");
+      box.append(m, b);
+    } else if (a.id === "zakat") {
+      box.append(el("div", "ev-head", "مسودة إقرار ضريبة القيمة المضافة"));
+      const t = el("table", "ctab");
+      [["ضريبة المخرجات (المبيعات)", "٢١٠٬٠٠٠", ""], ["ضريبة المدخلات (المشتريات)", R("١٢٣٬٦٠٠", full), ""], ["منها على فواتير «النخبة»", R("٨٩٬١٠٠", full), "flag"], ["الرقم الضريبي للنخبة", "غير صحيح", "flag"]]
+        .forEach(([k, v, cls]) => { const r = el("tr", cls); const a1 = el("td", "", k); const a2 = el("td", "n"); if (v instanceof Node) a2.append(v); else a2.textContent = v; r.append(a1, a2); t.append(r); });
+      box.append(t);
+    } else if (a.id === "system") {
+      box.append(el("div", "ev-head", "سجل التعديلات على الموردين"));
+      const t = el("table", "ctab");
+      const head = el("tr"); ["الوقت", "المستخدم", "العملية"].forEach((x) => head.append(el("th", "", x))); t.append(head);
+      const others = SUSPECTS.filter((x) => x.id !== c.id);
+      [["١٠:٠٥ ص", others[0].user, "عرض بيانات مورد", false], ["١١:٤٠ ص", others[1].user, "تحديث جوال مورد", false], ["٢:١٤ ص", c.user, "تغيير آيبان «النخبة»", true]]
+        .forEach(([tm, u, act, f]) => { const r = el("tr", f ? "flag" : ""); const uc = el("td", "log-u"); uc.append(R(u, full || !f)); r.append(el("td", "n", tm), uc, el("td", "", act)); t.append(r); });
+      box.append(t);
+    }
+    return box;
+  }
+
   function backHome() { const b = el("button", "next", "رجوع للرئيسية"); b.type = "button"; b.onclick = () => show("sHome"); return b; }
 
   /* ---------- ملف القضية ---------- */
@@ -554,7 +662,7 @@
       const c = el("div", "choice");
       opts.forEach(([v, label]) => {
         const b = el("button", S.guess[key] === v ? "sel" : "", label); b.type = "button";
-        b.onclick = () => { S.guess[key] = v; [...c.children].forEach((x) => x.classList.toggle("sel", x === b)); send.disabled = Object.keys(S.guess).length < 3; };
+        b.onclick = () => { S.guess[key] = v; save(); [...c.children].forEach((x) => x.classList.toggle("sel", x === b)); send.disabled = Object.keys(S.guess).length < 3; };
         c.append(b);
       });
       g.append(c); body.append(g);
@@ -569,6 +677,7 @@
   /* ---------- النتيجة ---------- */
   function finish() {
     S.end = Date.now();
+    clearSaved();
     const solved = S.guess.who === S.culprit.id && S.guess.amount === 1 && S.guess.method === 0;
     const tier = TIERS.find(([min]) => S.score >= min)[1];
     const time = clock(S.end - S.start);
@@ -594,11 +703,61 @@
     const again = el("button", "next", "قضية جديدة"); again.type = "button"; again.style.marginTop = "0";
     again.onclick = () => { newGame(S.name); show("sHome"); };
     row.append(copy, again);
+    const share = el("div", "board");
+    share.append(el("h4", "", "بطاقتك للستوري"));
+    const img = el("img", "share-img"); img.alt = "بطاقة نتيجتك";
+    const shareBtn = el("button", "next", "شارك البطاقة"); shareBtn.type = "button"; shareBtn.style.marginTop = "10px";
+    const tip = el("p", "share-tip", "أو اضغط مطولًا على الصورة واحفظها.");
+    share.append(img, shareBtn, tip);
+    makeCard({ solved, tier, time }).then((blob) => {
+      if (!blob) { share.remove(); return; }
+      img.src = URL.createObjectURL(blob);
+      const file = new File([blob], "phone-case.png", { type: "image/png" });
+      shareBtn.onclick = async () => {
+        try {
+          if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file], text: "كشفت قضية «جوال المدير المالي» — accclubimamu.com/phone" });
+          else toast("اضغط مطولًا على الصورة واحفظها");
+        } catch (e) { /* ألغى المشاركة */ }
+      };
+    });
     const board = el("div", "board");
     board.append(el("h4", "", "المتصدرين"), el("p", "board-note", "جاري التحميل…"));
-    body.append(row, board, el("div", "made", "Made by Nourah N Aleissa"));
+    body.append(row, share, board, el("div", "made", "Made by Nourah N Aleissa"));
     show("sResult");
     saveScore(solved, board);
+  }
+
+  // بطاقة الستوري (١٠٨٠×١٩٢٠).
+  async function makeCard({ solved, tier, time }) {
+    try {
+      await document.fonts.load("800 80px Almarai"); await document.fonts.load("300 80px 'Readex Pro'");
+      const W = 1080, H = 1920, c = document.createElement("canvas"); c.width = W; c.height = H;
+      const g = c.getContext("2d");
+      const bg = g.createLinearGradient(0, 0, W, H); bg.addColorStop(0, "#1d2bb8"); bg.addColorStop(.45, "#0a1170"); bg.addColorStop(1, "#04082e");
+      g.fillStyle = bg; g.fillRect(0, 0, W, H);
+      const glow = g.createRadialGradient(W * .8, H * .1, 0, W * .8, H * .1, 700); glow.addColorStop(0, "rgba(108,207,246,.35)"); glow.addColorStop(1, "rgba(108,207,246,0)");
+      g.fillStyle = glow; g.fillRect(0, 0, W, H);
+      const logo = document.querySelector(".wall img");
+      if (logo && logo.complete) { const lw = 380, lh = lw * logo.naturalHeight / logo.naturalWidth; g.drawImage(logo, (W - lw) / 2, 150, lw, lh); }
+      g.textAlign = "center"; g.direction = "rtl"; g.fillStyle = "#fff";
+      g.font = "800 92px Almarai"; g.fillText("جوال المدير المالي", W / 2, 470);
+      g.font = "400 44px Almarai"; g.globalAlpha = .8; g.fillText("قضية اختلاس من نادي المحاسبة", W / 2, 545); g.globalAlpha = 1;
+      // الختم
+      g.save(); g.translate(W / 2, 760); g.rotate(-.06);
+      g.strokeStyle = solved ? "#3ddc84" : "#ff6b6b"; g.lineWidth = 10; g.beginPath(); g.roundRect(-330, -85, 660, 170, 26); g.stroke();
+      g.fillStyle = solved ? "#3ddc84" : "#ff6b6b"; g.font = "800 84px Almarai"; g.fillText(solved ? "القضية انكشفت" : "المختلس هرب", 0, 30); g.restore();
+      g.fillStyle = "#fff"; g.font = "800 78px Almarai"; g.fillText(S.name, W / 2, 1010);
+      g.fillStyle = "#6ccff6"; g.font = "800 64px Almarai"; g.fillText(tier, W / 2, 1110);
+      // الأرقام
+      [[AR(S.score) + "/٢٥", "إجابة صحيحة", W * .72], [time, "الوقت", W * .28]].forEach(([v, l, x]) => {
+        g.fillStyle = "rgba(255,255,255,.1)"; g.beginPath(); g.roundRect(x - 210, 1210, 420, 250, 36); g.fill();
+        g.fillStyle = "#fff"; g.font = "300 104px 'Readex Pro'"; g.fillText(v, x, 1355);
+        g.globalAlpha = .75; g.font = "700 40px Almarai"; g.fillText(l, x, 1420); g.globalAlpha = 1;
+      });
+      g.fillStyle = "#fff"; g.font = "800 50px Almarai"; g.fillText("تقدر تكشفه أسرع مني؟", W / 2, 1620);
+      g.fillStyle = "#6ccff6"; g.font = "700 46px 'Readex Pro'"; g.direction = "ltr"; g.fillText("accclubimamu.com/phone", W / 2, 1700);
+      return await new Promise((r) => c.toBlob(r, "image/png"));
+    } catch (e) { return null; }
   }
 
   // لوحة المتصدرين (على الموقع فقط).
@@ -615,7 +774,7 @@
     note.textContent = position ? `ترتيبك: ${AR(position)} من ${AR(data.total)}` : "";
     const ol = el("ol", "ranks");
     data.top.forEach((r, i) => {
-      const li = el("li", r.name === S.name && i + 1 === position ? "me" : "");
+      const li = el("li", r.name.trim().toLowerCase() === S.name.trim().toLowerCase() ? "me" : "");
       li.append(el("span", "pos num", AR(i + 1)), el("span", "nm", r.name), el("span", "sc num", (r.solved ? "✓ " : "") + AR(r.score) + "/٢٥"), el("span", "tm num", clock(r.ms)));
       ol.append(li);
     });
