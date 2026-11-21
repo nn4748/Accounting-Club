@@ -834,6 +834,10 @@
           frag.appendChild(card);
         });
         grid.prepend(frag);
+        // ترتيب كل البطاقات (الثابتة واللي من الشيت) من الأحدث للأقدم.
+        const dateOf = (card) => { const d = card.querySelector(".past-date"); return (d && EventSheet.parseDate(d.textContent)) || 0; };
+        [...grid.querySelectorAll(".past-card")].map((c, i) => ({ c, t: +dateOf(c), i }))
+          .sort((a, b) => (b.t - a.t) || (a.i - b.i)).forEach(({ c }) => grid.appendChild(c));
       }
       const cached = EventSheet.cache.get("past-events");
       if (cached) render(cached);
