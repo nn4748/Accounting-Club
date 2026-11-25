@@ -1,0 +1,29 @@
+{
+  "appId": "com.accclubimamu.app",
+  "appName": "نادي المحاسبة",
+  "webDir": "www",
+  "server": {
+    "url": "https://accclubimamu.com",
+    "cleartext": false,
+    "errorPath": "offline.html"
+  },
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#000878",
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 900,
+      "launchAutoHide": true,
+      "backgroundColor": "#000878",
+      "showSpinner": false
+    },
+    "LocalNotifications": {
+      "iconColor": "#000878"
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}

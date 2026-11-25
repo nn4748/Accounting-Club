@@ -1108,10 +1108,12 @@
 
     // أزرار "موقع الفعالية" و"مجموعة الواتساب" من عمودي map و whatsapp بالشيت.
     function addSheetLinks() {
-      if (!sheetEvent) return;
       const box = ["successMessage", "teamSuccessMessage", "financeWorkshopSuccessMessage", "socpaCmaSuccessMessage", "excellenceSuccessMessage", "vatSessionSuccessMessage"]
         .map(id => document.getElementById(id))
         .find(el => el && getComputedStyle(el).display !== "none");
+      // داخل تطبيق الآيفون: زر «ذكّرني بالفعالية».
+      if (box && window.AccNative) AccNative.onRegistered(eventData, box);
+      if (!sheetEvent) return;
       if (!box || box.querySelector(".sheet-link")) return;
       const before = box.querySelector(".add-to-calendar");
       [[sheetEvent.map, "موقع الفعالية"], [sheetEvent.whatsapp, "الانضمام لمجموعة الواتساب"]].forEach(([url, label]) => {
@@ -1422,5 +1424,6 @@
   <script src="js/pwa.js"></script>
 
   <script src="/js/track.js" defer></script>
+<script src="/js/native.js" defer></script>
 </body>
 </html>
