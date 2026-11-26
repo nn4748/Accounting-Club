@@ -82,7 +82,16 @@ function json(statusCode, body) {
 
 /* ---------- Apple Wallet ---------- */
 const b64 = (name) => (process.env[name] ? Buffer.from(process.env[name], "base64") : null);
-const passReady = () => !!(process.env.PASS_CERT_PEM_B64 && process.env.PASS_KEY_PEM_B64 && process.env.PASS_WWDR_PEM_B64 && process.env.PASS_TYPE_ID && process.env.PASS_TEAM_ID);
+// الشهادات العامة والمعرّفات بالكود، والمفتاح الخاص بس من Netlify.
+const CERTS = require("./pass-certs");
+const passTypeId = () => process.env.PASS_TYPE_ID || CERTS.passTypeId;
+const teamId = () => process.env.PASS_TEAM_ID || CERTS.teamId;
+function signerKey() {
+  const v = process.env.PASS_KEY_PEM_B64 || process.env.PASS_KEY_PEM || "";
+  if (!v) return null;
+  return /BEGIN/.test(v) ? Buffer.from(v.replace(/\\n/g, "\n")) : Buffer.from(v, "base64");
+}
+const passReady = () => !!signerKey();
 
 async function makePass(m, active) {
   const { PKPass } = require("passkit-generator");
@@ -93,8 +102,8 @@ async function makePass(m, active) {
   const url = `${SITE}/m/${tokenOf(m.no)}`;
   files["pass.json"] = Buffer.from(JSON.stringify({
     formatVersion: 1,
-    passTypeIdentifier: process.env.PASS_TYPE_ID,
-    teamIdentifier: process.env.PASS_TEAM_ID,
+    passTypeIdentifier: passTypeId(),
+    teamIdentifier: teamId(),
     serialNumber: "acc-member-" + m.no,
     organizationName: "نادي المحاسبة",
     description: "بطاقة عضوية نادي المحاسبة",
@@ -120,9 +129,9 @@ async function makePass(m, active) {
     barcodes: [{ format: "PKBarcodeFormatQR", message: url, messageEncoding: "iso-8859-1", altText: m.no }],
   }));
   const pass = new PKPass(files, {
-    wwdr: b64("PASS_WWDR_PEM_B64"),
-    signerCert: b64("PASS_CERT_PEM_B64"),
-    signerKey: b64("PASS_KEY_PEM_B64"),
+    wwdr: b64("PASS_WWDR_PEM_B64") || Buffer.from(CERTS.wwdr),
+    signerCert: b64("PASS_CERT_PEM_B64") || Buffer.from(CERTS.cert),
+    signerKey: signerKey(),
     signerKeyPassphrase: process.env.PASS_KEY_PASSPHRASE || undefined,
   });
   return pass.getAsBuffer();
