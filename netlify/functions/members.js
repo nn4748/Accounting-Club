@@ -3,6 +3,7 @@
 //  GET  ?pass=رمز         : بطاقة Apple Wallet (.pkpass) — يحتاج شهادات التوقيع في Netlify.
 //  POST list / send / set-active : للموارد بكلمة المرور.
 // الرمز = رقم العضوية + توقيع سري، عشان ما أحد يقدر يخمّن بطاقة غيره.
+// المفتاح الخاص للتوقيع: متغير PASS_KEY_PEM_B64 في Netlify (أو ملف مرفوع من /hr-members).
 const crypto = require("crypto");
 const { getStore, connectLambda } = require("@netlify/blobs");
 
