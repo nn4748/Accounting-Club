@@ -1,4 +1,195 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>نادي المحاسبة</title>
-<meta http-equiv="refresh" content="0;url=https://accclubimamu.com/"></head>
-<body style="margin:0;background:#000878"></body></html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>نادي المحاسبة</title>
+<link rel="stylesheet" href="fonts/almarai.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- ============ الرئيسية ============ -->
+<main class="screen is-active" id="tab-home" data-title="الرئيسية">
+  <header class="bar">
+    <div class="bar-inner">
+      <span class="bar-title">نادي المحاسبة</span>
+    </div>
+  </header>
+  <div class="content">
+    <section class="hero">
+      <img class="hero-mark" src="assets/club-mark-white.webp" alt="">
+      <p class="hero-kicker">نادي المحاسبة · جامعة الإمام</p>
+      <h1 class="hero-title">أثرنا <span>واضح</span></h1>
+      <div class="hero-pills" id="pillars"></div>
+    </section>
+
+    <section class="block" id="homeUpcomingBlock" hidden>
+      <div class="block-head"><h2>فعالياتنا القادمة</h2></div>
+      <div class="hscroll" id="homeUpcoming"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
+        <h2>التسجيل مفتوح</h2>
+        <button class="link" data-go="events">عرض الكل</button>
+      </div>
+      <div class="stack" id="homeOpen"><div class="skeleton"></div></div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h2>جرّب بنفسك</h2></div>
+      <div class="tools" id="tools"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
+        <h2>أبرز الزيارات</h2>
+        <button class="link" data-go="visits">عرض الكل</button>
+      </div>
+      <div class="hscroll" id="homeVisits"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h2>أرقامنا</h2></div>
+      <div class="stats" id="homeStats"></div>
+    </section>
+  </div>
+</main>
+
+<!-- ============ الفعاليات ============ -->
+<main class="screen" id="tab-events" data-title="الفعاليات">
+  <header class="bar">
+    <div class="bar-inner"><span class="bar-title">الفعاليات</span></div>
+    <div class="segmented" role="tablist">
+      <button class="seg is-on" data-seg="open">متاحة للتسجيل</button>
+      <button class="seg" data-seg="upcoming">القادمة</button>
+      <button class="seg" data-seg="archive">أرشيفنا</button>
+    </div>
+  </header>
+  <div class="content">
+    <div class="seg-pane is-on" data-pane="open"><div class="stack" id="eventsOpen"><div class="skeleton"></div><div class="skeleton"></div></div></div>
+    <div class="seg-pane" data-pane="upcoming"><div class="list" id="eventsUpcoming"></div></div>
+    <div class="seg-pane" data-pane="archive"><div class="grid" id="eventsArchive"></div></div>
+  </div>
+</main>
+
+<!-- ============ الزيارات ============ -->
+<main class="screen" id="tab-visits" data-title="الزيارات">
+  <header class="bar"><div class="bar-inner"><span class="bar-title">الزيارات الميدانية</span></div></header>
+  <div class="content">
+    <p class="lead">نفخر بزياراتنا لنخبة من الجهات الحكومية وشركات المحاسبة والاستشارات الرائدة.</p>
+    <div class="grid" id="visitsGrid"></div>
+  </div>
+</main>
+
+<!-- ============ النادي ============ -->
+<main class="screen" id="tab-club" data-title="النادي">
+  <header class="bar"><div class="bar-inner"><span class="bar-title">النادي</span></div></header>
+  <div class="content">
+    <section class="card about">
+      <div class="about-head"><img src="assets/club-white.webp" alt="نادي المحاسبة"></div>
+      <div class="pad">
+        <h3>من نحن</h3>
+        <p id="aboutText"></p>
+      </div>
+    </section>
+
+    <section class="card vision">
+      <h3>رؤيتنا</h3>
+      <p id="visionText"></p>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h2>أهدافنا</h2></div>
+      <ol class="goals" id="goals"></ol>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h2 id="orgTitle"></h2></div>
+      <button class="card org" id="orgBtn"><img src="assets/org-chart.webp" alt="الهيكل التنظيمي لنادي المحاسبة"><span class="org-hint">اضغط للتكبير</span></button>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h2>تواصل معنا</h2></div>
+      <form class="card form" id="contactForm" novalidate>
+        <label class="field"><span>الاسم</span><input id="cName" autocomplete="name" required></label>
+        <label class="field"><span>البريد الإلكتروني</span><input id="cEmail" type="email" inputmode="email" autocomplete="email" required></label>
+        <label class="field"><span>الغرض من التواصل</span>
+          <select id="cPurpose" required>
+            <option value="" disabled selected>اختر</option>
+            <option>استفسار</option><option>الانضمام للنادي</option><option>اقتراح</option><option>تعاون</option><option>شكوى</option>
+          </select>
+        </label>
+        <label class="field"><span>التفاصيل</span><textarea id="cDetails" rows="4" required></textarea></label>
+        <p class="form-err" id="cErr" hidden></p>
+        <button class="btn primary" type="submit" id="cSend">إرسال</button>
+      </form>
+      <div class="card done" id="contactDone" hidden>
+        <div class="done-ic">✓</div>
+        <h3>وصلنا ردك</h3>
+        <p>شكراً لك على تواصلك معنا.</p>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><h2>تابعنا</h2></div>
+      <div class="card rows" id="socials"></div>
+    </section>
+
+    <section class="block">
+      <div class="card rows">
+        <button class="row" data-open="/privacy.html"><span class="row-ic"><svg viewBox="0 0 24 24"><path d="M7 10V7.5a5 5 0 0 1 10 0V10h1a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 18 21H6a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 6 10zm2 0h6V7.5a3 3 0 0 0-6 0z"/></svg></span><span class="row-main">سياسة الخصوصية</span><span class="chev">‹</span></button>
+        <button class="row" id="mailRow"><span class="row-ic"><svg viewBox="0 0 24 24"><path d="M4 5h16a1.5 1.5 0 0 1 1.5 1.5v11A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-11A1.5 1.5 0 0 1 4 5zm.6 2.2v.3l7.4 5 7.4-5v-.3z"/></svg></span><span class="row-main">راسلنا بالبريد</span><span class="chev">‹</span></button>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <img src="assets/club-mark-white.webp" alt="" class="foot-mark">
+      <p>نحو أثر يبقى.. وبصمة تلهم</p>
+      <small>© نادي المحاسبة — جامعة الإمام محمد بن سعود الإسلامية</small>
+      <small class="credit">Made by Nourah Aleissa and the technical team</small>
+    </footer>
+  </div>
+</main>
+
+<!-- ============ شريط التبويبات ============ -->
+<nav class="tabbar" id="tabbar">
+  <button class="tab is-on" data-tab="home" aria-label="الرئيسية">
+    <svg viewBox="0 0 24 24"><path d="M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6h-6v6H4.5a1 1 0 0 1-1-1z"/></svg><span>الرئيسية</span>
+  </button>
+  <button class="tab" data-tab="events" aria-label="الفعاليات">
+    <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>الفعاليات</span>
+  </button>
+  <button class="tab" data-tab="visits" aria-label="الزيارات">
+    <svg viewBox="0 0 24 24"><path d="M4 21V7l6-3v17M10 21V9l10 3v9M2.5 21h19M7 9.5v.01M7 13v.01M7 16.5v.01M14 14v.01M17 14v.01M14 17.5v.01M17 17.5v.01"/></svg><span>الزيارات</span>
+  </button>
+  <button class="tab" data-tab="club" aria-label="النادي">
+    <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><rect x="8.5" y="8.5" width="7" height="7" rx="1"/></svg><span>النادي</span>
+  </button>
+</nav>
+
+<!-- ============ الورقة السفلية (التفاصيل) ============ -->
+<div class="sheet-wrap" id="sheet" hidden>
+  <div class="sheet-backdrop" data-close></div>
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="grabber"></div>
+    <button class="sheet-x" data-close aria-label="إغلاق">✕</button>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+</div>
+
+<!-- عارض الصور -->
+<div class="viewer" id="viewer" hidden>
+  <button class="viewer-x" data-vclose aria-label="إغلاق">✕</button>
+  <div class="viewer-scroll"><img id="viewerImg" alt=""></div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="js/event-sheet.js"></script>
+<script src="js/data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
