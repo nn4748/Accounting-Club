@@ -79,7 +79,14 @@
     </section>
 
     <section id="app" hidden>
-      <div class="note" id="walletNote" hidden>بطاقات Apple Wallet ما تفعّلت للحين (ناقص ملفات التوقيع في Netlify). تقدرون ترسلون البطاقات، ويفتح العضو بطاقته من الرابط، وزر «أضف إلى Apple Wallet» يشتغل أول ما تنضاف الملفات.</div>
+      <div class="note" id="walletNote" hidden>
+        <b>فعّل بطاقات Apple Wallet:</b> ارفع ملف المفتاح الخاص للشهادة (‎.p12 من Keychain، أو ‎.pem / ‎.key). الملف ينحفظ بالموقع بشكل آمن وما يظهر لأحد.
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center">
+          <input type="file" id="keyFile" accept=".p12,.pfx,.pem,.key">
+          <input class="field" type="password" id="keyPass" placeholder="كلمة مرور الملف (إذا فيه)" style="max-width:220px">
+          <button class="btn btn-primary" id="keyUpload" type="button">رفع المفتاح</button>
+        </div>
+      </div>
       <div class="kpis" id="kpis"></div>
       <div class="toolbar">
         <input class="field" type="search" id="search" placeholder="ابحث بالاسم أو رقم العضوية أو الإيميل">
@@ -178,6 +185,17 @@
       $("sendSel").onclick = () => confirmSend([...sel]);
       $("sendUnsent").onclick = () => { const n = members.filter((m) => !m.sentAt && m.active && m.email).map((m) => m.no); if (n.length) confirmSend(n); else toast("كل الأعضاء وصلتهم بطاقاتهم"); };
       $("refresh").onclick = load;
+      $("keyUpload").onclick = async () => {
+        const f = $("keyFile").files && $("keyFile").files[0];
+        if (!f) return toast("اختر ملف المفتاح أول");
+        const buf = new Uint8Array(await f.arrayBuffer());
+        let bin = ""; buf.forEach((b) => { bin += String.fromCharCode(b); });
+        $("keyUpload").disabled = true; $("keyUpload").textContent = "جاري الرفع…";
+        const { ok, d } = await call({ action: "upload-key", file: btoa(bin), passphrase: $("keyPass").value });
+        $("keyUpload").disabled = false; $("keyUpload").textContent = "رفع المفتاح";
+        if (ok) { toast("تم ✓ بطاقات Apple Wallet صارت شغالة"); load(); return; }
+        toast({ key_mismatch: "هذا المفتاح ما يطابق شهادة البطاقة، تأكد إنه نفس الشهادة", bad_password: "كلمة مرور الملف غير صحيحة", bad_file: "ما قدرنا نقرأ الملف، تأكد إنه ‎.p12 أو ‎.pem" }[d.error] || "ما انرفع الملف");
+      };
       $("search").oninput = render;
       $("loginForm").onsubmit = (e) => { e.preventDefault(); password = $("pw").value.trim(); try { sessionStorage.setItem("hrPw", password); } catch (er) { /* */ } load(); };
       if (password) load();
