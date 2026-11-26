@@ -86,12 +86,38 @@ const b64 = (name) => (process.env[name] ? Buffer.from(process.env[name], "base6
 const CERTS = require("./pass-certs");
 const passTypeId = () => process.env.PASS_TYPE_ID || CERTS.passTypeId;
 const teamId = () => process.env.PASS_TEAM_ID || CERTS.teamId;
+// المفتاح الخاص: من متغير Netlify، أو من الملف اللي ترفعه الإدارة (محفوظ في Blobs).
+let uploadedKey = null;
+async function loadKey() {
+  if (uploadedKey !== null) return;
+  try { uploadedKey = (await getStore("wallet-secrets").get("signer-key")) || ""; } catch (e) { uploadedKey = ""; }
+}
 function signerKey() {
   const v = process.env.PASS_KEY_PEM_B64 || process.env.PASS_KEY_PEM || "";
-  if (!v) return null;
-  return /BEGIN/.test(v) ? Buffer.from(v.replace(/\\n/g, "\n")) : Buffer.from(v, "base64");
+  if (v) return /BEGIN/.test(v) ? Buffer.from(v.replace(/\\n/g, "\n")) : Buffer.from(v, "base64");
+  return uploadedKey ? Buffer.from(uploadedKey) : null;
 }
 const passReady = () => !!signerKey();
+
+// يقرأ ملف .p12 أو .pem/.key ويتأكد إن المفتاح يطابق شهادة البطاقة.
+function extractKey(fileB64, passphrase) {
+  const forge = require("node-forge");
+  const raw = Buffer.from(fileB64, "base64");
+  let key = null;
+  const text = raw.toString("utf8");
+  if (/BEGIN (RSA |ENCRYPTED )?PRIVATE KEY/.test(text)) {
+    key = /ENCRYPTED/.test(text) ? forge.pki.decryptRsaPrivateKey(text, passphrase || "") : forge.pki.privateKeyFromPem(text);
+  } else {
+    const p12 = forge.pkcs12.pkcs12FromAsn1(forge.asn1.fromDer(raw.toString("binary")), passphrase || "");
+    const bags = Object.assign({}, p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag }), p12.getBags({ bagType: forge.pki.oids.keyBag }));
+    const all = [].concat(bags[forge.pki.oids.pkcs8ShroudedKeyBag] || [], bags[forge.pki.oids.keyBag] || []);
+    key = all.length ? all[0].key : null;
+  }
+  if (!key) throw new Error("no_key");
+  const cert = forge.pki.certificateFromPem(CERTS.cert);
+  if (cert.publicKey.n.compareTo(key.n) !== 0) throw new Error("key_mismatch");
+  return forge.pki.privateKeyToPem(key);
+}
 
 async function makePass(m, active) {
   const { PKPass } = require("passkit-generator");
@@ -159,6 +185,7 @@ function cardEmail(m) {
 
 exports.handler = async (event) => {
   connectLambda(event);
+  await loadKey();
   const status = getStore("members-status"); // الأعضاء الموقوفة عضويتهم
   const isActive = async (no) => !(await status.get(no));
 
@@ -203,6 +230,18 @@ exports.handler = async (event) => {
       email: m.email, token: tokenOf(m.no), sentAt: Number(await sent.get(m.no)) || null,
     })));
     return json(200, { members: out, wallet: passReady(), email: !!process.env.RESEND_API_KEY });
+  }
+
+  if (body.action === "upload-key") {
+    try {
+      const pem = extractKey(String(body.file || ""), String(body.passphrase || ""));
+      await getStore("wallet-secrets").set("signer-key", pem);
+      uploadedKey = pem;
+      return json(200, { ok: true });
+    } catch (e) {
+      const m = String(e.message || e);
+      return json(400, { error: m === "key_mismatch" ? "key_mismatch" : /password|Invalid|MAC|decrypt/i.test(m) ? "bad_password" : "bad_file" });
+    }
   }
 
   if (body.action === "set-active") {
