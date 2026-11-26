@@ -93,8 +93,18 @@ async function loadKey() {
   if (uploadedKey !== null) return;
   try { uploadedKey = (await getStore("wallet-secrets").get("signer-key")) || ""; } catch (e) { uploadedKey = ""; }
 }
+// يقبل أي اسم معقول للمتغير (PASS_KEY_PEM_B64 أو PASS_PRIVATE_KEY…)، ويتأكد إن قيمته مفتاح فعلًا.
+function envKey() {
+  const looksKey = (v) => /PRIVATE KEY/.test(v) || /PRIVATE KEY/.test(Buffer.from(v, "base64").toString("utf8"));
+  const names = Object.keys(process.env).filter((k) => /PASS|WALLET|PKPASS|SIGN/i.test(k) && /KEY/i.test(k) && !/PHRASE|PASSWORD|_PW/i.test(k));
+  names.sort((a, b) => (a === "PASS_KEY_PEM_B64" ? -1 : b === "PASS_KEY_PEM_B64" ? 1 : 0));
+  for (const k of names) { const v = String(process.env[k] || "").trim(); if (v && looksKey(v)) return v; }
+  return "";
+}
+const walletEnvNames = () => Object.keys(process.env).filter((k) => /PASS|WALLET|PKPASS|SIGN|CERT|WWDR/i.test(k) && !/^(PATH|PWD)$/.test(k)).sort();
+const passphrase = () => process.env.PASS_KEY_PASSPHRASE || Object.keys(process.env).filter((k) => /PASS.*PHRASE|KEY.*PASSWORD/i.test(k)).map((k) => process.env[k])[0] || undefined;
 function signerKey() {
-  const v = process.env.PASS_KEY_PEM_B64 || process.env.PASS_KEY_PEM || "";
+  const v = envKey();
   if (v) return /BEGIN/.test(v) ? Buffer.from(v.replace(/\\n/g, "\n")) : Buffer.from(v, "base64");
   return uploadedKey ? Buffer.from(uploadedKey) : null;
 }
@@ -159,7 +169,7 @@ async function makePass(m, active) {
     wwdr: b64("PASS_WWDR_PEM_B64") || Buffer.from(CERTS.wwdr),
     signerCert: b64("PASS_CERT_PEM_B64") || Buffer.from(CERTS.cert),
     signerKey: signerKey(),
-    signerKeyPassphrase: process.env.PASS_KEY_PASSPHRASE || undefined,
+    signerKeyPassphrase: passphrase(),
   });
   return pass.getAsBuffer();
 }
@@ -230,7 +240,7 @@ exports.handler = async (event) => {
     const out = await Promise.all(members.map(async (m) => Object.assign(publicOf(m, await isActive(m.no)), {
       email: m.email, token: tokenOf(m.no), sentAt: Number(await sent.get(m.no)) || null,
     })));
-    return json(200, { members: out, wallet: passReady(), email: !!process.env.RESEND_API_KEY });
+    return json(200, { members: out, wallet: passReady(), walletEnv: walletEnvNames(), email: !!process.env.RESEND_API_KEY });
   }
 
   if (body.action === "upload-key") {
