@@ -7,6 +7,7 @@
 <title>نادي المحاسبة</title>
 <link rel="stylesheet" href="fonts/almarai.css">
 <link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
 
@@ -19,10 +20,26 @@
   </header>
   <div class="content">
     <section class="hero">
-      <img class="hero-mark" src="assets/club-mark-white.webp" alt="">
-      <p class="hero-kicker">نادي المحاسبة · جامعة الإمام</p>
-      <h1 class="hero-title">أثرنا <span>واضح</span></h1>
+      <svg class="hero-waves" viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true">
+        <g fill="none" stroke="currentColor" stroke-width="1">
+          <path class="w w1" d="M-20 210 C 60 150, 140 270, 220 200 S 380 130, 440 190"/>
+          <path class="w w2" d="M-20 228 C 70 170, 150 290, 230 218 S 380 150, 440 208"/>
+          <path class="w w3" d="M-20 246 C 80 190, 160 305, 240 236 S 380 170, 440 226"/>
+          <path class="w w4" d="M-20 264 C 90 210, 170 320, 250 254 S 380 190, 440 244"/>
+          <path class="w w5" d="M-20 282 C 100 230, 180 335, 260 272 S 380 210, 440 262"/>
+          <path class="w w6" d="M-20 120 C 80 70, 180 170, 280 110 S 400 60, 440 100"/>
+          <path class="w w7" d="M-20 136 C 90 86, 190 186, 290 126 S 400 76, 440 116"/>
+        </g>
+      </svg>
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-top">
+        <img class="hero-logo" src="assets/club-white.webp" alt="نادي المحاسبة">
+      </div>
+      <p class="hero-kicker">نادي المحاسبة · جامعة الإمام محمد بن سعود الإسلامية</p>
+      <h1 class="hero-title"><span class="t1">أثرنا</span><span class="t2">واضح</span></h1>
+      <p class="hero-sub">نحو أثر يبقى.. وبصمة تلهم</p>
       <div class="hero-pills" id="pillars"></div>
+      <img class="hero-mark" src="assets/club-mark-white.webp" alt="">
     </section>
 
     <section class="block" id="homeUpcomingBlock" hidden>
@@ -97,6 +114,7 @@
     </section>
 
     <section class="card vision">
+      <span class="quote" aria-hidden="true">”</span>
       <h3>رؤيتنا</h3>
       <p id="visionText"></p>
     </section>
@@ -147,6 +165,7 @@
 
     <footer class="foot">
       <img src="assets/club-mark-white.webp" alt="" class="foot-mark">
+      <p class="foot-tag">أثرنا <span>واضح</span></p>
       <p>نحو أثر يبقى.. وبصمة تلهم</p>
       <small>© نادي المحاسبة — جامعة الإمام محمد بن سعود الإسلامية</small>
       <small class="credit">Made by Nourah Aleissa and the technical team</small>
@@ -203,5 +222,6 @@
 <script src="app.js"></script>
 <script src="js/register.js"></script>
 <script src="js/tools.js"></script>
+<script src="js/polish.js"></script>
 </body>
 </html>
