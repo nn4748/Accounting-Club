@@ -192,7 +192,7 @@
     const info = Q.PERSONALITIES[field];
     const html = `
       <div class="q-result" style="--rc:${info.color}">
-        <div class="q-badge"></div>
+        <div class="q-badge"><img src="assets/club-mark-white.webp" alt=""></div>
         <p class="q-hello">${esc(st.name)}، شخصيتك المحاسبية هي</p>
         <h2 class="q-label">${esc(info.label)}</h2>
         <p class="q-meaning">${esc(info.meaning)}</p>
