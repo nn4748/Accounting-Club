@@ -154,13 +154,14 @@ async function makePass(m, active) {
     labelColor: "rgb(108,207,246)",
     sharingProhibited: true,
     storeCard: {
-      // الترتيب يسار ← يمين، فالحقل الثاني هو اللي يطلع يمين.
+      // الاسم هو الحقل الكبير (يطلع على الشريط تحت الشعار).
+      primaryFields: [{ key: "name", label: "الاسم", value: m.name }],
+      // مع وجود الشريط Wallet يحط هذي كلها بسطر واحد (يسار ← يمين)، فرقم العضوية آخر شي عشان يطلع يمين.
       secondaryFields: [
-        { key: "role", label: "المنصب", value: m.role || "عضو", textAlignment: "PKTextAlignmentRight" },
-        { key: "name", label: "الاسم", value: m.name, textAlignment: "PKTextAlignmentRight" },
+        { key: "role", label: "المنصب", value: m.role || "عضو" },
+        { key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة", textAlignment: "PKTextAlignmentRight" },
       ],
       auxiliaryFields: [
-        { key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة", textAlignment: "PKTextAlignmentRight" },
         { key: "no", label: "رقم العضوية", value: m.no, textAlignment: "PKTextAlignmentRight" },
       ],
       backFields: [
