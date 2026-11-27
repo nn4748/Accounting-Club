@@ -179,6 +179,9 @@ async function makePass(m, active) {
     signerKey: signerKey(),
     signerKeyPassphrase: passphrase(),
   });
+  // لغة واحدة للبطاقة (en.lproj) عشان Wallet يعرضها بنفس الترتيب على آيفون عربي وإنجليزي:
+  // الاسم يمين، والشعار فوق يمين — بدون ما يقلبها.
+  pass.localize("en", { "الاسم": "الاسم" });
   return pass.getAsBuffer();
 }
 
