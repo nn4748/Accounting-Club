@@ -47,17 +47,18 @@ async function loadMembers() {
     const a = clean(r[0]), b = clean(r[C.name]);
     if (!b) continue;
     const no = clean(r[C.no]);
-    // صف عنوان قسم (إدارة أو لجنة).
-    if (!a && !no) {
+    // صف عنوان قسم (إدارة أو لجنة): ما له رقم عضوية. (بعض العناوين فيها رقم بالعمود الأول، فما نعتمد عليه.)
+    if (!/^\d{3,6}$/.test(no)) {
       if (/^لجنة/.test(b)) committee = b;
-      else { dept = b; committee = ""; }
+      else if (/^(إدارة|ادارة|الإدارة)/.test(b)) { dept = b.replace(/^ادارة/, "إدارة"); committee = ""; }
       continue;
     }
-    if (!/^\d{3,6}$/.test(no)) continue;
     const role = clean(r[C.role]);
+    // لو المنصب نفسه يذكر لجنة (مثل «قائد لجنة الحلول التقنية») فهي الأصح.
+    const fromRole = (role.match(/لجنة [^،,()]+/) || [])[0];
     list.push({
       no, name: b, nameEn: clean(r[C.en]), email: clean(r[C.email]).toLowerCase(),
-      dept, committee, role, leader: LEADER.test(role),
+      dept, committee: fromRole ? clean(fromRole) : committee, role, leader: LEADER.test(role),
     });
   }
   cache = { at: Date.now(), list };
@@ -145,16 +146,21 @@ async function makePass(m, active) {
     serialNumber: "acc-member-" + m.no,
     organizationName: "نادي المحاسبة",
     description: "بطاقة عضوية نادي المحاسبة",
-    backgroundColor: m.leader ? "rgb(4,12,168)" : "rgb(76,180,228)",
+    // نفس ألوان بطاقة الموقع: القادة كحلي، الأعضاء سماوي.
+    backgroundColor: m.leader ? "rgb(1,9,162)" : "rgb(76,180,228)",
     foregroundColor: "rgb(255,255,255)",
     labelColor: m.leader ? "rgb(40,190,255)" : "rgb(14,32,140)",
     sharingProhibited: true,
+    // الترتيب (على آيفون بالعربي يبدأ من اليمين):
+    // الشعار فوق — الاسم | رقم العضوية — المنصب | الإدارة - اللجنة
     storeCard: {
-      primaryFields: [{ key: "name", label: "", value: m.name }],
-      secondaryFields: [{ key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة", textAlignment: "PKTextAlignmentRight" }],
-      auxiliaryFields: [
-        { key: "role", label: "المنصب", value: m.role || "عضو", textAlignment: "PKTextAlignmentRight" },
+      secondaryFields: [
+        { key: "name", label: "الاسم", value: m.name },
         { key: "no", label: "رقم العضوية", value: m.no },
+      ],
+      auxiliaryFields: [
+        { key: "role", label: "المنصب", value: m.role || "عضو" },
+        { key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة" },
       ],
       backFields: [
         { key: "status", label: "حالة العضوية", value: active ? "فعّالة" : "غير فعّالة" },
@@ -172,6 +178,7 @@ async function makePass(m, active) {
     signerKey: signerKey(),
     signerKeyPassphrase: passphrase(),
   });
+  pass.localize("ar", { "الاسم": "الاسم" }); // مجلد ar.lproj يخلي Wallet يرتّب البطاقة من اليمين
   return pass.getAsBuffer();
 }
 
