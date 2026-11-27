@@ -47,17 +47,18 @@ async function loadMembers() {
     const a = clean(r[0]), b = clean(r[C.name]);
     if (!b) continue;
     const no = clean(r[C.no]);
-    // صف عنوان قسم (إدارة أو لجنة).
-    if (!a && !no) {
+    // صف عنوان قسم (إدارة أو لجنة): ما له رقم عضوية. (بعض العناوين فيها رقم بالعمود الأول، فما نعتمد عليه.)
+    if (!/^\d{3,6}$/.test(no)) {
       if (/^لجنة/.test(b)) committee = b;
-      else { dept = b; committee = ""; }
+      else if (/^(إدارة|ادارة|الإدارة)/.test(b)) { dept = b.replace(/^ادارة/, "إدارة"); committee = ""; }
       continue;
     }
-    if (!/^\d{3,6}$/.test(no)) continue;
     const role = clean(r[C.role]);
+    // لو المنصب نفسه يذكر لجنة (مثل «قائد لجنة الحلول التقنية») فهي الأصح.
+    const fromRole = (role.match(/لجنة [^،,()]+/) || [])[0];
     list.push({
       no, name: b, nameEn: clean(r[C.en]), email: clean(r[C.email]).toLowerCase(),
-      dept, committee, role, leader: LEADER.test(role),
+      dept, committee: fromRole ? clean(fromRole) : committee, role, leader: LEADER.test(role),
     });
   }
   cache = { at: Date.now(), list };
@@ -125,7 +126,8 @@ function extractKey(fileB64, passphrase) {
     key = all.length ? all[0].key : null;
   }
   if (!key) throw new Error("no_key");
-  const cert = forge.pki.certificateFromPem(CERTS.cert);
+  // نقارن بالشهادة اللي فعلًا نوقّع فيها: اللي في Netlify لو موجودة، وإلا اللي بالكود.
+  const cert = forge.pki.certificateFromPem((b64("PASS_CERT_PEM_B64") || Buffer.from(CERTS.cert)).toString("utf8"));
   if (cert.publicKey.n.compareTo(key.n) !== 0) throw new Error("key_mismatch");
   return forge.pki.privateKeyToPem(key);
 }
@@ -144,16 +146,23 @@ async function makePass(m, active) {
     serialNumber: "acc-member-" + m.no,
     organizationName: "نادي المحاسبة",
     description: "بطاقة عضوية نادي المحاسبة",
-    backgroundColor: m.leader ? "rgb(4,12,168)" : "rgb(76,180,228)",
+    // تصميم Wallet كحلي: شعار النادي مع الكلام فوق يمين، ثم الاسم والمنصب، ثم الإدارة - اللجنة ورقم العضوية، والـQR تحت.
+    // الـQR يفتح بطاقة الموقع (/m/…) بالتصميم الكامل.
+    backgroundColor: "rgb(1,9,162)",
     foregroundColor: "rgb(255,255,255)",
-    labelColor: m.leader ? "rgb(40,190,255)" : "rgb(14,32,140)",
+    labelColor: "rgb(108,207,246)",
     sharingProhibited: true,
-    storeCard: {
-      primaryFields: [{ key: "name", label: "", value: m.name }],
-      secondaryFields: [{ key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة", textAlignment: "PKTextAlignmentRight" }],
+    // generic: بدون شريط، فيطلع صفّين منفصلين. شعار النادي مع الكلام صورة (thumbnail) فوق يمين.
+    generic: {
+      // الصف الأول: الاسم يمين، وجنبه المنصب. (الترتيب يسار ← يمين)
+      secondaryFields: [
+        { key: "role", label: "المنصب", value: m.role || "عضو" },
+        { key: "name", label: "الاسم", value: m.name, textAlignment: "PKTextAlignmentRight" },
+      ],
+      // الصف الثاني: الإدارة - اللجنة يمين، وجنبها رقم العضوية.
       auxiliaryFields: [
-        { key: "role", label: "المنصب", value: m.role || "عضو", textAlignment: "PKTextAlignmentRight" },
         { key: "no", label: "رقم العضوية", value: m.no },
+        { key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة", textAlignment: "PKTextAlignmentRight" },
       ],
       backFields: [
         { key: "status", label: "حالة العضوية", value: active ? "فعّالة" : "غير فعّالة" },
@@ -163,7 +172,7 @@ async function makePass(m, active) {
         { key: "club", label: "نادي المحاسبة", value: "جامعة الإمام محمد بن سعود الإسلامية — accclubimamu.com" },
       ],
     },
-    barcodes: [{ format: "PKBarcodeFormatQR", message: url, messageEncoding: "iso-8859-1", altText: m.no }],
+    barcodes: [{ format: "PKBarcodeFormatQR", message: url, messageEncoding: "iso-8859-1", altText: "امسح لعرض بطاقة العضو" }],
   }));
   const pass = new PKPass(files, {
     wwdr: b64("PASS_WWDR_PEM_B64") || Buffer.from(CERTS.wwdr),
@@ -171,6 +180,9 @@ async function makePass(m, active) {
     signerKey: signerKey(),
     signerKeyPassphrase: passphrase(),
   });
+  // لغة واحدة للبطاقة (en.lproj) عشان Wallet يعرضها بنفس الترتيب على آيفون عربي وإنجليزي:
+  // الاسم يمين، والشعار فوق يمين — بدون ما يقلبها.
+  pass.localize("en", { "الاسم": "الاسم" });
   return pass.getAsBuffer();
 }
 
