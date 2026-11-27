@@ -146,11 +146,11 @@ async function makePass(m, active) {
     serialNumber: "acc-member-" + m.no,
     organizationName: "نادي المحاسبة",
     description: "بطاقة عضوية نادي المحاسبة",
-    // تصميم Wallet أبيض ونظيف (مثل بطاقات الحجوزات): الشعار فوق، الاسم كبير، شعار النادي يمين، والتفاصيل تحت، والـQR آخر شي.
+    // تصميم Wallet كحلي ونظيف (مثل بطاقات الحجوزات): الشعار فوق، الاسم كبير، شعار النادي يمين، والتفاصيل تحت، والـQR آخر شي.
     // الـQR يفتح بطاقة الموقع (/m/…) بالتصميم الكامل.
-    backgroundColor: "rgb(255,255,255)",
-    foregroundColor: "rgb(13,16,48)",
-    labelColor: "rgb(0,8,120)",
+    backgroundColor: "rgb(1,9,162)",
+    foregroundColor: "rgb(255,255,255)",
+    labelColor: "rgb(108,207,246)",
     logoText: "نادي المحاسبة",
     sharingProhibited: true,
     generic: {
