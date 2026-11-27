@@ -146,21 +146,22 @@ async function makePass(m, active) {
     serialNumber: "acc-member-" + m.no,
     organizationName: "نادي المحاسبة",
     description: "بطاقة عضوية نادي المحاسبة",
-    // تصميم Wallet كحلي ونظيف (مثل بطاقات الحجوزات): الشعار فوق، الاسم كبير، شعار النادي يمين، والتفاصيل تحت، والـQR آخر شي.
+    // تصميم Wallet كحلي: شريط فوق فيه شعار النادي و«نادي المحاسبة» يمين (مرسوم بالصورة عشان يثبت يمين بأي لغة)،
+    // وكل الحقول على اليمين: الاسم وجنبه المنصب، ثم رقم العضوية وجنبه الإدارة - اللجنة، والـQR تحت.
     // الـQR يفتح بطاقة الموقع (/m/…) بالتصميم الكامل.
     backgroundColor: "rgb(1,9,162)",
     foregroundColor: "rgb(255,255,255)",
     labelColor: "rgb(108,207,246)",
-    logoText: "نادي المحاسبة",
     sharingProhibited: true,
-    generic: {
-      primaryFields: [{ key: "name", label: "الاسم", value: m.name }],
+    storeCard: {
+      // الترتيب يسار ← يمين، فالحقل الثاني هو اللي يطلع يمين.
       secondaryFields: [
-        { key: "no", label: "رقم العضوية", value: m.no },
-        { key: "role", label: "المنصب", value: m.role || "عضو" },
+        { key: "role", label: "المنصب", value: m.role || "عضو", textAlignment: "PKTextAlignmentRight" },
+        { key: "name", label: "الاسم", value: m.name, textAlignment: "PKTextAlignmentRight" },
       ],
       auxiliaryFields: [
-        { key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة" },
+        { key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة", textAlignment: "PKTextAlignmentRight" },
+        { key: "no", label: "رقم العضوية", value: m.no, textAlignment: "PKTextAlignmentRight" },
       ],
       backFields: [
         { key: "status", label: "حالة العضوية", value: active ? "فعّالة" : "غير فعّالة" },
@@ -178,7 +179,9 @@ async function makePass(m, active) {
     signerKey: signerKey(),
     signerKeyPassphrase: passphrase(),
   });
-  pass.localize("ar", { "الاسم": "الاسم" }); // مجلد ar.lproj يخلي Wallet يرتّب البطاقة من اليمين
+  // لغة واحدة للبطاقة (en.lproj) عشان Wallet يعرضها بنفس الترتيب على آيفون عربي وإنجليزي:
+  // الاسم يمين، والشعار فوق يمين — بدون ما يقلبها.
+  pass.localize("en", { "الاسم": "الاسم" });
   return pass.getAsBuffer();
 }
 
