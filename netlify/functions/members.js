@@ -146,20 +146,20 @@ async function makePass(m, active) {
     serialNumber: "acc-member-" + m.no,
     organizationName: "نادي المحاسبة",
     description: "بطاقة عضوية نادي المحاسبة",
-    // نفس ألوان بطاقة الموقع: القادة كحلي، الأعضاء سماوي.
-    backgroundColor: m.leader ? "rgb(1,9,162)" : "rgb(76,180,228)",
-    foregroundColor: "rgb(255,255,255)",
-    labelColor: m.leader ? "rgb(40,190,255)" : "rgb(14,32,140)",
+    // تصميم Wallet أبيض ونظيف (مثل بطاقات الحجوزات): الشعار فوق، الاسم كبير، شعار النادي يمين، والتفاصيل تحت، والـQR آخر شي.
+    // الـQR يفتح بطاقة الموقع (/m/…) بالتصميم الكامل.
+    backgroundColor: "rgb(255,255,255)",
+    foregroundColor: "rgb(13,16,48)",
+    labelColor: "rgb(0,8,120)",
+    logoText: "نادي المحاسبة",
     sharingProhibited: true,
-    // الترتيب (على آيفون بالعربي يبدأ من اليمين):
-    // الشعار فوق — الاسم | رقم العضوية — المنصب | الإدارة - اللجنة
-    storeCard: {
+    generic: {
+      primaryFields: [{ key: "name", label: "الاسم", value: m.name }],
       secondaryFields: [
-        { key: "name", label: "الاسم", value: m.name },
         { key: "no", label: "رقم العضوية", value: m.no },
+        { key: "role", label: "المنصب", value: m.role || "عضو" },
       ],
       auxiliaryFields: [
-        { key: "role", label: "المنصب", value: m.role || "عضو" },
         { key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة" },
       ],
       backFields: [
@@ -170,7 +170,7 @@ async function makePass(m, active) {
         { key: "club", label: "نادي المحاسبة", value: "جامعة الإمام محمد بن سعود الإسلامية — accclubimamu.com" },
       ],
     },
-    barcodes: [{ format: "PKBarcodeFormatQR", message: url, messageEncoding: "iso-8859-1", altText: m.no }],
+    barcodes: [{ format: "PKBarcodeFormatQR", message: url, messageEncoding: "iso-8859-1", altText: "امسح لعرض بطاقة العضو" }],
   }));
   const pass = new PKPass(files, {
     wwdr: b64("PASS_WWDR_PEM_B64") || Buffer.from(CERTS.wwdr),
