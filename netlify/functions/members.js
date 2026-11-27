@@ -146,23 +146,23 @@ async function makePass(m, active) {
     serialNumber: "acc-member-" + m.no,
     organizationName: "نادي المحاسبة",
     description: "بطاقة عضوية نادي المحاسبة",
-    // تصميم Wallet كحلي: شريط فوق فيه شعار النادي و«نادي المحاسبة» يمين (مرسوم بالصورة عشان يثبت يمين بأي لغة)،
-    // وكل الحقول على اليمين: الاسم وجنبه المنصب، ثم رقم العضوية وجنبه الإدارة - اللجنة، والـQR تحت.
+    // تصميم Wallet كحلي: شعار النادي مع الكلام فوق يمين، ثم الاسم والمنصب، ثم الإدارة - اللجنة ورقم العضوية، والـQR تحت.
     // الـQR يفتح بطاقة الموقع (/m/…) بالتصميم الكامل.
     backgroundColor: "rgb(1,9,162)",
     foregroundColor: "rgb(255,255,255)",
     labelColor: "rgb(108,207,246)",
     sharingProhibited: true,
-    storeCard: {
-      // الاسم هو الحقل الكبير (يطلع على الشريط تحت الشعار).
-      primaryFields: [{ key: "name", label: "الاسم", value: m.name }],
-      // مع وجود الشريط Wallet يحط هذي كلها بسطر واحد (يسار ← يمين)، فرقم العضوية آخر شي عشان يطلع يمين.
+    // generic: بدون شريط، فيطلع صفّين منفصلين. شعار النادي مع الكلام صورة (thumbnail) فوق يمين.
+    generic: {
+      // الصف الأول: الاسم يمين، وجنبه المنصب. (الترتيب يسار ← يمين)
       secondaryFields: [
         { key: "role", label: "المنصب", value: m.role || "عضو" },
-        { key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة", textAlignment: "PKTextAlignmentRight" },
+        { key: "name", label: "الاسم", value: m.name, textAlignment: "PKTextAlignmentRight" },
       ],
+      // الصف الثاني: الإدارة - اللجنة يمين، وجنبها رقم العضوية.
       auxiliaryFields: [
-        { key: "no", label: "رقم العضوية", value: m.no, textAlignment: "PKTextAlignmentRight" },
+        { key: "no", label: "رقم العضوية", value: m.no },
+        { key: "unit", label: "الإدارة - اللجنة", value: line1(m) || "نادي المحاسبة", textAlignment: "PKTextAlignmentRight" },
       ],
       backFields: [
         { key: "status", label: "حالة العضوية", value: active ? "فعّالة" : "غير فعّالة" },
