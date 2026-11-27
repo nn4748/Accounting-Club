@@ -125,7 +125,8 @@ function extractKey(fileB64, passphrase) {
     key = all.length ? all[0].key : null;
   }
   if (!key) throw new Error("no_key");
-  const cert = forge.pki.certificateFromPem(CERTS.cert);
+  // نقارن بالشهادة اللي فعلًا نوقّع فيها: اللي في Netlify لو موجودة، وإلا اللي بالكود.
+  const cert = forge.pki.certificateFromPem((b64("PASS_CERT_PEM_B64") || Buffer.from(CERTS.cert)).toString("utf8"));
   if (cert.publicKey.n.compareTo(key.n) !== 0) throw new Error("key_mismatch");
   return forge.pki.privateKeyToPem(key);
 }
