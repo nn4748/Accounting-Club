@@ -29,7 +29,6 @@
       window.open(url, "_blank");
     }
   }
-  const openSite = (path) => openUrl(D.site + path);
 
   let toastT;
   function toast(msg) {
@@ -161,7 +160,7 @@
       <span class="tool-main"><b>${esc(t.title)}</b><small>${esc(t.sub)}</small></span>
       <span class="chev">‹</span>
     </button>`).join("");
-  $("#tools").addEventListener("click", (e) => { const b = e.target.closest("[data-tool]"); if (b) { tap(); openSite(D.tools[b.dataset.tool].path); } });
+  $("#tools").addEventListener("click", (e) => { const b = e.target.closest("[data-tool]"); if (b) { tap(); window.Tools.open(D.tools[b.dataset.tool].key); } });
 
   $("#socials").innerHTML = D.socials.map((s) => `
     <button class="row" data-url="${esc(s.url)}">
@@ -170,7 +169,7 @@
       <span class="chev">‹</span>
     </button>`).join("");
   $("#socials").addEventListener("click", (e) => { const b = e.target.closest("[data-url]"); if (b) { tap(); openUrl(b.dataset.url); } });
-  $$("[data-open]").forEach((b) => b.addEventListener("click", () => { tap(); openSite(b.dataset.open); }));
+  $$("[data-page]").forEach((b) => b.addEventListener("click", () => { tap(); window.Tools.open(b.dataset.page); }));
   $("#mailRow").addEventListener("click", () => { tap(); window.location.href = "mailto:" + D.email; });
   $("#orgBtn").addEventListener("click", () => openViewer("assets/org-chart.webp"));
 
@@ -313,20 +312,15 @@
     }
   }
 
-  function registerUrl(ev) {
-    const q = new URLSearchParams({
-      id: ev.id || ev.event_id || "", name: ev.name || "", date: ev.date || "",
-      location: ev.location || "", description: ev.description || "", image: img(ev.image) || "",
-    });
-    return D.site + "/register.html?" + q.toString();
-  }
-
   document.addEventListener("click", (e) => {
     const b = e.target.closest("[data-ev]");
     if (!b) return;
     const ev = events[+b.dataset.ev];
     const st = stateOf(ev);
-    const action = st === "open"
+    const done = window.Register && window.Register.isRegistered(ev);
+    const action = done
+      ? `<button class="btn done" disabled>✓ أنت مسجّل في هذي الفعالية</button>`
+      : st === "open"
       ? `<button class="btn primary" data-reg>سجّل الآن</button>`
       : `<button class="btn" disabled style="background:#e9ebf2;color:#6b6f86">${STATE_LABEL[st]}</button>`;
     openSheet(`
@@ -349,7 +343,7 @@
         </div>
       </div>`);
     const reg = $("[data-reg]", sheet);
-    if (reg) reg.addEventListener("click", () => { tap(); openUrl(registerUrl(ev)); });
+    if (reg) reg.addEventListener("click", () => { tap(); window.Register.open(ev); });
     $$(".actions [data-url]", sheet).forEach((x) => x.addEventListener("click", () => { tap(); openUrl(x.dataset.url); }));
     bindRemind(ev);
   });
@@ -439,6 +433,9 @@
       btn.disabled = false; btn.textContent = "إرسال";
     }
   });
+
+  // أدوات مشتركة للشاشات الثانية (التسجيل والأدوات)
+  window.AppUI = { $, $$, esc, tap, notify, toast, store, openSheet, closeSheet, sheet, openUrl, openViewer, remindBtn, bindRemind, cleanLoc, img, I, toLatin, parseCSV, isNative };
 
   /* =========================================================
      التشغيل

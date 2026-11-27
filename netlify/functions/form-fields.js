@@ -11,7 +11,7 @@ const FIELD_PATTERNS = {
 exports.handler = async (event) => {
   const id = String((event.queryStringParameters || {}).id || "");
   if (!/^[\w-]{20,}$/.test(id)) {
-    return { statusCode: 400, body: JSON.stringify({ error: "bad id" }) };
+    return { statusCode: 400, headers: { "Access-Control-Allow-Origin": "*" }, body: JSON.stringify({ error: "bad id" }) };
   }
   try {
     const res = await fetch(`https://docs.google.com/forms/d/e/${id}/viewform`, { redirect: "follow" });
@@ -42,7 +42,8 @@ exports.handler = async (event) => {
 function json(body, maxAge) {
   return {
     statusCode: 200,
-    headers: { "Content-Type": "application/json", "Cache-Control": `public, max-age=${maxAge}` },
+    // التطبيق (capacitor://localhost) يستخدمها كاحتياط.
+    headers: { "Content-Type": "application/json", "Cache-Control": `public, max-age=${maxAge}`, "Access-Control-Allow-Origin": "*" },
     body: JSON.stringify(body),
   };
 }
