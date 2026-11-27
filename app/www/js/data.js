@@ -3,6 +3,16 @@ window.CLUB = {
   site: "https://accclubimamu.com",
   eventsApi: "https://script.google.com/macros/s/AKfycbwnD4jxqeTzbi4n5_OOJl3BUhwNeAdDN2f2HF80MWTiRRjZilvt8tu9-8UBYY74P_2W/exec",
   upcomingCsv: "https://docs.google.com/spreadsheets/d/1OSnNAbCPm22qr7WP_ksJopj4TV1JqH3qmIYyK5DQexs/export?format=csv&gid=0",
+  /* التسجيل بالفعاليات: النموذج العام (لو الفعالية ما لها نموذج خاص بالشيت) */
+  registerForm: {
+    id: "1FAIpQLSd0vm30tzFhwk-975_-IvjyAA27WPNqt3SYjvkQF-MUMILWaA",
+    entries: { fullName: "entry.1551432397", phone: "entry.1099802155", email: "entry.746033374", major: "entry.1326577839", eventName: "entry.266454573" },
+    responsesCsv: "https://docs.google.com/spreadsheets/d/1Sbv_pomVeZEBPqPA1v4hZWHLvh3mJ6hHkGz3U-HRl24/export?format=csv",
+  },
+  /* احتياط لو ما قدرنا نقرأ النموذج من الجوال مباشرة */
+  formFieldsApi: "https://accclubimamu.com/.netlify/functions/form-fields",
+  /* الساعات التطوعية: نقرأ الملف وقت البحث فقط ولا نحفظه */
+  hoursCsv: "https://docs.google.com/spreadsheets/d/1rsmJRtDDdZHWwssFYTG6wmKiOSdVw0irFXE8i3gjC90/export?format=csv",
   contactForm: {
     id: "1FAIpQLSfy20_67n9WpPwRNEJbjzjiHLV995zR5ivv38hEXcbmbs63lg",
     name: "entry.1919255040",
@@ -66,8 +76,8 @@ window.CLUB = {
     ["12-accrual-center", "مركز الاستحقاق المحاسبي", "10-11-2022"],
   ].map(([f, t, d]) => ({ img: `assets/visits/${f}.webp`, title: t, date: d })),
   tools: [
-    { icon: "clock", title: "ساعاتي التطوعية", sub: "استعلم عن ساعاتك برقمك الجامعي", path: "/volunteer-hours.html" },
-    { icon: "spark", title: "شخصيتك المحاسبية", sub: "٢٠ سؤال يكشف لك مجالك", path: "/quiz.html" },
-    { icon: "build", title: "ابنِ شركتك", sub: "جرّب تأسس شركتك بنفسك", path: "/company-builder.html" },
+    { icon: "clock", title: "ساعاتي التطوعية", sub: "استعلم عن ساعاتك برقمك الجامعي", key: "hours" },
+    { icon: "spark", title: "شخصيتك المحاسبية", sub: "٢٠ سؤال يكشف لك مجالك", key: "quiz" },
+    { icon: "build", title: "ابنِ شركتك", sub: "جرّب تأسس شركتك بنفسك", key: "company" },
   ],
 };

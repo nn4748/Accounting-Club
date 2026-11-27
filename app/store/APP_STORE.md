@@ -110,13 +110,26 @@ No login is required. All features are available immediately.
 
 - Home / Events / Visits / Club tabs are native screens bundled in the app.
 - Event data is loaded live from the club's own Google Sheets.
-- "Register" and the student tools (volunteer hours, quiz) open the club's official website (accclubimamu.com) in an in-app Safari view.
+- Event registration is a native form inside the app (name, email, phone, major). It is submitted to the club's own Google Form for that event.
+- Student tools are native screens: volunteer hours lookup (by university ID, looked up on-device), the "Accounting Personality" quiz and the "Build Your Company" simulation. Quiz and game results stay on the device.
+- The privacy policy is shown inside the app (Club tab > Privacy Policy), with a button to erase data saved on the device.
+- Only external links (social accounts, event map / WhatsApp group) open in an in-app Safari view.
 - "Remind me" schedules local notifications before an event (no push server).
 
 If no events are currently open, the "Archive" segment in the Events tab shows past events.
 ```
 - Sign-in required: **No**
 - Contact: اكتبي اسمك وجوالك وإيميلك (Apple تتواصل معك لو عندها سؤال)
+
+## ما الجديد في 1.1 (What's New)
+```
+- التسجيل في الفعاليات صار من داخل التطبيق مباشرة، ويحفظ بياناتك للمرة الجاية
+- ساعاتي التطوعية: استعلم عن ساعاتك برقمك الجامعي
+- اختبار «شخصيتك المحاسبية» مع بطاقة تقدر تشاركها
+- لعبة «ابنِ شركتك» بقوائمها المالية
+- سياسة الخصوصية داخل التطبيق
+```
+- App Privacy ما يحتاج تعديل: الرقم الجامعي بالساعات التطوعية يُستخدم على الجهاز فقط وما ينرسل لنا، ونتائج الاختبار واللعبة ما تنرسل.
 
 ## Export Compliance
 مضبوطة بالمشروع (`ITSAppUsesNonExemptEncryption = NO`)، فما بيسألك عنها.
